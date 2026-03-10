@@ -1,0 +1,287 @@
+import { useState } from 'react'
+import { useSpaces } from '../../hooks/useData'
+import { spacesService } from '../../services/spaces'
+import type { Space } from '../../types'
+import { useQueryClient } from '@tanstack/react-query'
+import { Plus, Pencil, Trash2, X, Check, Loader2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+const spaceSchema = z.object({
+  name: z.string().min(1, '공간명을 입력하세요'),
+  slug: z.string().min(1, 'slug를 입력하세요').regex(/^[a-z0-9-]+$/, '소문자, 숫자, 하이픈만 허용됩니다'),
+  description: z.string().optional(),
+  category: z.enum(['cafe', 'garden', 'studio', 'storage', 'hall', 'other']),
+  capacity: z.coerce.number().min(0).optional(),
+  size_sqm: z.coerce.number().min(0).optional(),
+  rental_price_per_hour: z.coerce.number().min(0).optional(),
+  is_available: z.boolean().default(true),
+  sort_order: z.coerce.number().default(0),
+})
+
+type SpaceFormData = z.infer<typeof spaceSchema>
+
+const CATEGORY_LABELS: Record<string, string> = {
+  cafe: '카페',
+  garden: '가든',
+  studio: '스튜디오',
+  storage: '스토리지',
+  hall: '홀',
+  other: '기타',
+}
+
+const defaultValues: SpaceFormData = {
+  name: '',
+  slug: '',
+  description: '',
+  category: 'other',
+  capacity: undefined,
+  size_sqm: undefined,
+  rental_price_per_hour: undefined,
+  is_available: true,
+  sort_order: 0,
+}
+
+function SpaceForm({
+  initialData,
+  onClose,
+  onSuccess,
+}: {
+  initialData?: Space
+  onClose: () => void
+  onSuccess: () => void
+}) {
+  const [saving, setSaving] = useState(false)
+  const { register, handleSubmit, formState: { errors } } = useForm<SpaceFormData>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(spaceSchema) as any,
+    defaultValues: initialData
+      ? {
+          name: initialData.name,
+          slug: initialData.slug,
+          description: initialData.description ?? '',
+          category: initialData.category,
+          capacity: initialData.capacity ?? undefined,
+          size_sqm: initialData.size_sqm ?? undefined,
+          rental_price_per_hour: initialData.rental_price_per_hour ?? undefined,
+          is_available: initialData.is_available,
+          sort_order: initialData.sort_order,
+        }
+      : defaultValues,
+  })
+
+  const onSubmit = async (data: SpaceFormData) => {
+    setSaving(true)
+    try {
+      const payload = {
+        name: data.name,
+        slug: data.slug,
+        description: data.description ?? null,
+        category: data.category,
+        capacity: data.capacity ?? null,
+        size_sqm: data.size_sqm ?? null,
+        rental_price_per_hour: data.rental_price_per_hour ?? null,
+        is_available: data.is_available ?? true,
+        sort_order: data.sort_order ?? 0,
+      }
+      if (initialData) {
+        await spacesService.update(initialData.id, payload)
+      } else {
+        await spacesService.create({ ...payload, is_available: payload.is_available, sort_order: payload.sort_order })
+      }
+      onSuccess()
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h2 className="font-display text-lg font-light">{initialData ? '공간 편집' : '공간 추가'}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-brand-black"><X size={20} /></button>
+        </div>
+        <form onSubmit={handleSubmit(onSubmit as any /* eslint-disable-line @typescript-eslint/no-explicit-any */)} className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">공간명 *</label>
+              <input {...register('name')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">Slug *</label>
+              <input {...register('slug')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>}
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">설명</label>
+            <textarea {...register('description')} rows={3} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">카테고리</label>
+              <select {...register('category')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black bg-white">
+                {Object.entries(CATEGORY_LABELS).map(([val, label]) => (
+                  <option key={val} value={val}>{label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">수용 인원</label>
+              <input type="number" {...register('capacity')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">면적 (㎡)</label>
+              <input type="number" {...register('size_sqm')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+            </div>
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">시간당 대여 가격 (₩)</label>
+              <input type="number" {...register('rental_price_per_hour')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">정렬 순서</label>
+              <input type="number" {...register('sort_order')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+            </div>
+            <div className="flex items-end pb-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" {...register('is_available')} className="w-4 h-4" />
+                <span className="text-sm font-sans text-gray-700">대여 가능</span>
+              </label>
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black">취소</button>
+            <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50">
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+              저장
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+export default function AdminSpacesPage() {
+  const { data: spaces, isLoading } = useSpaces()
+  const queryClient = useQueryClient()
+  const [formOpen, setFormOpen] = useState(false)
+  const [editingSpace, setEditingSpace] = useState<Space | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const handleSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['spaces'] })
+    setFormOpen(false)
+    setEditingSpace(null)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('이 공간을 삭제하시겠습니까?')) return
+    setDeletingId(id)
+    try {
+      await spacesService.delete(id)
+      queryClient.invalidateQueries({ queryKey: ['spaces'] })
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="font-display text-2xl font-light text-brand-black">Spaces</h1>
+          <p className="font-sans text-sm text-gray-500 mt-1">공간 관리</p>
+        </div>
+        <button
+          onClick={() => setFormOpen(true)}
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors"
+        >
+          <Plus size={16} />
+          공간 추가
+        </button>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center h-40">
+          <Loader2 size={24} className="animate-spin text-brand-muted" />
+        </div>
+      ) : (
+        <div className="bg-white border border-gray-200 overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase">공간명</th>
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden md:table-cell">카테고리</th>
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden lg:table-cell">수용 인원</th>
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden lg:table-cell">상태</th>
+                <th className="px-6 py-3" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {spaces && spaces.length > 0 ? (
+                spaces.map((space) => (
+                  <tr key={space.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <p className="font-sans text-sm font-medium text-brand-black">{space.name}</p>
+                      <p className="font-sans text-xs text-gray-400 mt-0.5">/{space.slug}</p>
+                    </td>
+                    <td className="px-6 py-4 hidden md:table-cell">
+                      <span className="text-xs font-sans text-gray-600">{CATEGORY_LABELS[space.category] ?? space.category}</span>
+                    </td>
+                    <td className="px-6 py-4 hidden lg:table-cell">
+                      <span className="text-xs font-sans text-gray-600">{space.capacity ? `${space.capacity}명` : '-'}</span>
+                    </td>
+                    <td className="px-6 py-4 hidden lg:table-cell">
+                      <span className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${space.is_available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                        {space.is_available ? 'Available' : 'Unavailable'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setEditingSpace(space)}
+                          className="p-1.5 text-gray-400 hover:text-brand-black transition-colors"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(space.id)}
+                          disabled={deletingId === space.id}
+                          className="p-1.5 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                        >
+                          {deletingId === space.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center font-sans text-sm text-gray-400">
+                    등록된 공간이 없습니다. 공간을 추가하세요.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {(formOpen || editingSpace) && (
+        <SpaceForm
+          initialData={editingSpace ?? undefined}
+          onClose={() => { setFormOpen(false); setEditingSpace(null) }}
+          onSuccess={handleSuccess}
+        />
+      )}
+    </div>
+  )
+}
