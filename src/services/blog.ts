@@ -11,7 +11,7 @@ export const blogService = {
     let query = supabase
       .from('blog_posts')
       .select('*, author:profiles(id, full_name, avatar_url), category:blog_categories(*)', { count: 'exact' })
-      .eq('status', 'published')
+      .eq('is_published', true)
       .order('published_at', { ascending: false })
       .range(from, to)
 
@@ -31,7 +31,7 @@ export const blogService = {
       .from('blog_posts')
       .select('*, author:profiles(id, full_name, avatar_url), category:blog_categories(*)')
       .eq('slug', slug)
-      .eq('status', 'published')
+      .eq('is_published', true)
       .single()
     if (error) return null
 

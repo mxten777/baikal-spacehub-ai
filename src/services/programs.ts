@@ -5,7 +5,7 @@ export const programsService = {
   async getAll(filters?: FilterOptions & { limit?: number }): Promise<Program[]> {
     let query = supabase
       .from('programs')
-      .select('*, space:spaces(id, name, name_en)')
+      .select('*')
       .order('start_date', { ascending: true })
 
     if (filters?.category) query = query.eq('category', filters.category)
@@ -24,7 +24,7 @@ export const programsService = {
   async getUpcoming(limit = 6): Promise<Program[]> {
     const { data, error } = await supabase
       .from('programs')
-      .select('*, space:spaces(id, name)')
+      .select('*')
       .in('status', ['upcoming', 'ongoing'])
       .gte('end_date', new Date().toISOString())
       .order('start_date', { ascending: true })
@@ -36,7 +36,7 @@ export const programsService = {
   async getBySlug(slug: string): Promise<Program | null> {
     const { data, error } = await supabase
       .from('programs')
-      .select('*, space:spaces(*)')
+      .select('*')
       .eq('slug', slug)
       .single()
     if (error) return null

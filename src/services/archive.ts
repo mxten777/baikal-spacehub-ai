@@ -4,9 +4,9 @@ import type { ArchiveItem, FilterOptions } from '../types'
 export const archiveService = {
   async getAll(filters?: FilterOptions & { limit?: number }): Promise<ArchiveItem[]> {
     let query = supabase
-      .from('archives')
+      .from('archive_items')
       .select('*')
-      .order('held_date', { ascending: false })
+      .order('date', { ascending: false })
 
     if (filters?.category) query = query.eq('category', filters.category)
     if (filters?.featured) query = query.eq('is_featured', true)
@@ -22,7 +22,7 @@ export const archiveService = {
 
   async getBySlug(slug: string): Promise<ArchiveItem | null> {
     const { data, error } = await supabase
-      .from('archives')
+      .from('archive_items')
       .select('*')
       .eq('slug', slug)
       .single()
@@ -31,14 +31,14 @@ export const archiveService = {
   },
 
   async create(item: Omit<ArchiveItem, 'id' | 'created_at' | 'updated_at'>): Promise<ArchiveItem> {
-    const { data, error } = await supabase.from('archives').insert(item).select().single()
+    const { data, error } = await supabase.from('archive_items').insert(item).select().single()
     if (error) throw error
     return data
   },
 
   async update(id: string, updates: Partial<ArchiveItem>): Promise<ArchiveItem> {
     const { data, error } = await supabase
-      .from('archives')
+      .from('archive_items')
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
@@ -48,7 +48,7 @@ export const archiveService = {
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from('archives').delete().eq('id', id)
+    const { error } = await supabase.from('archive_items').delete().eq('id', id)
     if (error) throw error
   },
 }

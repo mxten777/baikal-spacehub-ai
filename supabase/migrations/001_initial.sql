@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS public.spaces (
   created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at               TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_spaces_slug ON public.spaces(slug);
-CREATE INDEX idx_spaces_category ON public.spaces(category);
+CREATE INDEX IF NOT EXISTS idx_spaces_slug ON public.spaces(slug);
+CREATE INDEX IF NOT EXISTS idx_spaces_category ON public.spaces(category);
 
 -- ============================================================
 -- PROGRAMS
@@ -85,9 +85,9 @@ CREATE TABLE IF NOT EXISTS public.programs (
   created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_programs_slug ON public.programs(slug);
-CREATE INDEX idx_programs_status ON public.programs(status);
-CREATE INDEX idx_programs_start_date ON public.programs(start_date);
+CREATE INDEX IF NOT EXISTS idx_programs_slug ON public.programs(slug);
+CREATE INDEX IF NOT EXISTS idx_programs_status ON public.programs(status);
+CREATE INDEX IF NOT EXISTS idx_programs_start_date ON public.programs(start_date);
 
 -- ============================================================
 -- ARCHIVE ITEMS
@@ -107,8 +107,8 @@ CREATE TABLE IF NOT EXISTS public.archive_items (
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_archive_slug ON public.archive_items(slug);
-CREATE INDEX idx_archive_category ON public.archive_items(category);
+CREATE INDEX IF NOT EXISTS idx_archive_slug ON public.archive_items(slug);
+CREATE INDEX IF NOT EXISTS idx_archive_category ON public.archive_items(category);
 
 -- ============================================================
 -- BLOG CATEGORIES
@@ -140,9 +140,9 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_blog_posts_slug ON public.blog_posts(slug);
-CREATE INDEX idx_blog_posts_published ON public.blog_posts(is_published, published_at DESC);
-CREATE INDEX idx_blog_posts_category ON public.blog_posts(category_id);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON public.blog_posts(slug);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON public.blog_posts(is_published, published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_category ON public.blog_posts(category_id);
 
 -- RPC to safely increment view_count
 CREATE OR REPLACE FUNCTION public.increment_view_count(post_id UUID)
@@ -168,8 +168,8 @@ CREATE TABLE IF NOT EXISTS public.media_items (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_media_platform ON public.media_items(platform);
-CREATE INDEX idx_media_featured ON public.media_items(is_featured);
+CREATE INDEX IF NOT EXISTS idx_media_platform ON public.media_items(platform);
+CREATE INDEX IF NOT EXISTS idx_media_featured ON public.media_items(is_featured);
 
 -- ============================================================
 -- INQUIRIES
@@ -188,8 +188,8 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_inquiries_status ON public.inquiries(status);
-CREATE INDEX idx_inquiries_created ON public.inquiries(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_inquiries_status ON public.inquiries(status);
+CREATE INDEX IF NOT EXISTS idx_inquiries_created ON public.inquiries(created_at DESC);
 
 -- ============================================================
 -- SETTINGS (key/value store)
@@ -268,39 +268,97 @@ RETURNS BOOLEAN LANGUAGE sql STABLE SECURITY DEFINER AS $$
 $$;
 
 -- SPACES: public read, admin write
-CREATE POLICY "spaces_public_read"  ON public.spaces FOR SELECT USING (TRUE);
-CREATE POLICY "spaces_admin_write"  ON public.spaces FOR ALL USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='spaces' AND policyname='spaces_public_read') THEN
+    CREATE POLICY "spaces_public_read" ON public.spaces FOR SELECT USING (TRUE);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='spaces' AND policyname='spaces_admin_write') THEN
+    CREATE POLICY "spaces_admin_write" ON public.spaces FOR ALL USING (public.is_admin());
+  END IF;
+END $$;
 
 -- PROGRAMS: public read, admin write
-CREATE POLICY "programs_public_read"  ON public.programs FOR SELECT USING (TRUE);
-CREATE POLICY "programs_admin_write"  ON public.programs FOR ALL USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='programs' AND policyname='programs_public_read') THEN
+    CREATE POLICY "programs_public_read" ON public.programs FOR SELECT USING (TRUE);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='programs' AND policyname='programs_admin_write') THEN
+    CREATE POLICY "programs_admin_write" ON public.programs FOR ALL USING (public.is_admin());
+  END IF;
+END $$;
 
 -- ARCHIVE: public read, admin write
-CREATE POLICY "archive_public_read"  ON public.archive_items FOR SELECT USING (TRUE);
-CREATE POLICY "archive_admin_write"  ON public.archive_items FOR ALL USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='archive_items' AND policyname='archive_public_read') THEN
+    CREATE POLICY "archive_public_read" ON public.archive_items FOR SELECT USING (TRUE);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='archive_items' AND policyname='archive_admin_write') THEN
+    CREATE POLICY "archive_admin_write" ON public.archive_items FOR ALL USING (public.is_admin());
+  END IF;
+END $$;
 
 -- BLOG CATEGORIES: public read, admin write
-CREATE POLICY "blogcat_public_read"  ON public.blog_categories FOR SELECT USING (TRUE);
-CREATE POLICY "blogcat_admin_write"  ON public.blog_categories FOR ALL USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='blog_categories' AND policyname='blogcat_public_read') THEN
+    CREATE POLICY "blogcat_public_read" ON public.blog_categories FOR SELECT USING (TRUE);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='blog_categories' AND policyname='blogcat_admin_write') THEN
+    CREATE POLICY "blogcat_admin_write" ON public.blog_categories FOR ALL USING (public.is_admin());
+  END IF;
+END $$;
 
 -- BLOG POSTS: published posts public, admin sees all + can write
-CREATE POLICY "blog_public_read"    ON public.blog_posts FOR SELECT USING (is_published = TRUE);
-CREATE POLICY "blog_admin_read"     ON public.blog_posts FOR SELECT USING (public.is_admin());
-CREATE POLICY "blog_admin_write"    ON public.blog_posts FOR ALL USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='blog_posts' AND policyname='blog_public_read') THEN
+    CREATE POLICY "blog_public_read" ON public.blog_posts FOR SELECT USING (is_published = TRUE);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='blog_posts' AND policyname='blog_admin_read') THEN
+    CREATE POLICY "blog_admin_read" ON public.blog_posts FOR SELECT USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='blog_posts' AND policyname='blog_admin_write') THEN
+    CREATE POLICY "blog_admin_write" ON public.blog_posts FOR ALL USING (public.is_admin());
+  END IF;
+END $$;
 
 -- MEDIA: public read, admin write
-CREATE POLICY "media_public_read"   ON public.media_items FOR SELECT USING (TRUE);
-CREATE POLICY "media_admin_write"   ON public.media_items FOR ALL USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='media_items' AND policyname='media_public_read') THEN
+    CREATE POLICY "media_public_read" ON public.media_items FOR SELECT USING (TRUE);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='media_items' AND policyname='media_admin_write') THEN
+    CREATE POLICY "media_admin_write" ON public.media_items FOR ALL USING (public.is_admin());
+  END IF;
+END $$;
 
 -- INQUIRIES: anyone can insert (submit form), admin can read/update
-CREATE POLICY "inquiries_public_insert"  ON public.inquiries FOR INSERT WITH CHECK (TRUE);
-CREATE POLICY "inquiries_admin_select"   ON public.inquiries FOR SELECT USING (public.is_admin());
-CREATE POLICY "inquiries_admin_update"   ON public.inquiries FOR UPDATE USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='inquiries' AND policyname='inquiries_public_insert') THEN
+    CREATE POLICY "inquiries_public_insert" ON public.inquiries FOR INSERT WITH CHECK (TRUE);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='inquiries' AND policyname='inquiries_admin_select') THEN
+    CREATE POLICY "inquiries_admin_select" ON public.inquiries FOR SELECT USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='inquiries' AND policyname='inquiries_admin_update') THEN
+    CREATE POLICY "inquiries_admin_update" ON public.inquiries FOR UPDATE USING (public.is_admin());
+  END IF;
+END $$;
 
 -- SETTINGS: public read, admin write
-CREATE POLICY "settings_public_read"   ON public.settings FOR SELECT USING (TRUE);
-CREATE POLICY "settings_admin_write"   ON public.settings FOR ALL USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='settings' AND policyname='settings_public_read') THEN
+    CREATE POLICY "settings_public_read" ON public.settings FOR SELECT USING (TRUE);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='settings' AND policyname='settings_admin_write') THEN
+    CREATE POLICY "settings_admin_write" ON public.settings FOR ALL USING (public.is_admin());
+  END IF;
+END $$;
 
 -- PROFILES: users see own row, admins see all
-CREATE POLICY "profiles_own"        ON public.profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "profiles_admin"      ON public.profiles FOR ALL USING (public.is_admin());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='profiles' AND policyname='profiles_own') THEN
+    CREATE POLICY "profiles_own" ON public.profiles FOR SELECT USING (auth.uid() = id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='profiles' AND policyname='profiles_admin') THEN
+    CREATE POLICY "profiles_admin" ON public.profiles FOR ALL USING (public.is_admin());
+  END IF;
+END $$;
