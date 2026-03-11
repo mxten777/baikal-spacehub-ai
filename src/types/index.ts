@@ -285,3 +285,119 @@ export interface SeoMeta {
   ogType?: string;
   canonicalUrl?: string;
 }
+
+// ============================================================
+// CONTENT AGGREGATOR — 자기확장형 콘텐츠 시스템
+// ============================================================
+
+export type ContentPlatform = 'rss' | 'youtube' | 'instagram' | 'x';
+
+export type VisibilityStatus = 'pending' | 'published' | 'hidden' | 'featured';
+
+// content_sources 테이블
+export interface ContentSource {
+  id: UUID;
+  name: string;
+  platform: ContentPlatform;
+  source_url?: string | null;
+  rss_url?: string | null;
+  channel_id?: string | null;
+  account_handle?: string | null;
+  is_active: boolean;
+  auto_publish: boolean;
+  fetch_interval_minutes: number;
+  last_fetched_at?: ISODateString | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+// external_contents 테이블
+export interface ExternalContent {
+  id: UUID;
+  source_id?: UUID | null;
+  source?: ContentSource;
+  platform: ContentPlatform;
+  external_id: string;
+  external_url: string;
+  title?: string | null;
+  summary?: string | null;
+  content?: string | null;
+  author_name?: string | null;
+  thumbnail_url?: string | null;
+  media_url?: string | null;
+  published_at?: ISODateString | null;
+  fetched_at: ISODateString;
+  visibility_status: VisibilityStatus;
+  is_featured: boolean;
+  category?: string | null;
+  related_space_id?: UUID | null;
+  related_space?: Space;
+  related_program_id?: UUID | null;
+  related_program?: Program;
+  metadata_json?: Record<string, unknown>;
+  tags?: ContentTag[];
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+// content_tags 테이블
+export interface ContentTag {
+  id: UUID;
+  name: string;
+  slug: string;
+  created_at: ISODateString;
+}
+
+// content_tag_maps 테이블
+export interface ContentTagMap {
+  external_content_id: UUID;
+  tag_id: UUID;
+}
+
+// fetch_logs 테이블
+export interface FetchLog {
+  id: UUID;
+  source_id?: UUID | null;
+  source?: ContentSource;
+  platform?: string | null;
+  status: 'success' | 'partial' | 'error';
+  items_found: number;
+  items_new: number;
+  items_skipped: number;
+  error_message?: string | null;
+  duration_ms?: number | null;
+  fetched_at: ISODateString;
+}
+
+// 플랫폼별 통계
+export interface ExternalContentStats {
+  platform: ContentPlatform;
+  total: number;
+  pending: number;
+  published: number;
+  hidden: number;
+}
+
+// Fetcher 공통 인터페이스
+export interface FetchResult {
+  source_id: string;
+  platform: ContentPlatform;
+  items: NormalizedContent[];
+  error?: string;
+  duration_ms: number;
+}
+
+// 정규화된 수집 콘텐츠 (저장 전 중간 형식)
+export interface NormalizedContent {
+  external_id: string;
+  external_url: string;
+  title?: string;
+  summary?: string;
+  content?: string;
+  author_name?: string;
+  thumbnail_url?: string;
+  media_url?: string;
+  published_at?: string;
+  platform: ContentPlatform;
+  metadata_json?: Record<string, unknown>;
+}

@@ -1,7 +1,8 @@
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Image, Calendar, Archive, FileText,
-  Video, MessageSquare, Settings, LogOut, ChevronLeft, Menu, X
+  Video, MessageSquare, Settings, LogOut, ChevronLeft, Menu, X,
+  Rss, Globe2,
 } from 'lucide-react'
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
@@ -13,6 +14,8 @@ const adminNav = [
   { label: 'Archive', href: '/admin/archive', icon: Archive },
   { label: 'Blog', href: '/admin/blog', icon: FileText },
   { label: 'Media', href: '/admin/media', icon: Video },
+  { label: '콘텐츠 소스', href: '/admin/content-sources', icon: Rss },
+  { label: '외부 콘텐츠', href: '/admin/external-content', icon: Globe2 },
   { label: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ]

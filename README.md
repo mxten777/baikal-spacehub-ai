@@ -200,7 +200,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ---
 
-## 6. Supabase 설정
+## 6. Supabase 설정  -> TiuapmISThWlzBGX
 
 ### 6-1. 프로젝트 생성
 1. [supabase.com](https://supabase.com) 접속 → New Project 생성

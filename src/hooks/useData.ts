@@ -5,8 +5,12 @@ import { archiveService } from '../services/archive'
 import { blogService } from '../services/blog'
 import { mediaService } from '../services/media'
 import { inquiriesService } from '../services/inquiries'
+import { contentSourcesService } from '../services/contentSources'
+import { externalContentsService } from '../services/externalContents'
+import { fetchLogsService } from '../services/fetchLogs'
 import { isSupabaseConfigured } from '../lib/supabase'
-import type { FilterOptions, InquiryType } from '../types'
+import type { FilterOptions, InquiryType, ContentPlatform } from '../types'
+import type { ExternalContentFilters } from '../services/externalContents'
 
 // ── Spaces ──────────────────────────────────────────────────
 export const useSpaces = (filters?: FilterOptions) =>
@@ -111,6 +115,68 @@ export const useInquiries = (filters?: { status?: string; type?: InquiryType }) 
   useQuery({
     queryKey: ['inquiries', filters],
     queryFn: () => inquiriesService.getAll(filters),
+    staleTime: 1 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+// ── Content Sources ───────────────────────────────────────────
+export const useContentSources = (platform?: ContentPlatform) =>
+  useQuery({
+    queryKey: ['content-sources', platform],
+    queryFn: () => contentSourcesService.getAll(platform),
+    staleTime: 5 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+export const useActiveContentSources = () =>
+  useQuery({
+    queryKey: ['content-sources', 'active'],
+    queryFn: () => contentSourcesService.getActive(),
+    staleTime: 5 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+// ── External Contents ─────────────────────────────────────────
+export const useExternalContents = (
+  filters: { platform?: ContentPlatform; category?: string; limit?: number } = {}
+) =>
+  useQuery({
+    queryKey: ['external-contents', 'public', filters],
+    queryFn: () => externalContentsService.getPublished(filters),
+    staleTime: 3 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+export const useFeaturedExternalContents = (limit = 6) =>
+  useQuery({
+    queryKey: ['external-contents', 'featured', limit],
+    queryFn: () => externalContentsService.getFeatured(limit),
+    staleTime: 3 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+export const useExternalContentsAdmin = (filters: ExternalContentFilters = {}) =>
+  useQuery({
+    queryKey: ['external-contents', filters],
+    queryFn: () => externalContentsService.getAllAdmin(filters),
+    staleTime: 1 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+    placeholderData: (prev) => prev,
+  })
+
+export const useExternalContentStats = () =>
+  useQuery({
+    queryKey: ['external-contents', 'stats'],
+    queryFn: () => externalContentsService.getStats(),
+    staleTime: 2 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+// ── Fetch Logs ────────────────────────────────────────────────
+export const useFetchLogs = (sourceId?: string, limit = 50) =>
+  useQuery({
+    queryKey: ['fetch-logs', sourceId, limit],
+    queryFn: () => fetchLogsService.getRecent(sourceId, limit),
     staleTime: 1 * 60 * 1000,
     enabled: isSupabaseConfigured,
   })

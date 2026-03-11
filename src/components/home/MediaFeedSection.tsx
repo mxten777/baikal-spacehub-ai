@@ -1,36 +1,39 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Play } from 'lucide-react'
-import { useFeaturedMedia } from '../../hooks/useData'
+import { useFeaturedExternalContents, useFeaturedMedia } from '../../hooks/useData'
 import AnimatedSection from '../common/AnimatedSection'
 import SectionHeader from '../common/SectionHeader'
-
-const FALLBACK_MEDIA = [
-  {
-    id: '1', platform: 'youtube', title: '더릿 스페이스 투어 | The Lit Space Tour',
-    thumbnail_url: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&q=80',
-    media_url: 'https://youtube.com/watch?v=example1', platform_id: 'example1',
-  },
-  {
-    id: '2', platform: 'instagram', title: '봄 전시 오프닝',
-    thumbnail_url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80',
-    media_url: 'https://instagram.com/p/example2', platform_id: 'example2',
-  },
-  {
-    id: '3', platform: 'youtube', title: '재즈 나이트 하이라이트',
-    thumbnail_url: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80',
-    media_url: 'https://youtube.com/watch?v=example3', platform_id: 'example3',
-  },
-]
 
 const PLATFORM_BADGE: Record<string, { label: string; color: string }> = {
   youtube: { label: 'YouTube', color: 'bg-red-600' },
   instagram: { label: 'Instagram', color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
   x: { label: 'X', color: 'bg-black' },
+  rss: { label: 'Blog', color: 'bg-orange-500' },
 }
 
 export default function MediaFeedSection() {
-  const { data: mediaItems } = useFeaturedMedia(6)
-  const items = mediaItems && mediaItems.length > 0 ? mediaItems : FALLBACK_MEDIA
+  const { data: featured } = useFeaturedExternalContents(6)
+  const { data: legacyMedia } = useFeaturedMedia(6)
+
+  // external_contents의 featured 항목 우선, 없으면 legacy media_items
+  const items =
+    featured && featured.length > 0
+      ? featured.map((item) => ({
+          id: item.id,
+          platform: item.platform,
+          title: item.title,
+          thumbnail_url: item.thumbnail_url,
+          url: item.external_url,
+        }))
+      : (legacyMedia ?? []).map((m) => ({
+          id: m.id,
+          platform: m.platform,
+          title: m.title,
+          thumbnail_url: m.thumbnail_url,
+          url: m.media_url,
+        }))
+
+  if (items.length === 0) return null
 
   return (
     <section className="section-padding bg-brand-white">
@@ -54,7 +57,7 @@ export default function MediaFeedSection() {
             return (
               <AnimatedSection key={item.id} animation="fade-up" delay={i * 100}>
                 <a
-                  href={item.media_url}
+                  href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group block relative overflow-hidden aspect-video bg-brand-warm"
@@ -67,7 +70,6 @@ export default function MediaFeedSection() {
                   />
                   <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300" />
 
-                  {/* Play button for video */}
                   {isVideo && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -76,14 +78,12 @@ export default function MediaFeedSection() {
                     </div>
                   )}
 
-                  {/* Platform badge */}
                   <div className="absolute top-3 left-3">
                     <span className={`font-sans text-[9px] font-medium tracking-widest uppercase text-white px-2 py-1 ${badge.color}`}>
                       {badge.label}
                     </span>
                   </div>
 
-                  {/* Title */}
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <p className="font-sans text-sm font-medium text-white line-clamp-2 leading-snug">
                       {item.title}

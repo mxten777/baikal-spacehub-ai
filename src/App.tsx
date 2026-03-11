@@ -32,6 +32,8 @@ import AdminBlogPage from './pages/admin/AdminBlogPage'
 import AdminMediaPage from './pages/admin/AdminMediaPage'
 import AdminInquiriesPage from './pages/admin/AdminInquiriesPage'
 import AdminSettingsPage from './pages/admin/AdminSettingsPage'
+import AdminContentSourcesPage from './pages/admin/AdminContentSourcesPage'
+import AdminExternalContentPage from './pages/admin/AdminExternalContentPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,6 +102,8 @@ export default function App() {
               <Route path="media" element={<AdminMediaPage />} />
               <Route path="inquiries" element={<AdminInquiriesPage />} />
               <Route path="settings" element={<AdminSettingsPage />} />
+              <Route path="content-sources" element={<AdminContentSourcesPage />} />
+              <Route path="external-content" element={<AdminExternalContentPage />} />
             </Route>
 
             {/* 404 fallback */}

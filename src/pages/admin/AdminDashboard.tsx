@@ -3,7 +3,8 @@ import { usePrograms } from '../../hooks/useData'
 import { useArchive } from '../../hooks/useData'
 import { useInquiries } from '../../hooks/useData'
 import { useBlogPosts } from '../../hooks/useData'
-import { Image, Calendar, Archive, MessageSquare, FileText, TrendingUp } from 'lucide-react'
+import { useExternalContentStats } from '../../hooks/useData'
+import { Image, Calendar, Archive, MessageSquare, FileText, TrendingUp, Globe2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 interface StatCardProps {
@@ -35,6 +36,9 @@ export default function AdminDashboard() {
   const { data: archives } = useArchive()
   const { data: inquiries } = useInquiries({ status: 'pending' })
   const { data: blogResult } = useBlogPosts({ limit: 1 })
+  const { data: extStats } = useExternalContentStats()
+
+  const pendingExternal = extStats?.reduce((sum, s) => sum + (s.pending ?? 0), 0) ?? 0
 
   const stats = [
     { icon: Image, label: 'Spaces', value: spaces?.length ?? 0, href: '/admin/spaces', color: 'bg-blue-600' },
@@ -42,6 +46,7 @@ export default function AdminDashboard() {
     { icon: Archive, label: 'Archive', value: archives?.length ?? 0, href: '/admin/archive', color: 'bg-orange-500' },
     { icon: FileText, label: 'Blog Posts', value: blogResult?.count ?? 0, href: '/admin/blog', color: 'bg-green-600' },
     { icon: MessageSquare, label: 'Pending Inquiries', value: inquiries?.length ?? 0, href: '/admin/inquiries', color: 'bg-red-500' },
+    { icon: Globe2, label: 'Pending Content', value: pendingExternal, href: '/admin/external-content', color: pendingExternal > 0 ? 'bg-amber-500' : 'bg-gray-400' },
   ]
 
   return (
@@ -52,7 +57,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-10">
         {stats.map((stat) => (
           <StatCard key={stat.label} {...stat} />
         ))}
@@ -70,6 +75,7 @@ export default function AdminDashboard() {
               { label: 'New Blog Post', href: '/admin/blog/new', icon: FileText },
               { label: 'New Space', href: '/admin/spaces/new', icon: Image },
               { label: 'View Inquiries', href: '/admin/inquiries', icon: MessageSquare },
+              { label: 'Content Sources', href: '/admin/content-sources', icon: Globe2 },
             ].map((action) => (
               <Link
                 key={action.label}
