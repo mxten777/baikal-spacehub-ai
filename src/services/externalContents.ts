@@ -109,17 +109,40 @@ export const externalContentsService = {
       fetched_at: new Date().toISOString(),
     }))
 
-    const { data, error } = await supabase
+    // ignoreDuplicates:true 는 삽입된 행을 반환하지 않으므로 두 단계로 처리
+    // 1) upsert (중복이면 아무것도 안 함)
+    const { error } = await supabase
       .from('external_contents')
       .upsert(rows, {
         onConflict: 'source_id,external_id',
         ignoreDuplicates: true,
       })
-      .select('id')
 
     if (error) throw error
-    const inserted = data?.length ?? 0
-    const skipped = items.length - inserted
+
+    // 2) 방금 upsert한 external_id들 중 실제로 존재하는 행 수 = 총 행 수 (inserted + already existed)
+    //    inserted = 총 행 수 - 이미 있던(skipped) 행 수를 직접 계산하기 어려우므로
+    //    fetched_at이 지금과 가까운 行 수로 근사치 계산
+    const externalIds = rows.map((r) => r.external_id)
+    const { count: totalNow } = await supabase
+      .from('external_contents')
+      .select('id', { count: 'exact', head: true })
+      .eq('source_id', sourceId)
+      .in('external_id', externalIds)
+
+    const total = totalNow ?? items.length
+    // 이번에 새로 들어온 것 = upsert 시도한 수 중 기존 미존재分
+    // 근사: fetched_at이 지금(30초 이내)인 것만 counted
+    const since = new Date(Date.now() - 30_000).toISOString()
+    const { count: insertedCount } = await supabase
+      .from('external_contents')
+      .select('id', { count: 'exact', head: true })
+      .eq('source_id', sourceId)
+      .in('external_id', externalIds)
+      .gte('fetched_at', since)
+
+    const inserted = insertedCount ?? 0
+    const skipped = total - inserted
     return { inserted, skipped }
   },
 

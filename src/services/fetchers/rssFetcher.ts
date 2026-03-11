@@ -83,10 +83,15 @@ export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
 
   const results: NormalizedContent[] = []
   for (const el of items) {
-    // link: <link> 텍스트 or <guid> 폴백 (네이버 블로그는 guid에 URL이 있을 수 있음)
+    // 네이버 블로그는 <link>가 next sibling text node로 존재해 textContent가 빈 경우 있음
+    // nextSibling으로 직접 텍스트 노드를 읽는 방식으로 보완
+    const linkEl = el.getElementsByTagName('link')[0]
+    const linkFromNextSibling = linkEl?.nextSibling?.nodeValue?.trim() ?? ''
     const link =
       getText(el, 'link') ||
+      linkFromNextSibling ||
       getText(el, 'guid') ||
+      el.getElementsByTagName('origLink')[0]?.textContent?.trim() ||
       el.getElementsByTagName('link')[0]?.getAttribute('href') ||
       ''
 
