@@ -1,13 +1,49 @@
 /**
  * RSS Fetcher
  * 
- * CORS 우회: allOrigins 프록시 또는 서버 측(Supabase Edge Function) 권장
- * 프론트엔드에서 직접 호출 시 CORS 제한이 있으므로,
+ * CORS 우회: 여러 공개 프록시를 폴백 체인으로 시도
  * 실제 운영에서는 Supabase Edge Function으로 이동할 것.
  */
 import type { NormalizedContent } from '../../types'
 
-const RSS_PROXY = 'https://api.allorigins.win/get?url='
+// 각 프록시는 { type: 'json', key: 'contents' } 또는 { type: 'raw' } 형태
+const CORS_PROXIES: Array<
+  | { type: 'json'; url: string; key: string }
+  | { type: 'raw'; url: string }
+> = [
+  { type: 'raw',  url: 'https://corsproxy.io/?' },
+  { type: 'json', url: 'https://api.allorigins.win/get?url=', key: 'contents' },
+  { type: 'raw',  url: 'https://api.codetabs.com/v1/proxy?quest=' },
+]
+
+async function fetchWithProxy(rssUrl: string): Promise<string> {
+  const encoded = encodeURIComponent(rssUrl)
+  const errors: string[] = []
+
+  for (const proxy of CORS_PROXIES) {
+    try {
+      const res = await fetch(`${proxy.url}${encoded}`, { signal: AbortSignal.timeout(10_000) })
+      if (!res.ok) {
+        errors.push(`${proxy.url}: HTTP ${res.status}`)
+        continue
+      }
+      if (proxy.type === 'json') {
+        const json = await res.json()
+        const text: string = json[proxy.key] ?? ''
+        if (text) return text
+        errors.push(`${proxy.url}: empty contents field`)
+      } else {
+        const text = await res.text()
+        if (text) return text
+        errors.push(`${proxy.url}: empty response`)
+      }
+    } catch (e) {
+      errors.push(`${proxy.url}: ${e instanceof Error ? e.message : String(e)}`)
+    }
+  }
+
+  throw new Error(`모든 RSS 프록시 실패:\n${errors.join('\n')}`)
+}
 
 export interface RssItem {
   title: string
@@ -61,14 +97,7 @@ function getText(el: Element, tagName: string): string {
 }
 
 export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
-  const proxyUrl = `${RSS_PROXY}${encodeURIComponent(rssUrl)}`
-
-  const res = await fetch(proxyUrl)
-  if (!res.ok) throw new Error(`RSS proxy failed: ${res.status}`)
-
-  const json = await res.json()
-  const xmlText: string = json.contents
-  if (!xmlText) throw new Error('RSS proxy returned empty content')
+  const xmlText = await fetchWithProxy(rssUrl)
 
   // XML 파싱 (text/xml) — namespace 있어도 getElementsByTagName은 안정적
   const parser = new DOMParser()
