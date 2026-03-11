@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Play, ExternalLink } from 'lucide-react'
 import { useMedia } from '../hooks/useData'
@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner'
 import type { ContentPlatform } from '../types'
 
 const PLATFORMS: Array<{ value: 'all' | ContentPlatform; label: string }> = [
-  { value: 'all', label: '?꾩껜' },
+  { value: 'all', label: '전체' },
   { value: 'youtube', label: 'YouTube' },
   { value: 'instagram', label: 'Instagram' },
   { value: 'x', label: 'X (Twitter)' },
@@ -25,13 +25,13 @@ const PLATFORM_BADGE: Record<string, { label: string; cls: string }> = {
 export default function MediaPage() {
   const [activePlatform, setActivePlatform] = useState<'all' | ContentPlatform>('all')
 
-  // external_contents媛 二??곗씠???뚯뒪 (?섏쭛??肄섑뀗痢?
+  // external_contents가 주요 데이터 소스 (수집된 콘텐츠)
   const { data: externalItems = [], isLoading: externalLoading } = useExternalContents({
     platform: activePlatform === 'all' ? undefined : activePlatform,
     limit: 24,
   })
 
-  // 湲곗〈 media_items??蹂묐젹 議고쉶 (?섏쐞 ?명솚)
+  // 기존 media_items도 병렬 조회 (하위 호환)
   const { data: legacyMedia = [], isLoading: legacyLoading } = useMedia(
     activePlatform === 'all' || activePlatform === 'rss' ? undefined : activePlatform,
     12
@@ -39,7 +39,7 @@ export default function MediaPage() {
 
   const isLoading = externalLoading || legacyLoading
 
-  // external_contents ?곗꽑, ?놁쑝硫?legacy media_items濡?fallback
+  // external_contents 우선, 없으면 legacy media_items로 fallback
   const items =
     externalItems.length > 0
       ? externalItems
@@ -63,10 +63,10 @@ export default function MediaPage() {
   return (
     <>
       <Helmet>
-        <title>Media ??The Lit</title>
-        <meta name="description" content="?붾┸??YouTube, Instagram, X, 釉붾줈洹?肄섑뀗痢좊? ?쒓납?먯꽌 紐⑥븘蹂댁꽭??" />
-        <meta property="og:title" content="Media ??The Lit" />
-        <meta property="og:description" content="?붾┸??誘몃뵒???덈툕?먯꽌 ?ㅼ뼇??梨꾨꼸??理쒖떊 肄섑뀗痢좊? 留뚮굹蹂댁꽭??" />
+        <title>Media — The Lit</title>
+        <meta name="description" content="더릿의 YouTube, Instagram, X, 블로그 RSS에서 실시간으로 업데이트됩니다." />
+        <meta property="og:title" content="Media — The Lit" />
+        <meta property="og:description" content="더릿의 미디어 피드에서 최신 영상과 다양한 콘텐츠를 만나보세요." />
       </Helmet>
 
       {/* Hero */}
@@ -75,11 +75,11 @@ export default function MediaPage() {
           <AnimatedSection animation="fade-up">
             <p className="eyebrow mb-4">Media</p>
             <h1 className="font-display text-display font-light text-brand-black mb-6">
-              誘몃뵒???덈툕
+              미디어 피드
             </h1>
             <p className="font-sans text-base text-brand-muted max-w-xl">
-              ?붾┸???ㅼ뼇??梨꾨꼸?먯꽌 怨듦컙怨?臾명솕 ?댁빞湲곕? 寃쏀뿕?섏꽭??
-              YouTube, Instagram, X, 釉붾줈洹?肄섑뀗痢좉? ??怨녹뿉???ㅼ떆媛??낅뜲?댄듃?⑸땲??
+              더릿이 활동하는 공간에서 문화와 예술을 위한 콘텐츠를 소개합니다.
+              YouTube, Instagram, X, 블로그 RSS의 각 채널에서 실시간으로 업데이트됩니다.
             </p>
           </AnimatedSection>
         </div>
@@ -102,7 +102,7 @@ export default function MediaPage() {
           ))}
           {items.length > 0 && (
             <span className="ml-auto shrink-0 font-sans text-xs text-gray-400">
-              {items.length}媛?
+              {items.length}개
             </span>
           )}
         </div>
@@ -116,10 +116,10 @@ export default function MediaPage() {
           ) : items.length === 0 ? (
             <div className="text-center py-24 text-brand-muted">
               <p className="font-sans text-sm">
-                ?꾩옱 ?쒖떆??肄섑뀗痢좉? ?놁뒿?덈떎.
+                현재 표시할 콘텐츠가 없습니다.
               </p>
               <p className="font-sans text-xs mt-2 text-gray-300">
-                愿由ъ옄 ?섏씠吏?먯꽌 ?뚯뒪瑜?異붽??섍퀬 ?섏쭛???ㅽ뻾?섏꽭??
+                관리자 페이지에서 소스를 추가하고 수집을 실행하세요.
               </p>
             </div>
           ) : (

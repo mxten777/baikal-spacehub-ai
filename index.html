@@ -27,9 +27,13 @@
     <meta name="twitter:description" content="The Lit은 전시, 공연, 워크샵, 공간 대여가 한 곳에서 이루어지는 복합문화공간입니다." />
     <meta name="twitter:image" content="https://thelit.kr/og-image.jpg" />
 
-    <!-- Preconnect for Google Fonts (loaded in CSS) -->
+    <!-- Preconnect for external font CDNs -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Pretendard (Korean font) — loaded here to avoid Vite CSS processing issues -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
     <!-- Theme color -->
     <meta name="theme-color" content="#0A0A0A" />
