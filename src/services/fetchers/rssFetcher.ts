@@ -1,10 +1,27 @@
 /**
  * RSS Fetcher
  * 
- * CORS 우회: 여러 공개 프록시를 폴백 체인으로 시도
+ * CORS 우회 전략 (우선순위 순):
+ * 1. rss2json.com  — RSS 전용 서버사이드 파서, JSON 반환 (Naver 차단 우회 최적)
+ * 2. CORS 프록시 체인 — 3개 프록시 폴백 + 직접 XML 파싱
+ *
  * 실제 운영에서는 Supabase Edge Function으로 이동할 것.
  */
 import type { NormalizedContent } from '../../types'
+
+// rss2json.com — RSS 전용 변환 서비스 (free tier: 10,000 req/day)
+const RSS2JSON_API = 'https://api.rss2json.com/v1/api.json?rss_url='
+
+interface Rss2JsonItem {
+  title: string
+  link: string
+  pubDate: string
+  author: string
+  thumbnail: string
+  description: string
+  content: string
+  enclosure: { link?: string; type?: string }
+}
 
 // 각 프록시는 { type: 'json', key: 'contents' } 또는 { type: 'raw' } 형태
 const CORS_PROXIES: Array<
@@ -43,6 +60,45 @@ async function fetchWithProxy(rssUrl: string): Promise<string> {
   }
 
   throw new Error(`모든 RSS 프록시 실패:\n${errors.join('\n')}`)
+}
+
+// rss2json.com 시도: 성공하면 NormalizedContent[], 실패하면 null
+async function tryRss2Json(rssUrl: string): Promise<NormalizedContent[] | null> {
+  try {
+    const res = await fetch(`${RSS2JSON_API}${encodeURIComponent(rssUrl)}`, {
+      signal: AbortSignal.timeout(15_000),
+    })
+    if (!res.ok) return null
+    const json = await res.json()
+    if (json.status !== 'ok' || !Array.isArray(json.items)) return null
+
+    const results: NormalizedContent[] = []
+    for (const item of json.items as Rss2JsonItem[]) {
+      const url = item.link
+      if (!url) continue
+      const externalId = btoa(url).replace(/[^a-zA-Z0-9]/g, '').slice(0, 64)
+      const rawContent = item.content || item.description || ''
+      const summary = rawContent.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 300)
+      const thumbnail =
+        item.thumbnail ||
+        item.enclosure?.link ||
+        rawContent.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1]
+      results.push({
+        external_id: externalId,
+        external_url: url,
+        title: item.title?.trim(),
+        summary,
+        author_name: item.author || undefined,
+        thumbnail_url: thumbnail || undefined,
+        published_at: item.pubDate ? new Date(item.pubDate).toISOString() : undefined,
+        platform: 'rss',
+        metadata_json: { source_url: rssUrl },
+      })
+    }
+    return results.length > 0 ? results : null
+  } catch {
+    return null
+  }
 }
 
 export interface RssItem {
@@ -97,6 +153,11 @@ function getText(el: Element, tagName: string): string {
 }
 
 export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
+  // 1순위: rss2json.com — RSS 전용 서버사이드 파서 (Naver CORS 차단 우회)
+  const rss2jsonResult = await tryRss2Json(rssUrl)
+  if (rss2jsonResult !== null) return rss2jsonResult
+
+  // 2순위 폴백: CORS 프록시 체인 + 직접 XML 파싱
   const xmlText = await fetchWithProxy(rssUrl)
 
   // XML 파싱 (text/xml) — namespace 있어도 getElementsByTagName은 안정적
