@@ -8,11 +8,11 @@
  */
 import type { NormalizedContent } from '../../types'
 
-// Supabase Edge Function URL — VITE_SUPABASE_URL 환경변수에서 자동 구성
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string) ?? ''
-const EDGE_FUNCTION_URL = SUPABASE_URL
-  ? `${SUPABASE_URL.replace(/\/$/, '')}/functions/v1/fetch-rss`
-  : ''
+// Supabase Edge Function URL
+const SUPABASE_URL =
+  (import.meta.env.VITE_SUPABASE_URL as string) ||
+  'https://ifadgzgiowsyhztylgrd.supabase.co'
+const EDGE_FUNCTION_URL = `${SUPABASE_URL.replace(/\/$/, '')}/functions/v1/super-function`
 const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) ?? ''
 
 // rss2json.com — RSS 전용 변환 서비스 (free tier: 10,000 req/day)
