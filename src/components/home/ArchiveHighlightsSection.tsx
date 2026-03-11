@@ -45,18 +45,18 @@ export default function ArchiveHighlightsSection() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-3">
           {items.map((item, i) => (
             <AnimatedSection
               key={item.id}
               animation="fade-up"
               delay={i * 80}
-              className={i === 0 ? 'col-span-2 row-span-2' : ''}
+              className={i === 0 ? 'sm:col-span-2 sm:row-span-2' : ''}
             >
               <Link
                 to={`/archive/${item.slug}`}
                 className={`group relative overflow-hidden block ${
-                  i === 0 ? 'aspect-[4/3]' : 'aspect-square'
+                  i === 0 ? 'aspect-video sm:aspect-[4/3]' : 'aspect-video sm:aspect-square'
                 }`}
               >
                 <img

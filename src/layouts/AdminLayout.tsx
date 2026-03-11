@@ -34,9 +34,17 @@ const adminNav = [
 ];
 
 export default function AdminLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
+
+  // md+(768px) 이상에서는 사이드바 기본 열림
+  useEffect(() => {
+    const checkWidth = () => setSidebarOpen(window.innerWidth >= 768);
+    checkWidth();
+    window.addEventListener("resize", checkWidth);
+    return () => window.removeEventListener("resize", checkWidth);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -53,10 +61,22 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
+      {/* Mobile backdrop overlay — closes sidebar on tap */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar
+          Mobile: slides in/out via translate-x (w-60 always), backdrop behind
+          Desktop (md+): translate-x-0 always; w-16 collapsed or w-60 expanded */}
       <aside
-        className={`fixed left-0 top-0 h-full z-30 bg-brand-black text-white transition-all duration-300
-          ${sidebarOpen ? "w-60" : "w-16"}`}
+        className={`fixed left-0 top-0 h-full z-30 bg-brand-black text-white transition-all duration-300 overflow-hidden
+          ${sidebarOpen
+            ? "w-60 translate-x-0"
+            : "-translate-x-full md:translate-x-0 w-60 md:w-16"}`}
       >
         {/* Sidebar header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-white/10">
@@ -71,6 +91,7 @@ export default function AdminLayout() {
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-1.5 text-white/60 hover:text-white transition-colors ml-auto"
+            aria-label="사이드바 닫기"
           >
             {sidebarOpen ? <ChevronLeft size={18} /> : <Menu size={18} />}
           </button>
@@ -83,6 +104,7 @@ export default function AdminLayout() {
               key={item.href}
               to={item.href}
               end={item.exact}
+              onClick={() => { if (window.innerWidth < 768) setSidebarOpen(false); }}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 text-sm font-sans transition-colors duration-150
                 ${
@@ -123,29 +145,40 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* Main content */}
+      {/* Main content
+          Mobile: ml-0 항상 (사이드바가 오버레이로 처리됨)
+          Desktop (md+): ml-16 collapsed / ml-60 expanded */}
       <div
-        className={`flex-1 transition-all duration-300 ${sidebarOpen ? "ml-60" : "ml-16"}`}
+        className={`flex-1 transition-all duration-300 min-w-0 ${sidebarOpen ? "md:ml-60" : "md:ml-16"}`}
       >
         {/* Top bar */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center px-6 sticky top-0 z-20">
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center px-4 sm:px-6 sticky top-0 z-10">
+          {/* 햄버거 버튼 — 모바일에서 항상 표시, 데스크탑에서도 토글 용도 */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 mr-3 -ml-1 text-gray-500 hover:text-gray-900 transition-colors rounded"
+            aria-label="메뉴 열기/닫기"
+          >
+            <Menu size={20} />
+          </button>
+
           {user && (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <UserCircle2 size={16} className="text-brand-accent" />
-              <span className="font-sans">{user.email}</span>
+            <div className="flex items-center gap-2 text-sm text-gray-500 min-w-0">
+              <UserCircle2 size={16} className="shrink-0 text-brand-accent" />
+              <span className="font-sans truncate hidden sm:block">{user.email}</span>
             </div>
           )}
           <Link
             to="/"
             target="_blank"
-            className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors ml-auto"
+            className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors ml-auto shrink-0"
           >
             View Site
             <X size={14} className="rotate-45" />
           </Link>
         </header>
 
-        <main className="p-6 lg:p-8">
+        <main className="p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

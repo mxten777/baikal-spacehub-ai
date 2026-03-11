@@ -87,7 +87,7 @@ export default function MediaPage() {
 
       {/* Platform filter */}
       <div className="border-b border-brand-border">
-        <div className="container-wide py-4 flex items-center gap-2 overflow-x-auto">
+        <div className="container-wide py-4 flex items-center gap-2 overflow-x-auto no-scrollbar">
           {PLATFORMS.map((p) => (
             <button
               key={p.value}

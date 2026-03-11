@@ -43,14 +43,14 @@ export default function BrandIntroSection() {
           {/* Right — program types + image */}
           <div>
             <AnimatedSection animation="fade-up" delay={150}>
-              <div className="relative">
+              <div className="relative pb-8 sm:pb-10">
                 <img
                   src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
                   alt="The Lit 공간"
                   className="w-full aspect-[4/5] object-cover"
                 />
-                {/* Floating card */}
-                <div className="absolute -bottom-8 -left-8 bg-brand-black py-7 px-8 max-w-[260px]">
+                {/* Floating card — 모바일에서 이미지 하단 붙임, sm+에서 네거티브 오프셋 */}
+                <div className="absolute bottom-0 left-0 sm:-bottom-2 sm:-left-8 bg-brand-black py-6 px-7 sm:py-7 sm:px-8 max-w-[240px] sm:max-w-[260px]">
                   <p className="font-sans text-[9px] tracking-[0.22em] uppercase text-white/30 mb-4">
                     What We Do
                   </p>

@@ -69,7 +69,7 @@ export default function SpaceDetailPage() {
       {/* Content */}
       <section className="section-padding">
         <div className="container-wide">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16">
             {/* Main */}
             <div className="lg:col-span-2">
               <AnimatedSection animation="fade-up">
@@ -113,7 +113,7 @@ export default function SpaceDetailPage() {
             {/* Sidebar */}
             <div className="lg:col-span-1">
               <AnimatedSection animation="fade-up" delay={200}>
-                <div className="sticky top-24 space-y-6">
+                <div className="sticky top-16 sm:top-24 space-y-6">
                   {/* Space info card */}
                   <div className="bg-brand-cream p-6">
                     <div className="grid grid-cols-2 gap-4 mb-6">

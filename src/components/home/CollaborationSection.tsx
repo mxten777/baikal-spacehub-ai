@@ -48,10 +48,10 @@ export default function CollaborationSection() {
           </div>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10 md:mb-12">
           {collabTypes.map((type, i) => (
             <AnimatedSection key={type.title} animation="fade-up" delay={i * 100}>
-              <Link to={type.link} className="group block p-8 border border-white/10 hover:border-brand-accent transition-colors duration-300">
+              <Link to={type.link} className="group block p-5 sm:p-8 border border-white/10 hover:border-brand-accent transition-colors duration-300">
                 <span className="text-3xl mb-4 block">{type.icon}</span>
                 <h3 className="font-display text-xl font-light text-white mb-3 group-hover:text-brand-accent transition-colors">
                   {type.title}

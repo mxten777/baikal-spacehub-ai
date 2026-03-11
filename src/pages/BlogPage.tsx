@@ -90,8 +90,8 @@ export default function BlogPage() {
             <>
               {/* Featured post */}
               {posts[0] && (
-                <AnimatedSection animation="fade-up" className="mb-12">
-                  <Link to={`/blog/${posts[0].slug}`} className="group grid grid-cols-1 lg:grid-cols-2 gap-0 bg-brand-cream">
+                <AnimatedSection animation="fade-up" className="mb-8 sm:mb-12">
+                  <Link to={`/blog/${posts[0].slug}`} className="group grid grid-cols-1 lg:grid-cols-2 bg-brand-cream">
                     <div className="overflow-hidden aspect-[16/9] lg:aspect-auto">
                       <img
                         src={posts[0].cover_image}
@@ -99,7 +99,7 @@ export default function BlogPage() {
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     </div>
-                    <div className="p-8 lg:p-12 flex flex-col justify-center">
+                    <div className="p-5 sm:p-8 lg:p-12 flex flex-col justify-center">
                       {posts[0].category && (
                         <span className="eyebrow mb-3" style={{ color: posts[0].category.color }}>
                           {posts[0].category.name}
