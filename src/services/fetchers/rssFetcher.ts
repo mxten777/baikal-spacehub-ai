@@ -56,49 +56,72 @@ function normalizeItem(item: RssItem, sourceUrl: string): NormalizedContent | nu
   }
 }
 
+function getText(el: Element, tagName: string): string {
+  return el.getElementsByTagName(tagName)[0]?.textContent?.trim() ?? ''
+}
+
 export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
   const proxyUrl = `${RSS_PROXY}${encodeURIComponent(rssUrl)}`
 
   const res = await fetch(proxyUrl)
-  if (!res.ok) throw new Error(`RSS fetch failed: ${res.status}`)
+  if (!res.ok) throw new Error(`RSS proxy failed: ${res.status}`)
 
   const json = await res.json()
   const xmlText: string = json.contents
+  if (!xmlText) throw new Error('RSS proxy returned empty content')
 
-  // DOMParser로 XML 파싱 (브라우저 환경)
+  // XML 파싱 (text/xml) — namespace 있어도 getElementsByTagName은 안정적
   const parser = new DOMParser()
-  const doc = parser.parseFromString(xmlText, 'text/xml')
+  let doc = parser.parseFromString(xmlText, 'text/xml')
 
-  const items = Array.from(doc.querySelectorAll('item'))
+  // 파싱 오류 시 text/html 폴백
+  if (doc.querySelector('parsererror')) {
+    doc = parser.parseFromString(xmlText, 'text/html') as unknown as XMLDocument
+  }
+
+  const items = Array.from(doc.getElementsByTagName('item'))
 
   const results: NormalizedContent[] = []
   for (const el of items) {
+    // link: <link> 텍스트 or <guid> 폴백 (네이버 블로그는 guid에 URL이 있을 수 있음)
+    const link =
+      getText(el, 'link') ||
+      getText(el, 'guid') ||
+      el.getElementsByTagName('link')[0]?.getAttribute('href') ||
+      ''
+
     const raw: RssItem = {
-      title: el.querySelector('title')?.textContent ?? '',
-      link: el.querySelector('link')?.textContent?.trim() ?? '',
-      description: el.querySelector('description')?.textContent ?? '',
-      pubDate: el.querySelector('pubDate')?.textContent ?? undefined,
-      author: el.querySelector('author, dc\\:creator')?.textContent ?? undefined,
+      title: getText(el, 'title'),
+      link,
+      description: getText(el, 'description'),
+      pubDate: getText(el, 'pubDate') || undefined,
+      author:
+        getText(el, 'author') ||
+        getText(el, 'dc:creator') ||
+        undefined,
     }
 
-    // media:content
-    const mediaContent = el.querySelector('media\\:content, content')
-    if (mediaContent) {
-      raw['media:content'] = { url: mediaContent.getAttribute('url') ?? '' }
+    // media:content (namespace prefix 가변 대응)
+    const mediaEls = [...el.getElementsByTagName('media:content'), ...el.getElementsByTagName('content')]
+    const mediaEl = mediaEls.find(e => e.hasAttribute('url'))
+    if (mediaEl) {
+      raw['media:content'] = { url: mediaEl.getAttribute('url') ?? '' }
     }
 
     // content:encoded
-    const contentEncoded = el.querySelector('encoded')
-    if (contentEncoded) {
-      raw['content:encoded'] = contentEncoded.textContent ?? ''
+    const encodedEl =
+      el.getElementsByTagName('content:encoded')[0] ||
+      el.getElementsByTagName('encoded')[0]
+    if (encodedEl) {
+      raw['content:encoded'] = encodedEl.textContent ?? ''
     }
 
     // enclosure
-    const enclosure = el.querySelector('enclosure')
-    if (enclosure) {
+    const enclosureEl = el.getElementsByTagName('enclosure')[0]
+    if (enclosureEl) {
       raw.enclosure = {
-        url: enclosure.getAttribute('url') ?? '',
-        type: enclosure.getAttribute('type') ?? '',
+        url: enclosureEl.getAttribute('url') ?? '',
+        type: enclosureEl.getAttribute('type') ?? '',
       }
     }
 
