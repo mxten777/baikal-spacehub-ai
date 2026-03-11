@@ -63,6 +63,7 @@ function ContentCard({
 }) {
   const Icon = PLATFORM_ICONS[item.platform]
   const [updating, setUpdating] = useState(false)
+  const [imgError, setImgError] = useState(false)
 
   const handleStatus = async (status: VisibilityStatus) => {
     setUpdating(true)
@@ -81,23 +82,18 @@ function ContentCard({
       item.visibility_status === 'hidden' ? 'opacity-50' : ''
     }`}>
       {/* Thumbnail */}
-      <div className="w-20 h-16 shrink-0 bg-gray-100 overflow-hidden relative">
-        {item.thumbnail_url ? (
+      <div className="w-20 h-16 shrink-0 bg-gray-100 overflow-hidden flex items-center justify-center">
+        {item.thumbnail_url && !imgError ? (
           <img
             src={item.thumbnail_url}
             alt=""
             className="w-full h-full object-cover"
             loading="lazy"
-            onError={(e) => {
-              const t = e.currentTarget
-              t.style.display = 'none'
-              t.nextElementSibling?.classList.remove('hidden')
-            }}
+            onError={() => setImgError(true)}
           />
-        ) : null}
-        <div className={`absolute inset-0 flex items-center justify-center ${item.thumbnail_url ? 'hidden' : ''}`}>
+        ) : (
           <Icon size={20} className={PLATFORM_COLORS[item.platform]} />
-        </div>
+        )}
       </div>
 
       {/* Content */}
