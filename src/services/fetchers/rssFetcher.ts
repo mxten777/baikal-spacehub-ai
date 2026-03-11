@@ -1,13 +1,19 @@
 /**
  * RSS Fetcher
- * 
- * CORS 우회 전략 (우선순위 순):
- * 1. rss2json.com  — RSS 전용 서버사이드 파서, JSON 반환 (Naver 차단 우회 최적)
- * 2. CORS 프록시 체인 — 3개 프록시 폴백 + 직접 XML 파싱
  *
- * 실제 운영에서는 Supabase Edge Function으로 이동할 것.
+ * CORS 우회 전략 (우선순위 순):
+ * 1. Supabase Edge Function (fetch-rss) — 서버사이드 fetch, Naver 차단 완전 우회
+ * 2. rss2json.com  — RSS 전용 서버사이드 파서 (Edge Function 미배포 시 폴백)
+ * 3. CORS 프록시 체인 — 3개 프록시 폴백 + 직접 XML 파싱
  */
 import type { NormalizedContent } from '../../types'
+
+// Supabase Edge Function URL — VITE_SUPABASE_URL 환경변수에서 자동 구성
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string) ?? ''
+const EDGE_FUNCTION_URL = SUPABASE_URL
+  ? `${SUPABASE_URL.replace(/\/$/, '')}/functions/v1/fetch-rss`
+  : ''
+const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) ?? ''
 
 // rss2json.com — RSS 전용 변환 서비스 (free tier: 10,000 req/day)
 const RSS2JSON_API = 'https://api.rss2json.com/v1/api.json?rss_url='
@@ -152,29 +158,17 @@ function getText(el: Element, tagName: string): string {
   return el.getElementsByTagName(tagName)[0]?.textContent?.trim() ?? ''
 }
 
-export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
-  // 1순위: rss2json.com — RSS 전용 서버사이드 파서 (Naver CORS 차단 우회)
-  const rss2jsonResult = await tryRss2Json(rssUrl)
-  if (rss2jsonResult !== null) return rss2jsonResult
-
-  // 2순위 폴백: CORS 프록시 체인 + 직접 XML 파싱
-  const xmlText = await fetchWithProxy(rssUrl)
-
-  // XML 파싱 (text/xml) — namespace 있어도 getElementsByTagName은 안정적
+function parseXmlItems(xmlText: string, sourceUrl: string): NormalizedContent[] {
   const parser = new DOMParser()
   let doc = parser.parseFromString(xmlText, 'text/xml')
-
-  // 파싱 오류 시 text/html 폴백
   if (doc.querySelector('parsererror')) {
     doc = parser.parseFromString(xmlText, 'text/html') as unknown as XMLDocument
   }
 
   const items = Array.from(doc.getElementsByTagName('item'))
-
   const results: NormalizedContent[] = []
+
   for (const el of items) {
-    // 네이버 블로그는 <link>가 next sibling text node로 존재해 textContent가 빈 경우 있음
-    // nextSibling으로 직접 텍스트 노드를 읽는 방식으로 보완
     const linkEl = el.getElementsByTagName('link')[0]
     const linkFromNextSibling = linkEl?.nextSibling?.nodeValue?.trim() ?? ''
     const link =
@@ -196,14 +190,12 @@ export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
         undefined,
     }
 
-    // media:content (namespace prefix 가변 대응)
     const mediaEls = [...el.getElementsByTagName('media:content'), ...el.getElementsByTagName('content')]
     const mediaEl = mediaEls.find(e => e.hasAttribute('url'))
     if (mediaEl) {
       raw['media:content'] = { url: mediaEl.getAttribute('url') ?? '' }
     }
 
-    // content:encoded
     const encodedEl =
       el.getElementsByTagName('content:encoded')[0] ||
       el.getElementsByTagName('encoded')[0]
@@ -211,7 +203,6 @@ export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
       raw['content:encoded'] = encodedEl.textContent ?? ''
     }
 
-    // enclosure
     const enclosureEl = el.getElementsByTagName('enclosure')[0]
     if (enclosureEl) {
       raw.enclosure = {
@@ -220,9 +211,47 @@ export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
       }
     }
 
-    const normalized = normalizeItem(raw, rssUrl)
+    const normalized = normalizeItem(raw, sourceUrl)
     if (normalized) results.push(normalized)
   }
 
   return results
+}
+
+export async function fetchRss(rssUrl: string): Promise<NormalizedContent[]> {
+  // 1순위: Supabase Edge Function — 서버사이드 fetch (Naver CORS 차단 완전 우회)
+  if (EDGE_FUNCTION_URL) {
+    try {
+      const res = await fetch(EDGE_FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ url: rssUrl }),
+        signal: AbortSignal.timeout(20_000),
+      })
+      if (res.ok) {
+        const json = await res.json()
+        const xmlText: string = json.content ?? ''
+        if (xmlText) {
+          const items = parseXmlItems(xmlText, rssUrl)
+          if (items.length > 0) return items
+        }
+      } else {
+        console.warn(`[RSS] Edge Function ${res.status}`)
+      }
+    } catch (e) {
+      console.warn('[RSS] Edge Function 실패:', e)
+    }
+  }
+
+  // 2순위: rss2json.com
+  const rss2jsonResult = await tryRss2Json(rssUrl)
+  if (rss2jsonResult !== null) return rss2jsonResult
+
+  // 3순위 폴백: CORS 프록시 체인 + 직접 XML 파싱
+  const xmlText = await fetchWithProxy(rssUrl)
+  return parseXmlItems(xmlText, rssUrl)
 }
