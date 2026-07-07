@@ -1,23 +1,31 @@
-import { Link } from 'react-router-dom'
-import { Instagram, Youtube, Twitter, MapPin, Phone, Mail, ArrowUpRight } from 'lucide-react'
+import { Link } from "react-router-dom";
+import {
+  Instagram,
+  Youtube,
+  Twitter,
+  MapPin,
+  Phone,
+  Mail,
+  ArrowUpRight,
+} from "lucide-react";
 
 const footerLinks = {
   explore: [
-    { label: 'About', href: '/about' },
-    { label: 'Spaces', href: '/spaces' },
-    { label: 'Programs', href: '/programs' },
-    { label: 'Archive', href: '/archive' },
+    { label: "About", href: "/about" },
+    { label: "Spaces", href: "/spaces" },
+    { label: "Programs", href: "/programs" },
+    { label: "Archive", href: "/archive" },
   ],
   connect: [
-    { label: 'Blog', href: '/blog' },
-    { label: 'Media', href: '/media' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Reserve Space', href: '/contact?type=rental' },
+    { label: "Blog", href: "/blog" },
+    { label: "Media", href: "/media" },
+    { label: "Contact", href: "/contact" },
+    { label: "Reserve Space", href: "/contact?type=rental" },
   ],
-}
+};
 
 export default function Footer() {
-  const year = new Date().getFullYear()
+  const year = new Date().getFullYear();
 
   return (
     <footer className="bg-brand-black text-white">
@@ -26,7 +34,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand column */}
           <div className="lg:col-span-4">
-            <Link to="/" className="font-display text-2xl font-light tracking-[0.15em] uppercase text-white block mb-4">
+            <Link
+              to="/"
+              className="font-display text-2xl font-light tracking-[0.15em] uppercase text-white block mb-4"
+            >
               The Lit
             </Link>
             <p className="font-sans text-sm text-white/50 leading-relaxed max-w-xs mb-8">
@@ -67,7 +78,9 @@ export default function Footer() {
 
           {/* Links */}
           <div className="lg:col-span-2 lg:col-start-6">
-            <h4 className="font-sans text-[10px] tracking-[0.2em] uppercase text-white/40 mb-5">Explore</h4>
+            <h4 className="font-sans text-[10px] tracking-[0.2em] uppercase text-white/40 mb-5">
+              Explore
+            </h4>
             <ul className="space-y-3">
               {footerLinks.explore.map((item) => (
                 <li key={item.href}>
@@ -83,7 +96,9 @@ export default function Footer() {
           </div>
 
           <div className="lg:col-span-2">
-            <h4 className="font-sans text-[10px] tracking-[0.2em] uppercase text-white/40 mb-5">Connect</h4>
+            <h4 className="font-sans text-[10px] tracking-[0.2em] uppercase text-white/40 mb-5">
+              Connect
+            </h4>
             <ul className="space-y-3">
               {footerLinks.connect.map((item) => (
                 <li key={item.href}>
@@ -100,19 +115,38 @@ export default function Footer() {
 
           {/* Contact info */}
           <div className="lg:col-span-3 lg:col-start-10">
-            <h4 className="font-sans text-[10px] tracking-[0.2em] uppercase text-white/40 mb-5">Location</h4>
+            <h4 className="font-sans text-[10px] tracking-[0.2em] uppercase text-white/40 mb-5">
+              Location
+            </h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-white/60">
-                <MapPin size={14} className="mt-0.5 shrink-0 text-brand-accent" />
-                <span>경기도 하남시<br />미사동 468</span>
+                <MapPin
+                  size={14}
+                  className="mt-0.5 shrink-0 text-brand-accent"
+                />
+                <span>
+                  경기도 하남시
+                  <br />
+                  미사동 468
+                </span>
               </li>
               <li className="flex items-center gap-3 text-sm text-white/60">
                 <Phone size={14} className="shrink-0 text-brand-accent" />
-                <a href="tel:16610288" className="hover:text-white transition-colors">1661-0288</a>
+                <a
+                  href="tel:16610288"
+                  className="hover:text-white transition-colors"
+                >
+                  1661-0288
+                </a>
               </li>
               <li className="flex items-center gap-3 text-sm text-white/60">
                 <Mail size={14} className="shrink-0 text-brand-accent" />
-                <a href="mailto:goworld33@naver.com" className="hover:text-white transition-colors">goworld33@naver.com</a>
+                <a
+                  href="mailto:goworld33@naver.com"
+                  className="hover:text-white transition-colors"
+                >
+                  goworld33@naver.com
+                </a>
               </li>
             </ul>
 
@@ -135,15 +169,21 @@ export default function Footer() {
             © {year} The Lit. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link to="/privacy" className="font-sans text-[11px] text-white/25 hover:text-white/50 transition-colors duration-200">
+            <Link
+              to="/privacy"
+              className="font-sans text-[11px] text-white/25 hover:text-white/50 transition-colors duration-200"
+            >
               Privacy Policy
             </Link>
-            <Link to="/terms" className="font-sans text-[11px] text-white/25 hover:text-white/50 transition-colors duration-200">
+            <Link
+              to="/terms"
+              className="font-sans text-[11px] text-white/25 hover:text-white/50 transition-colors duration-200"
+            >
               Terms of Use
             </Link>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

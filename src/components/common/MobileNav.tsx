@@ -1,31 +1,32 @@
-import { useEffect } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X } from 'lucide-react'
+import { useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 
 interface MobileNavProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 const NAV_ITEMS = [
-  { label: 'About',    href: '/about'    },
-  { label: 'Spaces',   href: '/spaces'   },
-  { label: 'Programs', href: '/programs' },
-  { label: 'Events',   href: '/events'   },
-  { label: 'Archive',  href: '/archive'  },
-  { label: 'Media',    href: '/media'    },
-  { label: 'Blog',     href: '/blog'     },
-  { label: 'Contact',  href: '/contact'  },
-]
+  { label: "About", href: "/about" },
+  { label: "Spaces", href: "/spaces" },
+  { label: "Programs", href: "/programs" },
+  { label: "Events", href: "/events" },
+  { label: "Archive", href: "/archive" },
+  { label: "Media", href: "/media" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+];
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {
-
   // Lock body scroll while open
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [open])
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <AnimatePresence>
@@ -54,7 +55,10 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
           <div
             aria-hidden="true"
             className="absolute inset-0 pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, rgba(8,8,8,0.55) 0%, transparent 40%, rgba(8,8,8,0.5) 100%)' }}
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(8,8,8,0.55) 0%, transparent 40%, rgba(8,8,8,0.5) 100%)",
+            }}
           />
 
           {/* Close button */}
@@ -68,7 +72,6 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
 
           {/* Layout */}
           <div className="relative flex flex-col h-full px-7 pt-[72px] pb-8 overflow-y-auto">
-
             {/* Brand label */}
             <motion.p
               className="font-display text-[9px] tracking-[0.36em] uppercase text-white/18 mb-8"
@@ -96,10 +99,15 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
                     to={item.href}
                     className={({ isActive }) =>
                       `block py-[13px] font-display font-extralight border-b border-white/[0.07] transition-colors duration-200 leading-tight ${
-                        isActive ? 'text-white' : 'text-white/32 hover:text-white/70'
+                        isActive
+                          ? "text-white"
+                          : "text-white/32 hover:text-white/70"
                       }`
                     }
-                    style={{ fontSize: 'clamp(1.85rem, 7.5vw, 2.4rem)', letterSpacing: '-0.01em' }}
+                    style={{
+                      fontSize: "clamp(1.85rem, 7.5vw, 2.4rem)",
+                      letterSpacing: "-0.01em",
+                    }}
                   >
                     {item.label}
                   </NavLink>
@@ -121,14 +129,17 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
                 Book a Space
               </Link>
               <div className="flex items-center justify-between pt-1">
-                <span className="font-sans text-[9px] tracking-widest text-white/16">goworld33@naver.com</span>
-                <span className="font-sans text-[9px] tracking-widest text-white/16">1661-0288</span>
+                <span className="font-sans text-[9px] tracking-widest text-white/16">
+                  goworld33@naver.com
+                </span>
+                <span className="font-sans text-[9px] tracking-widest text-white/16">
+                  1661-0288
+                </span>
               </div>
             </motion.div>
-
           </div>
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

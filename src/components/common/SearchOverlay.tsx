@@ -1,50 +1,54 @@
-import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Search, X } from 'lucide-react'
+import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, X } from "lucide-react";
 
 interface SearchOverlayProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 const QUICK_LINKS = [
-  { cat: 'Spaces',   label: '공간 대관',   href: '/spaces'  },
-  { cat: 'Programs', label: '전시',         href: '/programs' },
-  { cat: 'Programs', label: '워크숍',       href: '/programs' },
-  { cat: 'Programs', label: '공연',         href: '/programs' },
-  { cat: 'Archive',  label: '아카이브',     href: '/archive' },
-  { cat: 'Blog',     label: '블로그',       href: '/blog'    },
-  { cat: 'Media',    label: '미디어',       href: '/media'   },
-  { cat: 'Contact',  label: '문의하기',     href: '/contact' },
-]
+  { cat: "Spaces", label: "공간 대관", href: "/spaces" },
+  { cat: "Programs", label: "전시", href: "/programs" },
+  { cat: "Programs", label: "워크숍", href: "/programs" },
+  { cat: "Programs", label: "공연", href: "/programs" },
+  { cat: "Archive", label: "아카이브", href: "/archive" },
+  { cat: "Blog", label: "블로그", href: "/blog" },
+  { cat: "Media", label: "미디어", href: "/media" },
+  { cat: "Contact", label: "문의하기", href: "/contact" },
+];
 
 export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
-  const [query, setQuery] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input when overlay opens
   useEffect(() => {
     if (open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setQuery('')
-      const t = setTimeout(() => inputRef.current?.focus(), 130)
-      return () => clearTimeout(t)
+      setQuery("");
+      const t = setTimeout(() => inputRef.current?.focus(), 130);
+      return () => clearTimeout(t);
     }
-  }, [open])
+  }, [open]);
 
   // Keyboard: Escape → close
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [onClose])
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
 
   // Prevent body scroll while open
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [open])
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <AnimatePresence>
@@ -72,15 +76,22 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
           </motion.button>
 
           <div className="container-wide pt-24 lg:pt-[10vh]">
-
             {/* Search input */}
             <motion.div
               className="flex items-center gap-4 border-b border-white/[0.12] pb-5"
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.07, duration: 0.38, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{
+                delay: 0.07,
+                duration: 0.38,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
             >
-              <Search size={20} className="text-white/20 shrink-0" strokeWidth={1.5} />
+              <Search
+                size={20}
+                className="text-white/20 shrink-0"
+                strokeWidth={1.5}
+              />
               <input
                 ref={inputRef}
                 type="search"
@@ -93,7 +104,7 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
               />
               {query && (
                 <button
-                  onClick={() => setQuery('')}
+                  onClick={() => setQuery("")}
                   className="text-white/25 hover:text-white/55 transition-colors shrink-0"
                   aria-label="검색어 지우기"
                 >
@@ -109,9 +120,11 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.16, duration: 0.35 }}
             >
-              {query.trim() === '' ? (
+              {query.trim() === "" ? (
                 <>
-                  <p className="font-sans text-[8.5px] tracking-[0.26em] uppercase text-white/22 mb-6">Quick Links</p>
+                  <p className="font-sans text-[8.5px] tracking-[0.26em] uppercase text-white/22 mb-6">
+                    Quick Links
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {QUICK_LINKS.map((ql) => (
                       <Link
@@ -120,7 +133,9 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                         onClick={onClose}
                         className="flex items-center gap-2 px-4 py-2.5 border border-white/[0.1] text-white/50 hover:border-white/30 hover:text-white transition-all duration-200 font-sans text-xs tracking-wide"
                       >
-                        <span className="text-[8px] text-white/22 uppercase tracking-widest">{ql.cat}</span>
+                        <span className="text-[8px] text-white/22 uppercase tracking-widest">
+                          {ql.cat}
+                        </span>
                         <span className="text-white/20">/</span>
                         {ql.label}
                       </Link>
@@ -148,5 +163,5 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
