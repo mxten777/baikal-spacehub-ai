@@ -1,363 +1,213 @@
-import { useState } from "react";
-import { Helmet } from "react-helmet-async";
-import { useSearchParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { CheckCircle2, MapPin, Phone, Mail, Clock } from "lucide-react";
-import { inquiriesService } from "../services/inquiries";
-import AnimatedSection from "../components/common/AnimatedSection";
-import type { InquiryType } from "../types";
+import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
+import { motion } from 'framer-motion'
+import { Phone, Mail, MapPin, Clock, ArrowUpRight, MessageCircle } from 'lucide-react'
+import AnimatedSection from '../components/common/AnimatedSection'
 
-const schema = z.object({
-  type: z.enum(["rental", "collaboration", "general", "media"]),
-  name: z.string().min(2, "이름을 입력해 주세요"),
-  email: z.string().email("올바른 이메일을 입력해 주세요"),
-  phone: z.string().optional(),
-  company: z.string().optional(),
-  subject: z.string().min(3, "제목을 입력해 주세요"),
-  message: z.string().min(10, "내용을 10자 이상 입력해 주세요"),
-  preferred_date: z.string().optional(),
-  expected_attendees: z.number().int().positive().optional().or(z.literal("")),
-});
+// ─── Kakao Channel URL ────────────────────────────────────────────────────────
+// TODO: 실제 카카오채널 URL로 교체 (http://pf.kakao.com/_CHANNEL_ID/chat)
+const KAKAO_CHANNEL_URL = 'http://pf.kakao.com/_thelit/chat'
 
-type FormData = z.infer<typeof schema>;
-
-const INQUIRY_TYPES: { value: InquiryType; label: string }[] = [
-  { value: "rental", label: "공간 대관" },
-  { value: "collaboration", label: "협업 문의" },
-  { value: "general", label: "일반 문의" },
-  { value: "media", label: "미디어 / 취재" },
-];
+const CONTACT = {
+  phone:     '1661-0288',
+  email:     'goworld33@naver.com',
+  address:   '경기도 하남시 미사동 468',
+  hours:     '화 — 일  11:00 — 21:00 · 월요일 휴무',
+  map:       'https://map.naver.com/v5/search/경기도 하남시 미사동 468',
+  instagram: 'https://instagram.com/thelit_official',
+  blog:      'https://blog.naver.com/thelit_culture',
+}
 
 export default function ContactPage() {
-  const [searchParams] = useSearchParams();
-  const defaultType = (searchParams.get("type") as InquiryType) ?? "general";
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: { type: defaultType },
-  });
-
-  const onSubmit = async (data: FormData) => {
-    setSubmitting(true);
-    try {
-      await inquiriesService.submit({
-        inquiry_type: data.type,
-        name: data.name,
-        email: data.email || null,
-        phone: data.phone || null,
-        company: data.company,
-        subject: data.subject,
-        message: data.message,
-        preferred_date: data.preferred_date || undefined,
-        expected_attendees: data.expected_attendees
-          ? Number(data.expected_attendees)
-          : undefined,
-      });
-      setSubmitted(true);
-      reset();
-    } catch {
-      alert("문의 전송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
     <>
       <Helmet>
         <title>Contact — The Lit</title>
-        <meta
-          name="description"
-          content="더릿에 문의하세요. 공간 대관, 협업, 일반 문의를 받고 있습니다."
-        />
+        <meta name="description" content="더릿 복합문화공간 — 카카오채널, 전화, 이메일로 빠르게 연락하세요." />
       </Helmet>
 
-      {/* Hero */}
-      <section className="pt-32 pb-12 bg-brand-white">
+      {/* Page header */}
+      <section className="pt-32 pb-16 bg-brand-white border-b border-brand-line">
         <div className="container-wide">
           <AnimatedSection animation="fade-up">
             <p className="eyebrow mb-4">Contact</p>
-            <h1 className="font-display text-display font-light text-brand-black">
-              문의하기
+            <h1 className="font-display text-display font-light text-brand-black leading-tight">
+              언제든지<br />연락주세요
             </h1>
           </AnimatedSection>
         </div>
       </section>
 
-      <section className="section-padding bg-brand-white pt-0">
+      <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
-            {/* Form */}
-            <div className="lg:col-span-2">
-              <AnimatedSection animation="fade-up">
-                {submitted ? (
-                  <div className="py-16 text-center">
-                    <CheckCircle2
-                      size={48}
-                      className="text-brand-accent mx-auto mb-4"
-                    />
-                    <h2 className="font-display text-2xl font-light text-brand-black mb-2">
-                      문의가 접수되었습니다
-                    </h2>
-                    <p className="font-sans text-sm text-brand-muted">
-                      빠른 시일 내로 담당자가 연락드리겠습니다.
-                    </p>
-                    <button
-                      onClick={() => setSubmitted(false)}
-                      className="btn-secondary mt-6"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+
+            {/* Left: Channels */}
+            <AnimatedSection animation="slide-left">
+              <div className="space-y-10">
+
+                {/* Kakao Channel */}
+                <div>
+                  <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-brand-subtle mb-4">
+                    가장 빠른 연락 방법
+                  </p>
+                  <motion.a
+                    href={KAKAO_CHANNEL_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-center gap-5 p-6 border-2 border-[#FEE500] bg-[#FEE500]/5 hover:bg-[#FEE500]/10 transition-colors group"
+                  >
+                    <div className="w-14 h-14 bg-[#FEE500] flex items-center justify-center shrink-0">
+                      <MessageCircle size={26} className="text-[#3A1D1D]" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-display text-xl font-light text-brand-black">카카오채널 채팅</p>
+                      <p className="font-sans text-xs text-brand-muted mt-0.5">
+                        운영시간 내 즉시 응답 · 문의 · 협업 · 미디어
+                      </p>
+                    </div>
+                    <ArrowUpRight size={18} className="text-brand-muted group-hover:text-brand-black transition-colors" />
+                  </motion.a>
+                </div>
+
+                {/* Space Reservation */}
+                <div>
+                  <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-brand-subtle mb-4">
+                    공간 예약
+                  </p>
+                  <Link
+                    to="/reservation"
+                    className="flex items-center gap-5 p-6 border-2 border-brand-black bg-brand-black text-white hover:bg-brand-charcoal transition-colors group"
+                  >
+                    <div className="w-14 h-14 bg-white/10 flex items-center justify-center shrink-0">
+                      <span className="font-display text-2xl font-light">大</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-display text-xl font-light">공간 예약 위저드</p>
+                      <p className="font-sans text-xs text-white/60 mt-0.5">
+                        행사 유형 선택 → 공간 추천 → 예약 접수
+                      </p>
+                    </div>
+                    <ArrowUpRight size={18} className="text-white/50 group-hover:text-white transition-colors" />
+                  </Link>
+                </div>
+
+                {/* Direct contact */}
+                <div>
+                  <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-brand-subtle mb-4">
+                    직접 연락
+                  </p>
+                  <div className="space-y-0">
+                    <a
+                      href={`tel:16610288`}
+                      className="flex items-center gap-4 py-4 border-b border-brand-line group hover:border-brand-border transition-colors"
                     >
-                      다시 문의하기
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                    {/* Inquiry type */}
-                    <div>
-                      <label className="form-label">문의 유형 *</label>
-                      <div className="flex flex-wrap gap-3 mt-3">
-                        {INQUIRY_TYPES.map((t) => (
-                          <label
-                            key={t.value}
-                            className="flex items-center gap-2 cursor-pointer"
-                          >
-                            <input
-                              type="radio"
-                              value={t.value}
-                              {...register("type")}
-                              className="sr-only"
-                            />
-                            <span className="px-5 py-2.5 border border-brand-border font-sans text-xs font-medium tracking-widest uppercase transition-all duration-200 cursor-pointer peer-checked:bg-brand-black peer-checked:text-white hover:border-brand-black has-[:checked]:bg-brand-black has-[:checked]:text-white">
-                              {t.label}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                      {errors.type && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.type.message}
+                      <Phone size={14} className="text-brand-subtle shrink-0" />
+                      <div className="flex-1">
+                        <p className="font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-0.5">전화</p>
+                        <p className="font-sans text-sm text-brand-black group-hover:text-brand-accent transition-colors">
+                          {CONTACT.phone}
                         </p>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                      <div>
-                        <label className="form-label">이름 *</label>
-                        <input
-                          {...register("name")}
-                          className="form-input"
-                          placeholder="홍길동"
-                        />
-                        {errors.name && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.name.message}
-                          </p>
-                        )}
                       </div>
-                      <div>
-                        <label className="form-label">이메일 *</label>
-                        <input
-                          {...register("email")}
-                          type="email"
-                          className="form-input"
-                          placeholder="hello@example.com"
-                        />
-                        {errors.email && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.email.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                      <div>
-                        <label className="form-label">연락처</label>
-                        <input
-                          {...register("phone")}
-                          className="form-input"
-                          placeholder="010-0000-0000"
-                        />
-                      </div>
-                      <div>
-                        <label className="form-label">회사 / 단체명</label>
-                        <input
-                          {...register("company")}
-                          className="form-input"
-                          placeholder="선택 사항"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                      <div>
-                        <label className="form-label">희망 날짜</label>
-                        <input
-                          {...register("preferred_date")}
-                          type="date"
-                          className="form-input"
-                        />
-                      </div>
-                      <div>
-                        <label className="form-label">예상 인원</label>
-                        <input
-                          {...register("expected_attendees", {
-                            valueAsNumber: true,
-                          })}
-                          type="number"
-                          className="form-input"
-                          placeholder="명"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="form-label">제목 *</label>
-                      <input
-                        {...register("subject")}
-                        className="form-input"
-                        placeholder="문의 제목을 입력해 주세요"
-                      />
-                      {errors.subject && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.subject.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="form-label">내용 *</label>
-                      <textarea
-                        {...register("message")}
-                        rows={5}
-                        className="form-input resize-none"
-                        placeholder="문의 내용을 자세히 입력해 주세요"
-                      />
-                      {errors.message && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.message.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
+                    </a>
+                    <a
+                      href={`mailto:${CONTACT.email}`}
+                      className="flex items-center gap-4 py-4 border-b border-brand-line group hover:border-brand-border transition-colors"
                     >
-                      {submitting ? "전송 중..." : "문의 보내기"}
-                    </button>
-                  </form>
-                )}
-              </AnimatedSection>
-            </div>
-
-            {/* Contact info */}
-            <div className="lg:col-span-1">
-              <AnimatedSection animation="fade-up" delay={150}>
-                <div className="space-y-8">
-                  <div>
-                    <h3 className="font-display text-xl font-light text-brand-black mb-5">
-                      찾아오시는 방법
-                    </h3>
-                    <ul className="space-y-5">
-                      <li className="flex items-start gap-3">
-                        <MapPin
-                          size={15}
-                          className="text-brand-accent mt-0.5 shrink-0"
-                        />
-                        <div>
-                          <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">
-                            주소
-                          </p>
-                          <p className="font-sans text-sm text-brand-black">
-                            경기도 하남시 미사동 468
-                          </p>
-                          <p className="font-sans text-xs text-brand-muted mt-1">
-                            경강선 미사역 인근
-                          </p>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <Clock
-                          size={15}
-                          className="text-brand-accent mt-0.5 shrink-0"
-                        />
-                        <div>
-                          <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">
-                            운영 시간
-                          </p>
-                          <p className="font-sans text-sm text-brand-black">
-                            화 — 일: 11:00 — 21:00
-                          </p>
-                          <p className="font-sans text-xs text-brand-muted mt-1">
-                            월요일 휴관
-                          </p>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <Phone
-                          size={15}
-                          className="text-brand-accent mt-0.5 shrink-0"
-                        />
-                        <div>
-                          <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">
-                            전화
-                          </p>
-                          <a
-                            href="tel:16610288"
-                            className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors"
-                          >
-                            1661-0288
-                          </a>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <Mail
-                          size={15}
-                          className="text-brand-accent mt-0.5 shrink-0"
-                        />
-                        <div>
-                          <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">
-                            이메일
-                          </p>
-                          <a
-                            href="mailto:goworld33@naver.com"
-                            className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors"
-                          >
-                            goworld33@naver.com
-                          </a>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Map */}
-                  <div className="aspect-square bg-brand-warm">
-                    <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3163!2d127.2041!3d37.5571!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!2zMzfCsDMz!5e0!3m2!1sko!2skr!4v1"
-                      width="100%"
-                      height="100%"
-                      className="border-0 grayscale"
-                      allowFullScreen
-                      loading="lazy"
-                      title="The Lit 지도"
-                    />
+                      <Mail size={14} className="text-brand-subtle shrink-0" />
+                      <div className="flex-1">
+                        <p className="font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-0.5">이메일</p>
+                        <p className="font-sans text-sm text-brand-black group-hover:text-brand-accent transition-colors">
+                          {CONTACT.email}
+                        </p>
+                      </div>
+                    </a>
                   </div>
                 </div>
-              </AnimatedSection>
-            </div>
+
+                {/* SNS */}
+                <div>
+                  <p className="font-sans text-[9px] tracking-[0.25em] uppercase text-brand-subtle mb-4">
+                    소셜 미디어
+                  </p>
+                  <div className="flex gap-3">
+                    <a
+                      href={CONTACT.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2.5 border border-brand-line hover:border-brand-border text-brand-muted hover:text-brand-black transition-all font-sans text-xs tracking-widest uppercase"
+                    >
+                      Instagram <ArrowUpRight size={11} />
+                    </a>
+                    <a
+                      href={CONTACT.blog}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2.5 border border-brand-line hover:border-brand-border text-brand-muted hover:text-brand-black transition-all font-sans text-xs tracking-widest uppercase"
+                    >
+                      Naver Blog <ArrowUpRight size={11} />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
+
+            {/* Right: Location + Map */}
+            <AnimatedSection animation="slide-right">
+              <div className="space-y-8">
+                <div className="space-y-5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-brand-black flex items-center justify-center shrink-0">
+                      <MapPin size={15} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-1">주소</p>
+                      <p className="font-sans text-sm text-brand-black">{CONTACT.address}</p>
+                      <a
+                        href={CONTACT.map}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 font-sans text-[10px] tracking-widest uppercase text-brand-accent hover:text-brand-black transition-colors mt-1"
+                      >
+                        지도 보기 <ArrowUpRight size={10} />
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-brand-black flex items-center justify-center shrink-0">
+                      <Clock size={15} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-1">운영 시간</p>
+                      <p className="font-sans text-sm text-brand-black">{CONTACT.hours}</p>
+                      <p className="font-sans text-[10px] text-brand-muted mt-1">
+                        대관 행사 중 일반 방문이 제한될 수 있습니다
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Map */}
+                <div className="aspect-[4/3] overflow-hidden bg-brand-warm">
+                  <iframe
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=127.196%2C37.549%2C127.212%2C37.565&layer=mapnik&marker=37.557%2C127.204"
+                    width="100%"
+                    height="100%"
+                    className="border-0 grayscale"
+                    allowFullScreen
+                    loading="lazy"
+                    title="The Lit 위치"
+                  />
+                </div>
+              </div>
+            </AnimatedSection>
+
           </div>
         </div>
       </section>
     </>
-  );
+  )
 }

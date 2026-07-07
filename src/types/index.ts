@@ -13,7 +13,7 @@ export interface Profile {
   email: string;
   full_name?: string;
   avatar_url?: string;
-  role: 'admin' | 'editor' | 'viewer';
+  role: "admin" | "editor" | "viewer";
   created_at: ISODateString;
   updated_at: ISODateString;
 }
@@ -21,7 +21,13 @@ export interface Profile {
 // ============================================================
 // SPACES
 // ============================================================
-export type SpaceCategory = 'cafe' | 'garden' | 'studio' | 'storage' | 'hall' | 'other';
+export type SpaceCategory =
+  | "cafe"
+  | "garden"
+  | "studio"
+  | "storage"
+  | "hall"
+  | "other";
 
 export interface Space {
   id: UUID;
@@ -51,8 +57,13 @@ export interface Space {
 // ============================================================
 // PROGRAMS
 // ============================================================
-export type ProgramCategory = 'exhibition' | 'performance' | 'lecture' | 'workshop' | 'event';
-export type ProgramStatus = 'upcoming' | 'ongoing' | 'closed' | 'cancelled';
+export type ProgramCategory =
+  | "exhibition"
+  | "performance"
+  | "lecture"
+  | "workshop"
+  | "event";
+export type ProgramStatus = "upcoming" | "ongoing" | "closed" | "cancelled";
 
 export interface Program {
   id: UUID;
@@ -125,7 +136,7 @@ export interface ArchiveItem {
 // ============================================================
 // BLOG
 // ============================================================
-export type BlogPostStatus = 'draft' | 'published' | 'archived';
+export type BlogPostStatus = "draft" | "published" | "archived";
 
 export interface BlogCategory {
   id: UUID;
@@ -166,7 +177,7 @@ export interface BlogPost {
 // ============================================================
 // MEDIA / SNS
 // ============================================================
-export type MediaPlatform = 'youtube' | 'instagram' | 'x';
+export type MediaPlatform = "youtube" | "instagram" | "x";
 
 export interface MediaItem {
   id: UUID;
@@ -189,8 +200,8 @@ export interface MediaItem {
 // ============================================================
 // INQUIRIES
 // ============================================================
-export type InquiryType = 'rental' | 'collaboration' | 'general' | 'media';
-export type InquiryStatus = 'pending' | 'reviewing' | 'replied' | 'closed';
+export type InquiryType = "rental" | "collaboration" | "general" | "media";
+export type InquiryStatus = "pending" | "reviewing" | "replied" | "closed";
 
 export interface Inquiry {
   id: UUID;
@@ -222,7 +233,7 @@ export interface SiteSetting {
   id: UUID;
   key: string;
   value: string;
-  type?: 'text' | 'number' | 'boolean' | 'json' | 'color';
+  type?: "text" | "number" | "boolean" | "json" | "color";
   group?: string;
   label?: string;
   description?: string;
@@ -235,67 +246,67 @@ export interface SiteSetting {
 // ============================================================
 
 export type EventType =
-  | 'exhibition'
-  | 'performance'
-  | 'workshop'
-  | 'brand_event'
-  | 'corporate'
-  | 'shoot'
-  | 'wedding'
-  | 'gathering'
-  | 'consultation'
+  | "exhibition"
+  | "performance"
+  | "workshop"
+  | "brand_event"
+  | "corporate"
+  | "shoot"
+  | "wedding"
+  | "gathering"
+  | "consultation";
 
 export type ReservationStatus =
-  | 'new'
-  | 'consulting'
-  | 'quote_sent'
-  | 'confirmed'
-  | 'completed'
-  | 'cancelled'
+  | "new"
+  | "consulting"
+  | "quote_sent"
+  | "confirmed"
+  | "completed"
+  | "cancelled";
 
 export interface ReservationFormData {
   // Step 1
-  eventType: EventType | null
+  eventType: EventType | null;
   // Step 2
-  preferredDate: string
-  dateFlexible: boolean
-  expectedAttendees: string
-  eventPurpose: string
-  budgetRange: string
-  additionalDetails: Record<string, string>
+  preferredDate: string;
+  dateFlexible: boolean;
+  expectedAttendees: string;
+  eventPurpose: string;
+  budgetRange: string;
+  additionalDetails: Record<string, string>;
   // Step 3
-  recommendedSpace: string
-  selectedSpaceId: string
+  recommendedSpace: string;
+  selectedSpaceId: string;
   // Step 4
-  name: string
-  phone: string
-  email: string
-  company: string
-  notes: string
+  name: string;
+  phone: string;
+  email: string;
+  company: string;
+  notes: string;
 }
 
 export interface Reservation {
-  id: UUID
-  created_at: ISODateString
-  updated_at: ISODateString
-  event_type: EventType
-  preferred_date: string | null
-  date_flexible: boolean
-  expected_attendees: number | null
-  event_purpose: string | null
-  budget_range: string | null
-  additional_details: Record<string, string>
-  recommended_space: string | null
-  selected_space_id: UUID | null
-  name: string
-  phone: string
-  email: string
-  company: string | null
-  notes: string | null
-  status: ReservationStatus
-  admin_notes: string | null
-  assigned_to: string | null
-  spaces?: { name: string; slug: string } | null
+  id: UUID;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+  event_type: EventType;
+  preferred_date: string | null;
+  date_flexible: boolean;
+  expected_attendees: number | null;
+  event_purpose: string | null;
+  budget_range: string | null;
+  additional_details: Record<string, string>;
+  recommended_space: string | null;
+  selected_space_id: UUID | null;
+  name: string;
+  phone: string;
+  email: string;
+  company: string | null;
+  notes: string | null;
+  status: ReservationStatus;
+  admin_notes: string | null;
+  assigned_to: string | null;
+  spaces?: { name: string; slug: string } | null;
 }
 
 // ============================================================
@@ -321,7 +332,7 @@ export interface FilterOptions {
 
 export interface SortOptions {
   field: string;
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
 }
 
 export interface ApiError {
@@ -358,9 +369,9 @@ export interface SeoMeta {
 // CONTENT AGGREGATOR — 자기확장형 콘텐츠 시스템
 // ============================================================
 
-export type ContentPlatform = 'rss' | 'youtube' | 'instagram' | 'x';
+export type ContentPlatform = "rss" | "youtube" | "instagram" | "x";
 
-export type VisibilityStatus = 'pending' | 'published' | 'hidden' | 'featured';
+export type VisibilityStatus = "pending" | "published" | "hidden" | "featured";
 
 // content_sources 테이블
 export interface ContentSource {
@@ -428,7 +439,7 @@ export interface FetchLog {
   source_id?: UUID | null;
   source?: ContentSource;
   platform?: string | null;
-  status: 'success' | 'partial' | 'error';
+  status: "success" | "partial" | "error";
   items_found: number;
   items_new: number;
   items_skipped: number;
