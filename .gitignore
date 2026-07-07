@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Page capture output (screenshots + PDFs)
+captures/
+
 # Environment variables (API keys, secrets)
 .env
 .env.local

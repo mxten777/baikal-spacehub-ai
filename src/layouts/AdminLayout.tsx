@@ -74,9 +74,11 @@ export default function AdminLayout() {
           Desktop (md+): translate-x-0 always; w-16 collapsed or w-60 expanded */}
       <aside
         className={`fixed left-0 top-0 h-full z-30 bg-brand-black text-white transition-all duration-300 overflow-hidden
-          ${sidebarOpen
-            ? "w-60 translate-x-0"
-            : "-translate-x-full md:translate-x-0 w-60 md:w-16"}`}
+          ${
+            sidebarOpen
+              ? "w-60 translate-x-0"
+              : "-translate-x-full md:translate-x-0 w-60 md:w-16"
+          }`}
       >
         {/* Sidebar header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-white/10">
@@ -104,7 +106,9 @@ export default function AdminLayout() {
               key={item.href}
               to={item.href}
               end={item.exact}
-              onClick={() => { if (window.innerWidth < 768) setSidebarOpen(false); }}
+              onClick={() => {
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 text-sm font-sans transition-colors duration-150
                 ${
@@ -165,7 +169,9 @@ export default function AdminLayout() {
           {user && (
             <div className="flex items-center gap-2 text-sm text-gray-500 min-w-0">
               <UserCircle2 size={16} className="shrink-0 text-brand-accent" />
-              <span className="font-sans truncate hidden sm:block">{user.email}</span>
+              <span className="font-sans truncate hidden sm:block">
+                {user.email}
+              </span>
             </div>
           )}
           <Link

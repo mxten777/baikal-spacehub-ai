@@ -36,7 +36,7 @@ export default function Footer() {
             {/* Social */}
             <div className="flex items-center gap-4">
               <a
-                href="https://instagram.com/thelit"
+                href="https://instagram.com/thelit_official"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -104,20 +104,20 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-white/60">
                 <MapPin size={14} className="mt-0.5 shrink-0 text-brand-accent" />
-                <span>서울특별시 마포구<br />연남동 000-00</span>
+                <span>경기도 하남시<br />미사동 468</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-white/60">
                 <Phone size={14} className="shrink-0 text-brand-accent" />
-                <a href="tel:0200000000" className="hover:text-white transition-colors">02-0000-0000</a>
+                <a href="tel:16610288" className="hover:text-white transition-colors">1661-0288</a>
               </li>
               <li className="flex items-center gap-3 text-sm text-white/60">
                 <Mail size={14} className="shrink-0 text-brand-accent" />
-                <a href="mailto:hello@thelit.kr" className="hover:text-white transition-colors">hello@thelit.kr</a>
+                <a href="mailto:goworld33@naver.com" className="hover:text-white transition-colors">goworld33@naver.com</a>
               </li>
             </ul>
 
             <a
-              href="https://maps.naver.com"
+              href="https://map.naver.com/v5/search/경기도 하남시 미사동 468"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 mt-5 font-sans text-[11px] tracking-widest uppercase text-brand-accent hover:text-white transition-colors duration-200"

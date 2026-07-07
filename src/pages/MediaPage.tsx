@@ -1,43 +1,48 @@
-import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
-import { Play, ExternalLink } from 'lucide-react'
-import { useMedia } from '../hooks/useData'
-import { useExternalContents } from '../hooks/useData'
-import AnimatedSection from '../components/common/AnimatedSection'
-import LoadingSpinner from '../components/common/LoadingSpinner'
-import type { ContentPlatform } from '../types'
+import { useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { Play, ExternalLink } from "lucide-react";
+import { useMedia } from "../hooks/useData";
+import { useExternalContents } from "../hooks/useData";
+import AnimatedSection from "../components/common/AnimatedSection";
+import LoadingSpinner from "../components/common/LoadingSpinner";
+import type { ContentPlatform } from "../types";
 
-const PLATFORMS: Array<{ value: 'all' | ContentPlatform; label: string }> = [
-  { value: 'all', label: '전체' },
-  { value: 'youtube', label: 'YouTube' },
-  { value: 'instagram', label: 'Instagram' },
-  { value: 'x', label: 'X (Twitter)' },
-  { value: 'rss', label: 'Blog RSS' },
-]
+const PLATFORMS: Array<{ value: "all" | ContentPlatform; label: string }> = [
+  { value: "all", label: "전체" },
+  { value: "youtube", label: "YouTube" },
+  { value: "instagram", label: "Instagram" },
+  { value: "x", label: "X (Twitter)" },
+  { value: "rss", label: "Blog RSS" },
+];
 
 const PLATFORM_BADGE: Record<string, { label: string; cls: string }> = {
-  youtube: { label: 'YouTube', cls: 'bg-red-600' },
-  instagram: { label: 'Instagram', cls: 'bg-purple-600' },
-  x: { label: 'X', cls: 'bg-black' },
-  rss: { label: 'Blog', cls: 'bg-orange-500' },
-}
+  youtube: { label: "YouTube", cls: "bg-red-600" },
+  instagram: { label: "Instagram", cls: "bg-purple-600" },
+  x: { label: "X", cls: "bg-black" },
+  rss: { label: "Blog", cls: "bg-orange-500" },
+};
 
 export default function MediaPage() {
-  const [activePlatform, setActivePlatform] = useState<'all' | ContentPlatform>('all')
+  const [activePlatform, setActivePlatform] = useState<"all" | ContentPlatform>(
+    "all",
+  );
 
   // external_contents가 주요 데이터 소스 (수집된 콘텐츠)
-  const { data: externalItems = [], isLoading: externalLoading } = useExternalContents({
-    platform: activePlatform === 'all' ? undefined : activePlatform,
-    limit: 24,
-  })
+  const { data: externalItems = [], isLoading: externalLoading } =
+    useExternalContents({
+      platform: activePlatform === "all" ? undefined : activePlatform,
+      limit: 24,
+    });
 
   // 기존 media_items도 병렬 조회 (하위 호환)
   const { data: legacyMedia = [], isLoading: legacyLoading } = useMedia(
-    activePlatform === 'all' || activePlatform === 'rss' ? undefined : activePlatform,
-    12
-  )
+    activePlatform === "all" || activePlatform === "rss"
+      ? undefined
+      : activePlatform,
+    12,
+  );
 
-  const isLoading = externalLoading || legacyLoading
+  const isLoading = externalLoading || legacyLoading;
 
   // external_contents 우선, 없으면 legacy media_items로 fallback
   const items =
@@ -51,22 +56,28 @@ export default function MediaPage() {
           summary: m.description ?? null,
           thumbnail_url: m.thumbnail_url ?? null,
           published_at: m.published_at ?? null,
-          visibility_status: 'published' as const,
+          visibility_status: "published" as const,
           is_featured: m.is_featured,
           category: null,
           external_id: m.platform_id ?? m.id,
           fetched_at: m.created_at,
           created_at: m.created_at,
           updated_at: m.updated_at ?? m.created_at,
-        }))
+        }));
 
   return (
     <>
       <Helmet>
         <title>Media — The Lit</title>
-        <meta name="description" content="더릿의 YouTube, Instagram, X, 블로그 RSS에서 실시간으로 업데이트됩니다." />
+        <meta
+          name="description"
+          content="더릿의 YouTube, Instagram, X, 블로그 RSS에서 실시간으로 업데이트됩니다."
+        />
         <meta property="og:title" content="Media — The Lit" />
-        <meta property="og:description" content="더릿의 미디어 피드에서 최신 영상과 다양한 콘텐츠를 만나보세요." />
+        <meta
+          property="og:description"
+          content="더릿의 미디어 피드에서 최신 영상과 다양한 콘텐츠를 만나보세요."
+        />
       </Helmet>
 
       {/* Hero */}
@@ -79,7 +90,8 @@ export default function MediaPage() {
             </h1>
             <p className="font-sans text-base text-brand-muted max-w-xl">
               더릿이 활동하는 공간에서 문화와 예술을 위한 콘텐츠를 소개합니다.
-              YouTube, Instagram, X, 블로그 RSS의 각 채널에서 실시간으로 업데이트됩니다.
+              YouTube, Instagram, X, 블로그 RSS의 각 채널에서 실시간으로
+              업데이트됩니다.
             </p>
           </AnimatedSection>
         </div>
@@ -93,9 +105,11 @@ export default function MediaPage() {
               key={p.value}
               onClick={() => setActivePlatform(p.value)}
               className={`shrink-0 px-5 py-2 font-sans text-xs font-medium tracking-widest uppercase transition-all
-                ${activePlatform === p.value
-                  ? 'bg-brand-black text-white'
-                  : 'bg-brand-cream text-brand-muted hover:text-brand-black'}`}
+                ${
+                  activePlatform === p.value
+                    ? "bg-brand-black text-white"
+                    : "bg-brand-cream text-brand-muted hover:text-brand-black"
+                }`}
             >
               {p.label}
             </button>
@@ -125,12 +139,16 @@ export default function MediaPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {items.map((item, i) => {
-                const badge = PLATFORM_BADGE[item.platform]
-                const isVideo = item.platform === 'youtube'
-                const isText = item.platform === 'x' || item.platform === 'rss'
+                const badge = PLATFORM_BADGE[item.platform];
+                const isVideo = item.platform === "youtube";
+                const isText = item.platform === "x" || item.platform === "rss";
 
                 return (
-                  <AnimatedSection key={item.id} animation="fade-up" delay={i * 40}>
+                  <AnimatedSection
+                    key={item.id}
+                    animation="fade-up"
+                    delay={i * 40}
+                  >
                     <a
                       href={item.external_url}
                       target="_blank"
@@ -155,7 +173,9 @@ export default function MediaPage() {
                             </div>
                           )}
                           <div className="absolute top-3 left-3">
-                            <span className={`font-sans text-[9px] font-medium px-2 py-1 text-white ${badge?.cls}`}>
+                            <span
+                              className={`font-sans text-[9px] font-medium px-2 py-1 text-white ${badge?.cls}`}
+                            >
                               {badge?.label}
                             </span>
                           </div>
@@ -169,7 +189,9 @@ export default function MediaPage() {
                         /* Text-only card (X, RSS without image) */
                         <div className="p-5 min-h-[120px] flex flex-col justify-between">
                           <div>
-                            <span className={`font-sans text-[9px] font-medium px-2 py-1 text-white ${badge?.cls} inline-block mb-3`}>
+                            <span
+                              className={`font-sans text-[9px] font-medium px-2 py-1 text-white ${badge?.cls} inline-block mb-3`}
+                            >
                               {badge?.label}
                             </span>
                             <p className="font-sans text-sm font-medium text-brand-black line-clamp-3">
@@ -179,22 +201,26 @@ export default function MediaPage() {
                           <div className="flex items-center justify-between mt-3">
                             {item.published_at && (
                               <span className="text-xs text-gray-400">
-                                {new Date(item.published_at).toLocaleDateString('ko-KR')}
+                                {new Date(item.published_at).toLocaleDateString(
+                                  "ko-KR",
+                                )}
                               </span>
                             )}
-                            <ExternalLink size={12} className="text-gray-300 group-hover:text-brand-black transition-colors" />
+                            <ExternalLink
+                              size={12}
+                              className="text-gray-300 group-hover:text-brand-black transition-colors"
+                            />
                           </div>
                         </div>
                       )}
                     </a>
                   </AnimatedSection>
-                )
+                );
               })}
             </div>
           )}
         </div>
       </section>
     </>
-  )
+  );
 }
-

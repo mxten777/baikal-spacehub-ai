@@ -1,5 +1,5 @@
-import { MapPin, Phone, Mail, Clock } from 'lucide-react'
-import AnimatedSection from '../common/AnimatedSection'
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import AnimatedSection from "../common/AnimatedSection";
 
 export default function LocationSection() {
   return (
@@ -10,13 +10,12 @@ export default function LocationSection() {
           <AnimatedSection animation="slide-left">
             <div className="aspect-[4/3] bg-brand-warm relative overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3163.3!2d126.9241!3d37.5572!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzfCsDMzJzI2LjAiTiAxMjbCsDU1JzI3LjciRQ!5e0!3m2!1sko!2skr!4v1"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=127.196%2C37.549%2C127.212%2C37.565&layer=mapnik&marker=37.557%2C127.204"
                 width="100%"
                 height="100%"
                 className="absolute inset-0 border-0 grayscale"
                 allowFullScreen
                 loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
                 title="The Lit 위치"
               />
             </div>
@@ -36,10 +35,13 @@ export default function LocationSection() {
                     <MapPin size={16} className="text-white" />
                   </div>
                   <div>
-                    <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">Address</p>
+                    <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">
+                      Address
+                    </p>
                     <p className="font-sans text-sm text-brand-black">
-                      서울특별시 마포구 연남동 000-00<br />
-                      (지하철 2호선 홍대입구역 3번 출구)
+                      경기도 하남시 미사동 468
+                      <br />
+                      (경강선 미사역 인근)
                     </p>
                   </div>
                 </li>
@@ -49,9 +51,12 @@ export default function LocationSection() {
                     <Clock size={16} className="text-white" />
                   </div>
                   <div>
-                    <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">Hours</p>
+                    <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">
+                      Hours
+                    </p>
                     <p className="font-sans text-sm text-brand-black">
-                      화 — 일: 11:00 — 21:00<br />
+                      화 — 일: 11:00 — 21:00
+                      <br />
                       월요일 휴관
                     </p>
                   </div>
@@ -62,9 +67,14 @@ export default function LocationSection() {
                     <Phone size={16} className="text-white" />
                   </div>
                   <div>
-                    <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">Phone</p>
-                    <a href="tel:0200000000" className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors">
-                      02-0000-0000
+                    <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">
+                      Phone
+                    </p>
+                    <a
+                      href="tel:16610288"
+                      className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors"
+                    >
+                      1661-0288
                     </a>
                   </div>
                 </li>
@@ -74,9 +84,14 @@ export default function LocationSection() {
                     <Mail size={16} className="text-white" />
                   </div>
                   <div>
-                    <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">Email</p>
-                    <a href="mailto:hello@thelit.kr" className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors">
-                      hello@thelit.kr
+                    <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">
+                      Email
+                    </p>
+                    <a
+                      href="mailto:goworld33@naver.com"
+                      className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors"
+                    >
+                      goworld33@naver.com
                     </a>
                   </div>
                 </li>
@@ -86,5 +101,5 @@ export default function LocationSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

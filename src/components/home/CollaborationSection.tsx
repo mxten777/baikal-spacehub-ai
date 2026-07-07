@@ -1,27 +1,30 @@
-import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
-import AnimatedSection from '../common/AnimatedSection'
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import AnimatedSection from "../common/AnimatedSection";
 
 const collabTypes = [
   {
-    icon: '🎨',
-    title: '브랜드 이벤트',
-    description: '론칭, 팝업스토어, 기업 행사 등 브랜드의 특별한 순간을 연출합니다.',
-    link: '/contact?type=collaboration',
+    icon: "🎨",
+    title: "브랜드 이벤트",
+    description:
+      "론칭, 팝업스토어, 기업 행사 등 브랜드의 특별한 순간을 연출합니다.",
+    link: "/contact?type=collaboration",
   },
   {
-    icon: '📷',
-    title: '촬영 대관',
-    description: '광고, 영화, 화보 촬영을 위한 다양한 분위기의 공간을 제공합니다.',
-    link: '/contact?type=rental',
+    icon: "📷",
+    title: "촬영 대관",
+    description:
+      "광고, 영화, 화보 촬영을 위한 다양한 분위기의 공간을 제공합니다.",
+    link: "/contact?type=rental",
   },
   {
-    icon: '🏢',
-    title: '기업 미팅 & 세미나',
-    description: '소규모 워크샵부터 대형 컨퍼런스까지 맞춤형 공간 서비스를 제공합니다.',
-    link: '/contact?type=collaboration',
+    icon: "🏢",
+    title: "기업 미팅 & 세미나",
+    description:
+      "소규모 워크샵부터 대형 컨퍼런스까지 맞춤형 공간 서비스를 제공합니다.",
+    link: "/contact?type=collaboration",
   },
-]
+];
 
 export default function CollaborationSection() {
   return (
@@ -42,16 +45,23 @@ export default function CollaborationSection() {
               함께 만드는 특별한 경험
             </h2>
             <p className="font-sans text-base text-white/60 max-w-xl mx-auto">
-              브랜드, 기업, 크리에이터와 함께 더릿만의 특별한 공간에서
-              잊을 수 없는 경험을 만들어 드립니다.
+              브랜드, 기업, 크리에이터와 함께 더릿만의 특별한 공간에서 잊을 수
+              없는 경험을 만들어 드립니다.
             </p>
           </div>
         </AnimatedSection>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10 md:mb-12">
           {collabTypes.map((type, i) => (
-            <AnimatedSection key={type.title} animation="fade-up" delay={i * 100}>
-              <Link to={type.link} className="group block p-5 sm:p-8 border border-white/10 hover:border-brand-accent transition-colors duration-300">
+            <AnimatedSection
+              key={type.title}
+              animation="fade-up"
+              delay={i * 100}
+            >
+              <Link
+                to={type.link}
+                className="group block p-5 sm:p-8 border border-white/10 hover:border-brand-accent transition-colors duration-300"
+              >
                 <span className="text-3xl mb-4 block">{type.icon}</span>
                 <h3 className="font-display text-xl font-light text-white mb-3 group-hover:text-brand-accent transition-colors">
                   {type.title}
@@ -73,5 +83,5 @@ export default function CollaborationSection() {
         </AnimatedSection>
       </div>
     </section>
-  )
+  );
 }

@@ -208,8 +208,8 @@ export default function ContactPage() {
                         <MapPin size={15} className="text-brand-accent mt-0.5 shrink-0" />
                         <div>
                           <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">주소</p>
-                          <p className="font-sans text-sm text-brand-black">서울특별시 마포구 연남동 000-00</p>
-                          <p className="font-sans text-xs text-brand-muted mt-1">지하철 2호선 홍대입구역 3번 출구 도보 5분</p>
+                          <p className="font-sans text-sm text-brand-black">경기도 하남시 미사동 468</p>
+                          <p className="font-sans text-xs text-brand-muted mt-1">경강선 미사역 인근</p>
                         </div>
                       </li>
                       <li className="flex items-start gap-3">
@@ -224,14 +224,14 @@ export default function ContactPage() {
                         <Phone size={15} className="text-brand-accent mt-0.5 shrink-0" />
                         <div>
                           <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">전화</p>
-                          <a href="tel:0200000000" className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors">02-0000-0000</a>
+                          <a href="tel:16610288" className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors">1661-0288</a>
                         </div>
                       </li>
                       <li className="flex items-start gap-3">
                         <Mail size={15} className="text-brand-accent mt-0.5 shrink-0" />
                         <div>
                           <p className="font-sans text-xs tracking-widest uppercase text-brand-muted mb-1">이메일</p>
-                          <a href="mailto:hello@thelit.kr" className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors">hello@thelit.kr</a>
+                          <a href="mailto:goworld33@naver.com" className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors">goworld33@naver.com</a>
                         </div>
                       </li>
                     </ul>
@@ -240,7 +240,7 @@ export default function ContactPage() {
                   {/* Map */}
                   <div className="aspect-square bg-brand-warm">
                     <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3163!2d126.924!3d37.557!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!2zMzfCsDMz!5e0!3m2!1sko!2skr!4v1"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3163!2d127.2041!3d37.5571!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!2zMzfCsDMz!5e0!3m2!1sko!2skr!4v1"
                       width="100%"
                       height="100%"
                       className="border-0 grayscale"
