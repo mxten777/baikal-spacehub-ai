@@ -15,6 +15,7 @@ import {
   Rss,
   Globe2,
   UserCircle2,
+  CalendarCheck,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
@@ -29,6 +30,7 @@ const adminNav = [
   { label: "Media", href: "/admin/media", icon: Video },
   { label: "콘텐츠 소스", href: "/admin/content-sources", icon: Rss },
   { label: "외부 콘텐츠", href: "/admin/external-content", icon: Globe2 },
+  { label: "예약 관리", href: "/admin/reservations", icon: CalendarCheck },
   { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];

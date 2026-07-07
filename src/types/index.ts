@@ -231,6 +231,74 @@ export interface SiteSetting {
 }
 
 // ============================================================
+// RESERVATION — Premium Reservation Experience
+// ============================================================
+
+export type EventType =
+  | 'exhibition'
+  | 'performance'
+  | 'workshop'
+  | 'brand_event'
+  | 'corporate'
+  | 'shoot'
+  | 'wedding'
+  | 'gathering'
+  | 'consultation'
+
+export type ReservationStatus =
+  | 'new'
+  | 'consulting'
+  | 'quote_sent'
+  | 'confirmed'
+  | 'completed'
+  | 'cancelled'
+
+export interface ReservationFormData {
+  // Step 1
+  eventType: EventType | null
+  // Step 2
+  preferredDate: string
+  dateFlexible: boolean
+  expectedAttendees: string
+  eventPurpose: string
+  budgetRange: string
+  additionalDetails: Record<string, string>
+  // Step 3
+  recommendedSpace: string
+  selectedSpaceId: string
+  // Step 4
+  name: string
+  phone: string
+  email: string
+  company: string
+  notes: string
+}
+
+export interface Reservation {
+  id: UUID
+  created_at: ISODateString
+  updated_at: ISODateString
+  event_type: EventType
+  preferred_date: string | null
+  date_flexible: boolean
+  expected_attendees: number | null
+  event_purpose: string | null
+  budget_range: string | null
+  additional_details: Record<string, string>
+  recommended_space: string | null
+  selected_space_id: UUID | null
+  name: string
+  phone: string
+  email: string
+  company: string | null
+  notes: string | null
+  status: ReservationStatus
+  admin_notes: string | null
+  assigned_to: string | null
+  spaces?: { name: string; slug: string } | null
+}
+
+// ============================================================
 // UI / SHARED
 // ============================================================
 export interface PaginatedResponse<T> {

@@ -123,7 +123,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
               transition={{ delay: 0.62, duration: 0.35 }}
             >
               <Link
-                to="/contact?type=rental"
+                to="/reservation"
                 className="block w-full text-center py-[13px] font-sans text-[10px] font-medium tracking-[0.22em] uppercase border border-white/22 text-white hover:bg-white hover:text-brand-black transition-all duration-300"
               >
                 Book a Space

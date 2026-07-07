@@ -21,6 +21,7 @@ import BlogPage from './pages/BlogPage'
 import BlogPostPage from './pages/BlogPostPage'
 import MediaPage from './pages/MediaPage'
 import ContactPage from './pages/ContactPage'
+import ReservationPage from './pages/ReservationPage'
 
 // Admin pages
 import AdminLoginPage from './pages/admin/AdminLoginPage'
@@ -34,6 +35,7 @@ import AdminInquiriesPage from './pages/admin/AdminInquiriesPage'
 import AdminSettingsPage from './pages/admin/AdminSettingsPage'
 import AdminContentSourcesPage from './pages/admin/AdminContentSourcesPage'
 import AdminExternalContentPage from './pages/admin/AdminExternalContentPage'
+import AdminReservationsPage from './pages/admin/AdminReservationsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -80,6 +82,7 @@ export default function App() {
               <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/media" element={<MediaPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/reservation" element={<ReservationPage />} />
             </Route>
 
             {/* Admin auth */}
@@ -104,6 +107,7 @@ export default function App() {
               <Route path="settings" element={<AdminSettingsPage />} />
               <Route path="content-sources" element={<AdminContentSourcesPage />} />
               <Route path="external-content" element={<AdminExternalContentPage />} />
+              <Route path="reservations" element={<AdminReservationsPage />} />
             </Route>
 
             {/* 404 fallback */}

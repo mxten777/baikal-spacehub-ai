@@ -194,7 +194,7 @@ export default function Header() {
 
               {/* CTA */}
               <Link
-                to="/contact?type=rental"
+                to="/reservation"
                 className={`ml-2 font-sans text-[10px] font-medium tracking-[0.2em] uppercase px-5 py-[9px] border transition-all duration-300
                   ${
                     lightText
