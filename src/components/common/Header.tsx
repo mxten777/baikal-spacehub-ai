@@ -50,7 +50,7 @@ export default function Header() {
 
   // Close everything on route change
   useEffect(() => {
-    setActiveMega(null)
+    setActiveMega(null)  // eslint-disable-line react-hooks/set-state-in-effect
     setMobileOpen(false)
     setSearchOpen(false)
     setFeedOpen(false)

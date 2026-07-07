@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 
@@ -20,13 +20,6 @@ const NAV_ITEMS = [
 ]
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {
-  const { pathname } = useLocation()
-
-  // Close on navigation (handled in parent too, this is a safety net)
-  useEffect(() => {
-    if (open) onClose()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname])
 
   // Lock body scroll while open
   useEffect(() => {

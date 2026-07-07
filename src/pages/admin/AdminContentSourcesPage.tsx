@@ -124,7 +124,7 @@ function SourceForm({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit as any)} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit as any /* eslint-disable-line @typescript-eslint/no-explicit-any */)} className="p-6 space-y-4">
           <div>
             <label className="label-xs">소스 이름 *</label>
             <input

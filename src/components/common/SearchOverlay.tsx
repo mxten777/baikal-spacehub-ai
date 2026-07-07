@@ -26,6 +26,7 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
   // Focus input when overlay opens
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery('')
       const t = setTimeout(() => inputRef.current?.focus(), 130)
       return () => clearTimeout(t)
