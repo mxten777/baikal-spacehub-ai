@@ -131,21 +131,17 @@ export default function Header() {
                       item.hasMega ? activeMega === item.label : undefined
                     }
                     className={({ isActive }) => {
-                      const base =
-                        "relative block px-[13px] py-2 font-sans text-[10.5px] font-medium tracking-[0.16em] uppercase transition-colors duration-300";
-                      const line = `after:absolute after:bottom-0 after:left-0 after:h-px after:bg-current after:transition-all after:duration-300 ${
-                        isActive
-                          ? "after:w-full"
-                          : "after:w-0 hover:after:w-full"
-                      }`;
-                      const color = lightText
+                      const textColor = lightText
                         ? isActive
                           ? "text-white"
                           : "text-white/50 hover:text-white"
                         : isActive
                           ? "text-brand-black"
                           : "text-brand-subtle hover:text-brand-black";
-                      return `${base} ${line} ${color}`;
+                      const border = isActive
+                        ? "border-current"
+                        : "border-transparent hover:border-current";
+                      return `block px-[13px] py-2 font-sans text-[10.5px] font-medium tracking-[0.16em] uppercase border-b transition-colors duration-200 ${border} ${textColor}`;
                     }}
                   >
                     {item.label}
