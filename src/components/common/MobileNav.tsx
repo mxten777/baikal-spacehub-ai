@@ -64,7 +64,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-4 w-11 h-11 flex items-center justify-center text-white/35 hover:text-white transition-colors z-10"
+            className="absolute top-5 right-4 w-11 h-11 flex items-center justify-center text-white/70 hover:text-white transition-colors z-10"
             aria-label="메뉴 닫기"
           >
             <X size={18} />
@@ -74,7 +74,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
           <div className="relative flex flex-col h-full px-7 pt-[72px] pb-8 overflow-y-auto">
             {/* Brand label */}
             <motion.p
-              className="font-display text-[9px] tracking-[0.36em] uppercase text-white/18 mb-8"
+              className="font-display text-[9px] tracking-[0.36em] uppercase text-white/50 mb-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.18 }}
@@ -98,10 +98,10 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
                   <NavLink
                     to={item.href}
                     className={({ isActive }) =>
-                      `block py-[13px] font-display font-extralight border-b border-white/[0.07] transition-colors duration-200 leading-tight ${
+                      `block py-[13px] font-display font-extralight border-b border-white/20 transition-colors duration-200 leading-tight ${
                         isActive
                           ? "text-white"
-                          : "text-white/32 hover:text-white/70"
+                          : "text-white/75 hover:text-white"
                       }`
                     }
                     style={{
@@ -124,15 +124,15 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
             >
               <Link
                 to="/reservation"
-                className="block w-full text-center py-[13px] font-sans text-[10px] font-medium tracking-[0.22em] uppercase border border-white/22 text-white hover:bg-white hover:text-brand-black transition-all duration-300"
+                className="block w-full text-center py-[13px] font-sans text-[10px] font-medium tracking-[0.22em] uppercase border border-white/50 text-white hover:bg-white hover:text-brand-black transition-all duration-300"
               >
                 Book a Space
               </Link>
               <div className="flex items-center justify-between pt-1">
-                <span className="font-sans text-[9px] tracking-widest text-white/16">
+                <span className="font-sans text-[9px] tracking-widest text-white/50">
                   goworld33@naver.com
                 </span>
-                <span className="font-sans text-[9px] tracking-widest text-white/16">
+                <span className="font-sans text-[9px] tracking-widest text-white/50">
                   1661-0288
                 </span>
               </div>

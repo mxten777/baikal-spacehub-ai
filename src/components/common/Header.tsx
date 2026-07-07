@@ -92,12 +92,26 @@ export default function Header() {
           transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
         />
 
+        {/* — Top gradient scrim — legibility over bright hero images — */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0) 100%)",
+          }}
+          animate={{ opacity: isDark ? 1 : 0 }}
+          transition={{ duration: 0.4 }}
+        />
+
         {/* — Header content — */}
         <div className="relative container-wide">
           <div className="flex items-center justify-between h-16 lg:h-[72px]">
             {/* Logo */}
             <motion.div
-              animate={{ color: lightText ? "#ffffff" : "#0A0A0A" }}
+              animate={{
+                color: lightText ? "#ffffff" : "#0A0A0A",
+                textShadow: lightText ? "0 1px 6px rgba(0,0,0,0.55)" : "none",
+              }}
               transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <Link
@@ -134,7 +148,7 @@ export default function Header() {
                       const textColor = lightText
                         ? isActive
                           ? "text-white"
-                          : "text-white/50 hover:text-white"
+                          : "text-white/65 hover:text-white"
                         : isActive
                           ? "text-brand-black"
                           : "text-brand-subtle hover:text-brand-black";
@@ -143,6 +157,7 @@ export default function Header() {
                         : "border-transparent hover:border-current";
                       return `block px-[13px] py-2 font-sans text-[10.5px] font-medium tracking-[0.16em] uppercase border-b transition-colors duration-200 ${border} ${textColor}`;
                     }}
+                    style={lightText ? { textShadow: "0 1px 6px rgba(0,0,0,0.55)" } : undefined}
                   >
                     {item.label}
                   </NavLink>
