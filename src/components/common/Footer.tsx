@@ -8,6 +8,7 @@ import {
   Mail,
   ArrowUpRight,
 } from "lucide-react";
+import { useSettings } from "../../hooks/useData";
 
 const footerLinks = {
   explore: [
@@ -26,6 +27,16 @@ const footerLinks = {
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const { data: settings } = useSettings();
+
+  const instagramUrl = settings?.instagram_url || "https://instagram.com/thelit_official";
+  const youtubeUrl = settings?.youtube_url || "https://youtube.com/@thelit";
+  const xUrl = settings?.x_url || "https://x.com/thelit";
+  const address = settings?.address || "경기도 하남시 \ubbf8사동 468";
+  const phone = settings?.contact_phone || "1661-0288";
+  const email = settings?.contact_email || "goworld33@naver.com";
+  const mapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(address)}`;
+  const phoneHref = `tel:${phone.replace(/[^0-9]/g, '')}`;
 
   return (
     <footer className="bg-brand-black text-white">
@@ -47,7 +58,7 @@ export default function Footer() {
             {/* Social */}
             <div className="flex items-center gap-4">
               <a
-                href="https://instagram.com/thelit_official"
+                href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -56,7 +67,7 @@ export default function Footer() {
                 <Instagram size={15} />
               </a>
               <a
-                href="https://youtube.com/@thelit"
+                href={youtubeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
@@ -65,7 +76,7 @@ export default function Footer() {
                 <Youtube size={15} />
               </a>
               <a
-                href="https://x.com/thelit"
+                href={xUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X (Twitter)"
@@ -124,34 +135,30 @@ export default function Footer() {
                   size={14}
                   className="mt-0.5 shrink-0 text-brand-accent"
                 />
-                <span>
-                  경기도 하남시
-                  <br />
-                  미사동 468
-                </span>
+                <span>{address}</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-white/60">
                 <Phone size={14} className="shrink-0 text-brand-accent" />
                 <a
-                  href="tel:16610288"
+                  href={phoneHref}
                   className="hover:text-white transition-colors"
                 >
-                  1661-0288
+                  {phone}
                 </a>
               </li>
               <li className="flex items-center gap-3 text-sm text-white/60">
                 <Mail size={14} className="shrink-0 text-brand-accent" />
                 <a
-                  href="mailto:goworld33@naver.com"
+                  href={`mailto:${email}`}
                   className="hover:text-white transition-colors"
                 >
-                  goworld33@naver.com
+                  {email}
                 </a>
               </li>
             </ul>
 
             <a
-              href="https://map.naver.com/v5/search/경기도 하남시 미사동 468"
+              href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 mt-5 font-sans text-[11px] tracking-widest uppercase text-brand-accent hover:text-white transition-colors duration-200"

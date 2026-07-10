@@ -1,7 +1,16 @@
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import AnimatedSection from "../common/AnimatedSection";
+import { useSettings } from "../../hooks/useData";
 
 export default function LocationSection() {
+  const { data: settings } = useSettings();
+
+  const address = settings?.address || "경기도 하남시 \ubbf8사동 468";
+  const phone = settings?.contact_phone || "1661-0288";
+  const email = settings?.contact_email || "goworld33@naver.com";
+  const businessHours = settings?.business_hours || "화 — 일: 11:00 — 21:00";
+  const holiday = settings?.holiday || "월요일 휴관";
+  const phoneHref = `tel:${phone.replace(/[^0-9]/g, '')}`;
   return (
     <section className="section-padding bg-brand-cream">
       <div className="container-wide">
@@ -39,7 +48,7 @@ export default function LocationSection() {
                       Address
                     </p>
                     <p className="font-sans text-sm text-brand-black">
-                      경기도 하남시 미사동 468
+                      {address}
                       <br />
                       (경강선 미사역 인근)
                     </p>
@@ -55,9 +64,9 @@ export default function LocationSection() {
                       Hours
                     </p>
                     <p className="font-sans text-sm text-brand-black">
-                      화 — 일: 11:00 — 21:00
+                      {businessHours}
                       <br />
-                      월요일 휴관
+                      {holiday}
                     </p>
                   </div>
                 </li>
@@ -71,10 +80,10 @@ export default function LocationSection() {
                       Phone
                     </p>
                     <a
-                      href="tel:16610288"
+                      href={phoneHref}
                       className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors"
                     >
-                      1661-0288
+                      {phone}
                     </a>
                   </div>
                 </li>
@@ -88,10 +97,10 @@ export default function LocationSection() {
                       Email
                     </p>
                     <a
-                      href="mailto:goworld33@naver.com"
+                      href={`mailto:${email}`}
                       className="font-sans text-sm text-brand-black hover:text-brand-accent transition-colors"
                     >
-                      goworld33@naver.com
+                      {email}
                     </a>
                   </div>
                 </li>

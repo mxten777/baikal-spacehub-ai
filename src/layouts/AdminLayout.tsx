@@ -17,6 +17,7 @@ import {
   Globe2,
   UserCircle2,
   CalendarCheck,
+  MonitorPlay,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
@@ -24,6 +25,7 @@ import type { User } from "@supabase/supabase-js";
 
 const adminNav = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
+  { label: "Hero 슬라이드", href: "/admin/hero", icon: MonitorPlay },
   { label: "Spaces", href: "/admin/spaces", icon: Image },
   { label: "Programs", href: "/admin/programs", icon: Calendar },
   { label: "Archive", href: "/admin/archive", icon: Archive },

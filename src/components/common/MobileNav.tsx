@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { useSettings } from "../../hooks/useData";
 
 interface MobileNavProps {
   open: boolean;
@@ -20,6 +21,9 @@ const NAV_ITEMS = [
 ];
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {
+  const { data: settings } = useSettings();
+  const email = settings?.contact_email || 'goworld33@naver.com';
+  const phone = settings?.contact_phone || '1661-0288';
   // Lock body scroll while open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -130,10 +134,10 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
               </Link>
               <div className="flex items-center justify-between pt-1">
                 <span className="font-sans text-[9px] tracking-widest text-white/50">
-                  goworld33@naver.com
+                  {email}
                 </span>
                 <span className="font-sans text-[9px] tracking-widest text-white/50">
-                  1661-0288
+                  {phone}
                 </span>
               </div>
             </motion.div>

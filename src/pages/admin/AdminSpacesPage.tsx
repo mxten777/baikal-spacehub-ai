@@ -7,6 +7,7 @@ import { Plus, Pencil, Trash2, X, Check, Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import ImageUploadField from '../../components/admin/ImageUploadField'
 
 const spaceSchema = z.object({
   name: z.string().min(1, '공간명을 입력하세요'),
@@ -18,6 +19,7 @@ const spaceSchema = z.object({
   rental_price_per_hour: z.coerce.number().min(0).optional(),
   is_available: z.boolean().default(true),
   sort_order: z.coerce.number().default(0),
+  cover_image_url: z.string().nullable().optional(),
 })
 
 type SpaceFormData = z.infer<typeof spaceSchema>
@@ -41,6 +43,7 @@ const defaultValues: SpaceFormData = {
   rental_price_per_hour: undefined,
   is_available: true,
   sort_order: 0,
+  cover_image_url: null,
 }
 
 function SpaceForm({
@@ -53,7 +56,7 @@ function SpaceForm({
   onSuccess: () => void
 }) {
   const [saving, setSaving] = useState(false)
-  const { register, handleSubmit, formState: { errors } } = useForm<SpaceFormData>({
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<SpaceFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(spaceSchema) as any,
     defaultValues: initialData
@@ -67,9 +70,11 @@ function SpaceForm({
           rental_price_per_hour: initialData.rental_price_per_hour ?? undefined,
           is_available: initialData.is_available,
           sort_order: initialData.sort_order,
+          cover_image_url: initialData.cover_image_url ?? null,
         }
       : defaultValues,
   })
+  const coverImageUrl = watch('cover_image_url')
 
   const onSubmit = async (data: SpaceFormData) => {
     setSaving(true)
@@ -84,6 +89,7 @@ function SpaceForm({
         rental_price_per_hour: data.rental_price_per_hour ?? null,
         is_available: data.is_available ?? true,
         sort_order: data.sort_order ?? 0,
+        cover_image_url: data.cover_image_url ?? null,
       }
       if (initialData) {
         await spacesService.update(initialData.id, payload)
@@ -156,6 +162,12 @@ function SpaceForm({
               </label>
             </div>
           </div>
+          <ImageUploadField
+            label="대표 이미지"
+            value={coverImageUrl}
+            onChange={(url) => setValue('cover_image_url', url)}
+            folder="spaces"
+          />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black">취소</button>
             <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50">

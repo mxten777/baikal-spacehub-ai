@@ -36,8 +36,7 @@ import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 import AdminContentSourcesPage from "./pages/admin/AdminContentSourcesPage";
 import AdminExternalContentPage from "./pages/admin/AdminExternalContentPage";
 import AdminReservationsPage from "./pages/admin/AdminReservationsPage";
-import AdminPhotoCuratorPage from "./pages/admin/AdminPhotoCuratorPage";
-
+import AdminPhotoCuratorPage from "./pages/admin/AdminPhotoCuratorPage";import AdminHeroPage from './pages/admin/AdminHeroPage';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -124,6 +123,7 @@ export default function App() {
                 path="photo-curator"
                 element={<AdminPhotoCuratorPage />}
               />
+              <Route path="hero" element={<AdminHeroPage />} />
             </Route>
 
             {/* 404 fallback */}

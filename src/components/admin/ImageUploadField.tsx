@@ -1,0 +1,141 @@
+import { useState, useRef } from 'react'
+import { Upload, X, Loader2 } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
+
+const BUCKET = 'photos'
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_SIZE_MB = 10
+
+interface ImageUploadFieldProps {
+  label?: string
+  value: string | null | undefined
+  onChange: (url: string | null) => void
+  /** Storage sub-folder, e.g. 'spaces' or 'programs' */
+  folder?: string
+}
+
+export default function ImageUploadField({
+  label = '대표 이미지',
+  value,
+  onChange,
+  folder = 'cms',
+}: ImageUploadFieldProps) {
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [previewError, setPreviewError] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleFile = async (file: File) => {
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setError('JPG, PNG, WebP 형식만 가능합니다.')
+      return
+    }
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      setError(`파일 크기는 ${MAX_SIZE_MB}MB 이하여야 합니다.`)
+      return
+    }
+    setError(null)
+    setUploading(true)
+    try {
+      const { data: authData } = await supabase.auth.getUser()
+      const extMap: Record<string, string> = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+      }
+      const ext = extMap[file.type] ?? 'jpg'
+      const path = `cms/${folder}/${authData.user?.id ?? 'unknown'}/${crypto.randomUUID()}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, { contentType: file.type, upsert: false })
+
+      if (uploadError) throw uploadError
+
+      const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path)
+      onChange(urlData.publicUrl)
+      setPreviewError(false)
+    } catch (e) {
+      console.error('[ImageUploadField] upload error:', e)
+      setError('업로드 중 오류가 발생했습니다.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const hasImage = Boolean(value) && !previewError
+
+  return (
+    <div>
+      <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+        {label}
+      </label>
+
+      {hasImage ? (
+        <div className="relative w-full aspect-video bg-gray-100 mb-1 overflow-hidden">
+          <img
+            src={value!}
+            alt="cover preview"
+            className="w-full h-full object-cover"
+            onError={() => setPreviewError(true)}
+          />
+          <div className="absolute top-2 right-2 flex gap-1">
+            <button
+              type="button"
+              onClick={() => !uploading && inputRef.current?.click()}
+              disabled={uploading}
+              title="이미지 교체"
+              className="w-7 h-7 bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors disabled:opacity-50"
+            >
+              {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => { onChange(null); setPreviewError(false) }}
+              title="이미지 삭제"
+              className="w-7 h-7 bg-black/60 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+            >
+              <X size={12} />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => !uploading && inputRef.current?.click()}
+          onKeyDown={(e) => { if (e.key === 'Enter' && !uploading) inputRef.current?.click() }}
+          className={`w-full h-32 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 transition-colors ${
+            uploading ? 'cursor-wait opacity-60' : 'cursor-pointer hover:border-brand-black'
+          }`}
+        >
+          {uploading ? (
+            <Loader2 size={20} className="animate-spin text-gray-400" />
+          ) : (
+            <>
+              <Upload size={18} className="text-gray-400" />
+              <span className="text-xs font-sans text-gray-400">클릭하여 이미지 업로드</span>
+              <span className="text-[10px] font-sans text-gray-300">
+                JPG · PNG · WebP · 최대 {MAX_SIZE_MB}MB
+              </span>
+            </>
+          )}
+        </div>
+      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) void handleFile(file)
+          e.target.value = ''
+        }}
+      />
+
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    </div>
+  )
+}

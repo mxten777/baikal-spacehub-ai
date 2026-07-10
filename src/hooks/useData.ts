@@ -8,7 +8,8 @@ import { inquiriesService } from '../services/inquiries'
 import { contentSourcesService } from '../services/contentSources'
 import { externalContentsService } from '../services/externalContents'
 import { fetchLogsService } from '../services/fetchLogs'
-import { isSupabaseConfigured } from '../lib/supabase'
+import { heroSlidesService } from '../services/heroSlides'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import type { FilterOptions, InquiryType, ContentPlatform } from '../types'
 import type { ExternalContentFilters } from '../services/externalContents'
 
@@ -178,5 +179,41 @@ export const useFetchLogs = (sourceId?: string, limit = 50) =>
     queryKey: ['fetch-logs', sourceId, limit],
     queryFn: () => fetchLogsService.getRecent(sourceId, limit),
     staleTime: 1 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+// ── Settings ──────────────────────────────────────────────────
+/** Returns a flat key→value map of all settings rows. */
+export const useSettings = () =>
+  useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const { data } = await supabase.from('settings').select('key, value')
+      const map: Record<string, string> = {}
+      for (const row of (data ?? [])) {
+        if (row.key) map[row.key as string] = (row.value as string) ?? ''
+      }
+      return map
+    },
+    staleTime: 10 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+// ── Hero Slides ───────────────────────────────────────────────
+/** Admin: 비활성 포함 전체 조회 */
+export const useHeroSlides = () =>
+  useQuery({
+    queryKey: ['hero-slides'],
+    queryFn: () => heroSlidesService.getAll(),
+    staleTime: 2 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  })
+
+/** Public: 활성 + 게시기간 내 슬라이드만 조회 */
+export const useActiveHeroSlides = () =>
+  useQuery({
+    queryKey: ['hero-slides', 'active'],
+    queryFn: () => heroSlidesService.getActive(),
+    staleTime: 2 * 60 * 1000,
     enabled: isSupabaseConfigured,
   })

@@ -348,12 +348,22 @@ export interface NavItem {
 }
 
 export interface HeroSlide {
-  id: string;
+  id: UUID;
   title: string;
-  subtitle?: string;
-  image: string;
-  video?: string;
-  cta?: { label: string; href: string };
+  subtitle?: string | null;
+  description?: string | null;
+  desktop_image_url?: string | null;
+  mobile_image_url?: string | null;
+  primary_button_text?: string | null;
+  primary_button_link?: string | null;
+  secondary_button_text?: string | null;
+  secondary_button_link?: string | null;
+  display_order: number;
+  is_active: boolean;
+  publish_start_at?: ISODateString | null;
+  publish_end_at?: ISODateString | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
 }
 
 // ============================================================

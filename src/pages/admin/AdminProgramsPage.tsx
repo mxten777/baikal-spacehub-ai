@@ -7,6 +7,7 @@ import { Plus, Pencil, Trash2, X, Check, Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import ImageUploadField from '../../components/admin/ImageUploadField'
 
 const programSchema = z.object({
   title: z.string().min(1, '프로그램명을 입력하세요'),
@@ -21,6 +22,7 @@ const programSchema = z.object({
   capacity: z.coerce.number().min(0).optional(),
   registration_url: z.string().url('유효한 URL을 입력하세요').optional().or(z.literal('')),
   is_featured: z.boolean().default(false),
+  cover_image_url: z.string().nullable().optional(),
 })
 
 type ProgramFormData = z.infer<typeof programSchema>
@@ -60,11 +62,12 @@ const defaultValues: ProgramFormData = {
   capacity: undefined,
   registration_url: '',
   is_featured: false,
+  cover_image_url: null,
 }
 
 function ProgramForm({ initialData, onClose, onSuccess }: { initialData?: Program; onClose: () => void; onSuccess: () => void }) {
   const [saving, setSaving] = useState(false)
-  const { register, handleSubmit, formState: { errors } } = useForm<ProgramFormData>({
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProgramFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(programSchema) as any,
     defaultValues: initialData
@@ -81,14 +84,21 @@ function ProgramForm({ initialData, onClose, onSuccess }: { initialData?: Progra
           capacity: initialData.capacity ?? undefined,
           registration_url: initialData.registration_url ?? '',
           is_featured: initialData.is_featured,
+          cover_image_url: initialData.cover_image_url ?? null,
         }
       : defaultValues,
   })
+  const coverImageUrl = watch('cover_image_url')
 
   const onSubmit = async (data: ProgramFormData) => {
     setSaving(true)
     try {
-      const payload = { ...data, registration_url: data.registration_url || null, end_date: data.end_date || null }
+      const payload = {
+        ...data,
+        registration_url: data.registration_url || null,
+        end_date: data.end_date || null,
+        cover_image_url: data.cover_image_url ?? null,
+      }
       if (initialData) {
         await programsService.update(initialData.id, payload)
       } else {
@@ -180,6 +190,12 @@ function ProgramForm({ initialData, onClose, onSuccess }: { initialData?: Progra
               <span className="text-sm font-sans text-gray-700">메인 노출 (Featured)</span>
             </label>
           </div>
+          <ImageUploadField
+            label="대표 이미지"
+            value={coverImageUrl}
+            onChange={(url) => setValue('cover_image_url', url)}
+            folder="programs"
+          />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black">취소</button>
             <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50">

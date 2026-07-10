@@ -10,22 +10,33 @@ import {
   MessageCircle,
 } from "lucide-react";
 import AnimatedSection from "../components/common/AnimatedSection";
+import { useSettings } from "../hooks/useData";
 
-// ─── Kakao Channel URL ────────────────────────────────────────────────────────
-// TODO: 실제 카카오채널 URL로 교체 (http://pf.kakao.com/_CHANNEL_ID/chat)
-const KAKAO_CHANNEL_URL = "http://pf.kakao.com/_thelit/chat";
-
-const CONTACT = {
+// ─── Fallback constants ──────────────────────────────────────────────────
+const DEFAULTS = {
   phone: "1661-0288",
   email: "goworld33@naver.com",
-  address: "경기도 하남시 미사동 468",
+  address: "경기도 하남시 \ubbf8사동 468",
   hours: "화 — 일  11:00 — 21:00 · 월요일 휴무",
-  map: "https://map.naver.com/v5/search/경기도 하남시 미사동 468",
   instagram: "https://instagram.com/thelit_official",
   blog: "https://blog.naver.com/thelit_culture",
-};
+  kakao: "http://pf.kakao.com/_thelit/chat",
+} as const;
 
 export default function ContactPage() {
+  const { data: settings } = useSettings();
+
+  const phone = settings?.contact_phone || DEFAULTS.phone;
+  const email = settings?.contact_email || DEFAULTS.email;
+  const address = settings?.address || DEFAULTS.address;
+  const businessHours = settings?.business_hours
+    ? `${settings.business_hours}${settings.holiday ? ` · ${settings.holiday}` : ''}`
+    : DEFAULTS.hours;
+  const instagramUrl = settings?.instagram_url || DEFAULTS.instagram;
+  const kakaoUrl = settings?.kakao_channel_url || DEFAULTS.kakao;
+  const mapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(address)}`;
+  const phoneHref = `tel:${phone.replace(/[^0-9]/g, '')}`;
+
   return (
     <>
       <Helmet>
@@ -62,7 +73,7 @@ export default function ContactPage() {
                     가장 빠른 연락 방법
                   </p>
                   <motion.a
-                    href={KAKAO_CHANNEL_URL}
+                    href={kakaoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ y: -2 }}
@@ -123,7 +134,7 @@ export default function ContactPage() {
                   </p>
                   <div className="space-y-0">
                     <a
-                      href={`tel:16610288`}
+                      href={phoneHref}
                       className="flex items-center gap-4 py-4 border-b border-brand-line group hover:border-brand-border transition-colors"
                     >
                       <Phone size={14} className="text-brand-subtle shrink-0" />
@@ -132,12 +143,12 @@ export default function ContactPage() {
                           전화
                         </p>
                         <p className="font-sans text-sm text-brand-black group-hover:text-brand-accent transition-colors">
-                          {CONTACT.phone}
+                          {phone}
                         </p>
                       </div>
                     </a>
                     <a
-                      href={`mailto:${CONTACT.email}`}
+                      href={`mailto:${email}`}
                       className="flex items-center gap-4 py-4 border-b border-brand-line group hover:border-brand-border transition-colors"
                     >
                       <Mail size={14} className="text-brand-subtle shrink-0" />
@@ -146,7 +157,7 @@ export default function ContactPage() {
                           이메일
                         </p>
                         <p className="font-sans text-sm text-brand-black group-hover:text-brand-accent transition-colors">
-                          {CONTACT.email}
+                          {email}
                         </p>
                       </div>
                     </a>
@@ -160,7 +171,7 @@ export default function ContactPage() {
                   </p>
                   <div className="flex gap-3">
                     <a
-                      href={CONTACT.instagram}
+                      href={instagramUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2.5 border border-brand-line hover:border-brand-border text-brand-muted hover:text-brand-black transition-all font-sans text-xs tracking-widest uppercase"
@@ -168,7 +179,7 @@ export default function ContactPage() {
                       Instagram <ArrowUpRight size={11} />
                     </a>
                     <a
-                      href={CONTACT.blog}
+                      href={DEFAULTS.blog}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2.5 border border-brand-line hover:border-brand-border text-brand-muted hover:text-brand-black transition-all font-sans text-xs tracking-widest uppercase"
@@ -193,10 +204,10 @@ export default function ContactPage() {
                         주소
                       </p>
                       <p className="font-sans text-sm text-brand-black">
-                        {CONTACT.address}
+                        {address}
                       </p>
                       <a
-                        href={CONTACT.map}
+                        href={mapUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 font-sans text-[10px] tracking-widest uppercase text-brand-accent hover:text-brand-black transition-colors mt-1"
@@ -215,7 +226,7 @@ export default function ContactPage() {
                         운영 시간
                       </p>
                       <p className="font-sans text-sm text-brand-black">
-                        {CONTACT.hours}
+                        {businessHours}
                       </p>
                       <p className="font-sans text-[10px] text-brand-muted mt-1">
                         대관 행사 중 일반 방문이 제한될 수 있습니다
