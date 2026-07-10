@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X } from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
+import { useSearch } from "../../hooks/useData";
+import type { SearchResults } from "../../hooks/useData";
 
 interface SearchOverlayProps {
   open: boolean;
@@ -19,9 +21,86 @@ const QUICK_LINKS = [
   { cat: "Contact", label: "문의하기", href: "/contact" },
 ];
 
+interface ResultItem {
+  id: string;
+  title: string;
+  sub: string;
+  href: string;
+}
+
+interface CategorySection {
+  key: string;
+  label: string;
+  listHref: string;
+  items: ResultItem[];
+}
+
+function buildSections(results: SearchResults): CategorySection[] {
+  const sections: CategorySection[] = [];
+
+  if (results.spaces.length > 0) {
+    sections.push({
+      key: "spaces",
+      label: "Spaces",
+      listHref: "/spaces",
+      items: results.spaces.map((s) => ({
+        id: s.id,
+        title: s.name,
+        sub: s.description ?? s.short_description ?? "",
+        href: `/spaces/${s.slug}`,
+      })),
+    });
+  }
+
+  if (results.programs.length > 0) {
+    sections.push({
+      key: "programs",
+      label: "Programs",
+      listHref: "/programs",
+      items: results.programs.map((p) => ({
+        id: p.id,
+        title: p.title,
+        sub: p.short_description ?? p.description ?? "",
+        href: `/programs/${p.slug}`,
+      })),
+    });
+  }
+
+  if (results.blog.length > 0) {
+    sections.push({
+      key: "blog",
+      label: "Blog",
+      listHref: "/blog",
+      items: results.blog.map((p) => ({
+        id: p.id,
+        title: p.title,
+        sub: p.excerpt ?? "",
+        href: `/blog/${p.slug}`,
+      })),
+    });
+  }
+
+  if (results.archive.length > 0) {
+    sections.push({
+      key: "archive",
+      label: "Archive",
+      listHref: "/archive",
+      items: results.archive.map((a) => ({
+        id: a.id,
+        title: a.title,
+        sub: a.description ?? "",
+        href: `/archive`,
+      })),
+    });
+  }
+
+  return sections;
+}
+
 export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const { results, isLoading, isActive } = useSearch(query);
 
   // Focus input when overlay opens
   useEffect(() => {
@@ -49,6 +128,11 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  const queryTrimmed = query.trim();
+  const isSearching = queryTrimmed.length >= 2;
+  const sections = isActive ? buildSections(results) : [];
+  const hasResults = sections.length > 0;
 
   return (
     <AnimatePresence>
@@ -115,12 +199,13 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
             {/* Body */}
             <motion.div
-              className="mt-10"
+              className="mt-10 overflow-y-auto max-h-[calc(100vh-280px)] pb-16"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.16, duration: 0.35 }}
             >
-              {query.trim() === "" ? (
+              {!isSearching ? (
+                /* Quick Links */
                 <>
                   <p className="font-sans text-[8.5px] tracking-[0.26em] uppercase text-white/22 mb-6">
                     Quick Links
@@ -142,11 +227,59 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                     ))}
                   </div>
                 </>
-              ) : (
+              ) : isLoading || !isActive ? (
+                /* Loading */
+                <div className="flex items-center gap-3 text-white/30">
+                  <Loader2 size={15} className="animate-spin shrink-0" />
+                  <span className="font-sans text-sm tracking-wide">검색 중...</span>
+                </div>
+              ) : !hasResults ? (
+                /* No results */
                 <p className="font-sans text-sm text-white/30 tracking-wide">
-                  <span className="text-white/60">"{query}"</span>
-                  <span className="ml-2">— 검색 기능 준비 중입니다</span>
+                  <span className="text-white/55">"{queryTrimmed}"</span>
+                  <span className="ml-2">— 검색 결과가 없습니다.</span>
                 </p>
+              ) : (
+                /* Results */
+                <div className="space-y-10">
+                  {sections.map((section) => (
+                    <div key={section.key}>
+                      <div className="flex items-center justify-between mb-4">
+                        <p className="font-sans text-[8.5px] tracking-[0.26em] uppercase text-white/22">
+                          {section.label}
+                        </p>
+                        {section.items.length >= 3 && (
+                          <Link
+                            to={section.listHref}
+                            onClick={onClose}
+                            className="font-sans text-[9px] tracking-[0.15em] uppercase text-white/30 hover:text-white/70 transition-colors"
+                          >
+                            전체 보기 →
+                          </Link>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {section.items.map((item) => (
+                          <Link
+                            key={item.id}
+                            to={item.href}
+                            onClick={onClose}
+                            className="group flex flex-col gap-1 px-4 py-3.5 border border-white/[0.07] hover:border-white/20 hover:bg-white/[0.03] transition-all duration-200"
+                          >
+                            <span className="font-display text-sm font-light text-white/80 group-hover:text-white transition-colors leading-snug line-clamp-1">
+                              {item.title}
+                            </span>
+                            {item.sub && (
+                              <span className="font-sans text-[11px] text-white/30 leading-snug line-clamp-2">
+                                {item.sub}
+                              </span>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </motion.div>
 

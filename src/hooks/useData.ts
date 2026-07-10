@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { spacesService } from '../services/spaces'
 import { programsService } from '../services/programs'
@@ -10,7 +11,7 @@ import { externalContentsService } from '../services/externalContents'
 import { fetchLogsService } from '../services/fetchLogs'
 import { heroSlidesService } from '../services/heroSlides'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
-import type { FilterOptions, InquiryType, ContentPlatform } from '../types'
+import type { FilterOptions, InquiryType, ContentPlatform, Space, Program, BlogPost, ArchiveItem } from '../types'
 import type { ExternalContentFilters } from '../services/externalContents'
 
 // ── Spaces ──────────────────────────────────────────────────
@@ -217,3 +218,80 @@ export const useActiveHeroSlides = () =>
     staleTime: 2 * 60 * 1000,
     enabled: isSupabaseConfigured,
   })
+
+// ── Search ────────────────────────────────────────────────────
+export interface SearchResults {
+  spaces: Space[]
+  programs: Program[]
+  blog: BlogPost[]
+  archive: ArchiveItem[]
+}
+
+export const useSearch = (query: string) => {
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+
+  useEffect(() => {
+    const trimmed = query.trim()
+    const id = setTimeout(() => setDebouncedQuery(trimmed), 300)
+    return () => clearTimeout(id)
+  }, [query])
+
+  const isActive = debouncedQuery.length >= 2
+  const enabled = isSupabaseConfigured && isActive
+
+  const spacesQ = useQuery({
+    queryKey: ['search', 'spaces', debouncedQuery],
+    queryFn: async () => {
+      const all = await spacesService.getAll({ search: debouncedQuery })
+      return all.slice(0, 3)
+    },
+    enabled,
+    staleTime: 30 * 1000,
+  })
+
+  const programsQ = useQuery({
+    queryKey: ['search', 'programs', debouncedQuery],
+    queryFn: () => programsService.getAll({ search: debouncedQuery, limit: 3 }),
+    enabled,
+    staleTime: 30 * 1000,
+  })
+
+  const blogQ = useQuery({
+    queryKey: ['search', 'blog', debouncedQuery],
+    queryFn: async () => {
+      const result = await blogService.getPosts({ search: debouncedQuery, limit: 3 })
+      return result.data
+    },
+    enabled,
+    staleTime: 30 * 1000,
+  })
+
+  const archiveQ = useQuery({
+    queryKey: ['search', 'archive', debouncedQuery],
+    queryFn: () => archiveService.getAll({ search: debouncedQuery, limit: 3 }),
+    enabled,
+    staleTime: 30 * 1000,
+  })
+
+  const isLoading =
+    isActive &&
+    (spacesQ.isFetching || programsQ.isFetching || blogQ.isFetching || archiveQ.isFetching)
+
+  const error: Error | null =
+    (spacesQ.error as Error | null) ??
+    (programsQ.error as Error | null) ??
+    (blogQ.error as Error | null) ??
+    (archiveQ.error as Error | null)
+
+  return {
+    results: {
+      spaces: spacesQ.data ?? [],
+      programs: programsQ.data ?? [],
+      blog: blogQ.data ?? [],
+      archive: archiveQ.data ?? [],
+    } as SearchResults,
+    isLoading,
+    error,
+    isActive,
+  }
+}
