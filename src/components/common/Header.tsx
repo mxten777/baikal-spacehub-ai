@@ -28,7 +28,7 @@ const BG: Record<Phase, string> = {
 const SHADOW: Record<Phase, string> = {
   top: "0 0 0 rgba(0,0,0,0)",
   mid: "0 1px 0 rgba(0,0,0,0.06)",
-  solid: "0 1px 0 rgba(0,0,0,0.08)",
+  solid: "0 1px 0 rgba(0,0,0,0.06)",
 };
 
 export default function Header() {
@@ -145,16 +145,17 @@ export default function Header() {
                       item.hasMega ? activeMega === item.label : undefined
                     }
                     className={({ isActive }) => {
+                      const isOpen = activeMega === item.label;
                       const textColor = lightText
-                        ? isActive
+                        ? isActive || isOpen
                           ? "text-white"
                           : "text-white/65 hover:text-white"
-                        : isActive
+                        : isActive || isOpen
                           ? "text-brand-black"
                           : "text-brand-subtle hover:text-brand-black";
                       const border = isActive
                         ? "border-current"
-                        : "border-transparent hover:border-current";
+                        : "border-transparent";
                       return `block px-[13px] py-2 font-sans text-[10.5px] font-medium tracking-[0.16em] uppercase border-b transition-colors duration-200 ${border} ${textColor}`;
                     }}
                     style={
