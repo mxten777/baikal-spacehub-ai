@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { usePrograms } from '../../hooks/useData'
 import { programsService } from '../../services/programs'
 import type { Program } from '../../types'
@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import ImageUploadField from '../../components/admin/ImageUploadField'
+import { deleteStorageFilesByUrls } from '../../lib/storage'
 
 const programSchema = z.object({
   title: z.string().min(1, '프로그램명을 입력하세요'),
@@ -65,8 +66,24 @@ const defaultValues: ProgramFormData = {
   cover_image_url: null,
 }
 
-function ProgramForm({ initialData, onClose, onSuccess }: { initialData?: Program; onClose: () => void; onSuccess: () => void }) {
+function ProgramForm({ initialData, onClose, onSuccess, onWarning }: { initialData?: Program; onClose: () => void; onSuccess: () => void; onWarning?: (msg: string) => void }) {
   const [saving, setSaving] = useState(false)
+  const originalImageUrl = useRef<string | null>(initialData?.cover_image_url ?? null)
+  const uploadedUrlsRef = useRef<Set<string>>(new Set())
+  const handleUploadComplete = (url: string) => { uploadedUrlsRef.current.add(url) }
+  const handleClose = () => {
+    const toClean = new Set(uploadedUrlsRef.current)
+    uploadedUrlsRef.current.clear()
+    onClose()
+    if (toClean.size > 0) {
+      deleteStorageFilesByUrls(toClean).then((result) => {
+        if (result.failed.length > 0) {
+          result.failed.forEach(({ url, error }) => console.error('[Storage cleanup]', url, error))
+          onWarning?.('화면은 닫혀진만 일부 임시 이미지 파일을 정리하지 못했습니다.')
+        }
+      }).catch(console.error)
+    }
+  }
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProgramFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(programSchema) as any,
@@ -104,7 +121,23 @@ function ProgramForm({ initialData, onClose, onSuccess }: { initialData?: Progra
       } else {
         await programsService.create(payload)
       }
+      const savedUrl = payload.cover_image_url
+      if (savedUrl !== null) uploadedUrlsRef.current.delete(savedUrl)
+      const toClean = new Set(uploadedUrlsRef.current)
+      uploadedUrlsRef.current.clear()
+      const prevUrl = originalImageUrl.current
+      originalImageUrl.current = savedUrl
       onSuccess()
+      const urlsToDelete = new Set(toClean)
+      if (prevUrl !== null && prevUrl !== savedUrl) urlsToDelete.add(prevUrl)
+      if (urlsToDelete.size > 0) {
+        deleteStorageFilesByUrls(urlsToDelete).then((result) => {
+          if (result.failed.length > 0) {
+            result.failed.forEach(({ url, error }) => console.error('[Storage cleanup]', url, error))
+            onWarning?.('내용은 저장되었지만 일부 임시 이미지 파일을 정리하지 못했습니다.')
+          }
+        }).catch(console.error)
+      }
     } finally {
       setSaving(false)
     }
@@ -115,7 +148,7 @@ function ProgramForm({ initialData, onClose, onSuccess }: { initialData?: Progra
       <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="font-display text-lg font-light">{initialData ? '프로그램 편집' : '프로그램 추가'}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-brand-black"><X size={20} /></button>
+          <button onClick={handleClose} className="text-gray-400 hover:text-brand-black"><X size={20} /></button>
         </div>
         <form onSubmit={handleSubmit(onSubmit as any /* eslint-disable-line @typescript-eslint/no-explicit-any */)} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -194,10 +227,11 @@ function ProgramForm({ initialData, onClose, onSuccess }: { initialData?: Progra
             label="대표 이미지"
             value={coverImageUrl}
             onChange={(url) => setValue('cover_image_url', url)}
+            onUploadComplete={handleUploadComplete}
             folder="programs"
           />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black">취소</button>
+            <button type="button" onClick={handleClose} className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black">취소</button>
             <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50">
               {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
               저장
@@ -215,6 +249,7 @@ export default function AdminProgramsPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editingProgram, setEditingProgram] = useState<Program | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [storageWarning, setStorageWarning] = useState<string | null>(null)
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['programs'] })
@@ -235,6 +270,12 @@ export default function AdminProgramsPage() {
 
   return (
     <div>
+      {storageWarning && (
+        <div className="flex items-center justify-between gap-3 mb-4 px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-sans">
+          <span>{storageWarning}</span>
+          <button type="button" onClick={() => setStorageWarning(null)} className="shrink-0 text-amber-600 hover:text-amber-900">✕</button>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display text-2xl font-light text-brand-black">Programs</h1>
@@ -321,6 +362,7 @@ export default function AdminProgramsPage() {
           initialData={editingProgram ?? undefined}
           onClose={() => { setFormOpen(false); setEditingProgram(null) }}
           onSuccess={handleSuccess}
+          onWarning={setStorageWarning}
         />
       )}
     </div>

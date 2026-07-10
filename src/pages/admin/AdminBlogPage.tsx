@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useBlogPosts, useBlogCategories } from '../../hooks/useData'
 import { blogService } from '../../services/blog'
 import type { BlogPost } from '../../types'
@@ -7,6 +7,8 @@ import { Plus, Pencil, Trash2, X, Check, Loader2, Eye } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import ImageUploadField from '../../components/admin/ImageUploadField'
+import { deleteStorageFilesByUrls } from '../../lib/storage'
 
 const postSchema = z.object({
   title: z.string().min(1, '제목을 입력하세요'),
@@ -14,17 +16,34 @@ const postSchema = z.object({
   excerpt: z.string().optional(),
   content: z.string().min(1, '본문을 입력하세요'),
   category_id: z.string().optional(),
-  cover_image_url: z.string().url('유효한 URL을 입력하세요').optional().or(z.literal('')),
+  cover_image_url: z.string().nullable().optional(),
   is_published: z.boolean().default(false),
   is_featured: z.boolean().default(false),
 })
 
 type PostFormData = z.infer<typeof postSchema>
 
-function BlogPostForm({ initialData, onClose, onSuccess }: { initialData?: BlogPost; onClose: () => void; onSuccess: () => void }) {
+function BlogPostForm({ initialData, onClose, onSuccess, onWarning }: { initialData?: BlogPost; onClose: () => void; onSuccess: () => void; onWarning?: (msg: string) => void }) {
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const originalImageUrl = useRef<string | null>(initialData?.cover_image_url ?? null)
+  const uploadedUrlsRef = useRef<Set<string>>(new Set())
+  const handleUploadComplete = (url: string) => { uploadedUrlsRef.current.add(url) }
+  const handleClose = () => {
+    const toClean = new Set(uploadedUrlsRef.current)
+    uploadedUrlsRef.current.clear()
+    onClose()
+    if (toClean.size > 0) {
+      deleteStorageFilesByUrls(toClean).then((result) => {
+        if (result.failed.length > 0) {
+          result.failed.forEach(({ url, error }) => console.error('[Storage cleanup]', url, error))
+          onWarning?.('화면은 닫혀진만 일부 임시 이미지 파일을 정리하지 못했습니다.')
+        }
+      }).catch(console.error)
+    }
+  }
   const { data: categories } = useBlogCategories()
-  const { register, handleSubmit, formState: { errors } } = useForm<PostFormData>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PostFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(postSchema) as any,
     defaultValues: initialData
@@ -34,12 +53,13 @@ function BlogPostForm({ initialData, onClose, onSuccess }: { initialData?: BlogP
           excerpt: initialData.excerpt ?? '',
           content: initialData.content,
           category_id: initialData.category_id ?? '',
-          cover_image_url: initialData.cover_image_url ?? '',
+          cover_image_url: initialData.cover_image_url ?? null,
           is_published: initialData.is_published,
           is_featured: initialData.is_featured,
         }
-      : { title: '', slug: '', excerpt: '', content: '', category_id: '', cover_image_url: '', is_published: false, is_featured: false },
+      : { title: '', slug: '', excerpt: '', content: '', category_id: '', cover_image_url: null, is_published: false, is_featured: false },
   })
+  const coverImageUrl = watch('cover_image_url')
 
   const onSubmit = async (data: PostFormData) => {
     setSaving(true)
@@ -54,7 +74,23 @@ function BlogPostForm({ initialData, onClose, onSuccess }: { initialData?: BlogP
       } else {
         await blogService.create(payload)
       }
+      const savedUrl = payload.cover_image_url
+      if (savedUrl !== null) uploadedUrlsRef.current.delete(savedUrl)
+      const toClean = new Set(uploadedUrlsRef.current)
+      uploadedUrlsRef.current.clear()
+      const prevUrl = originalImageUrl.current
+      originalImageUrl.current = savedUrl
       onSuccess()
+      const urlsToDelete = new Set(toClean)
+      if (prevUrl !== null && prevUrl !== savedUrl) urlsToDelete.add(prevUrl)
+      if (urlsToDelete.size > 0) {
+        deleteStorageFilesByUrls(urlsToDelete).then((result) => {
+          if (result.failed.length > 0) {
+            result.failed.forEach(({ url, error }) => console.error('[Storage cleanup]', url, error))
+            onWarning?.('내용은 저장되었지만 일부 임시 이미지 파일을 정리하지 못했습니다.')
+          }
+        }).catch(console.error)
+      }
     } finally {
       setSaving(false)
     }
@@ -65,7 +101,7 @@ function BlogPostForm({ initialData, onClose, onSuccess }: { initialData?: BlogP
       <div className="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="font-display text-lg font-light">{initialData ? '포스트 편집' : '새 포스트'}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-brand-black"><X size={20} /></button>
+          <button onClick={handleClose} className="text-gray-400 hover:text-brand-black"><X size={20} /></button>
         </div>
         <form onSubmit={handleSubmit(onSubmit as any /* eslint-disable-line @typescript-eslint/no-explicit-any */)} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -90,12 +126,15 @@ function BlogPostForm({ initialData, onClose, onSuccess }: { initialData?: BlogP
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">커버 이미지 URL</label>
-              <input {...register('cover_image_url')} placeholder="https://" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
-              {errors.cover_image_url && <p className="text-red-500 text-xs mt-1">{errors.cover_image_url.message}</p>}
-            </div>
           </div>
+          <ImageUploadField
+            label="커버 이미지"
+            value={coverImageUrl}
+            onChange={(url) => setValue('cover_image_url', url)}
+            onUploadingChange={setUploading}
+            onUploadComplete={handleUploadComplete}
+            folder="blog"
+          />
           <div>
             <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">요약 (Excerpt)</label>
             <textarea {...register('excerpt')} rows={2} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none" />
@@ -116,8 +155,8 @@ function BlogPostForm({ initialData, onClose, onSuccess }: { initialData?: BlogP
             </label>
           </div>
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black">취소</button>
-            <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50">
+            <button type="button" onClick={handleClose} className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black">취소</button>
+            <button type="submit" disabled={saving || uploading} className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50">
               {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
               저장
             </button>
@@ -134,6 +173,7 @@ export default function AdminBlogPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [storageWarning, setStorageWarning] = useState<string | null>(null)
 
   const posts = blogResult?.data ?? []
 
@@ -156,6 +196,12 @@ export default function AdminBlogPage() {
 
   return (
     <div>
+      {storageWarning && (
+        <div className="flex items-center justify-between gap-3 mb-4 px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-sans">
+          <span>{storageWarning}</span>
+          <button type="button" onClick={() => setStorageWarning(null)} className="shrink-0 text-amber-600 hover:text-amber-900">✕</button>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display text-2xl font-light text-brand-black">Blog</h1>
@@ -243,6 +289,7 @@ export default function AdminBlogPage() {
           initialData={editingPost ?? undefined}
           onClose={() => { setFormOpen(false); setEditingPost(null) }}
           onSuccess={handleSuccess}
+          onWarning={setStorageWarning}
         />
       )}
     </div>

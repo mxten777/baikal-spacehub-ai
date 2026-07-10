@@ -12,6 +12,10 @@ interface ImageUploadFieldProps {
   onChange: (url: string | null) => void
   /** Storage sub-folder, e.g. 'spaces' or 'programs' */
   folder?: string
+  /** Called when upload starts (true) or finishes (false) */
+  onUploadingChange?: (uploading: boolean) => void
+  /** Called with the resulting public URL when upload completes successfully */
+  onUploadComplete?: (url: string) => void
 }
 
 export default function ImageUploadField({
@@ -19,6 +23,8 @@ export default function ImageUploadField({
   value,
   onChange,
   folder = 'cms',
+  onUploadingChange,
+  onUploadComplete,
 }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -36,6 +42,7 @@ export default function ImageUploadField({
     }
     setError(null)
     setUploading(true)
+    onUploadingChange?.(true)
     try {
       const { data: authData } = await supabase.auth.getUser()
       const extMap: Record<string, string> = {
@@ -54,12 +61,14 @@ export default function ImageUploadField({
 
       const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path)
       onChange(urlData.publicUrl)
+      onUploadComplete?.(urlData.publicUrl)
       setPreviewError(false)
     } catch (e) {
       console.error('[ImageUploadField] upload error:', e)
       setError('업로드 중 오류가 발생했습니다.')
     } finally {
       setUploading(false)
+      onUploadingChange?.(false)
     }
   }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useHeroSlides } from '../../hooks/useData'
 import { heroSlidesService } from '../../services/heroSlides'
 import type { HeroSlide } from '../../types'
@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import ImageUploadField from '../../components/admin/ImageUploadField'
+import { deleteStorageFilesByUrls } from '../../lib/storage'
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -68,13 +69,32 @@ function SlideForm({
   defaultOrder,
   onClose,
   onSuccess,
+  onWarning,
 }: {
   initialData?: HeroSlide
   defaultOrder: number
   onClose: () => void
   onSuccess: () => void
+  onWarning?: (msg: string) => void
 }) {
   const [saving, setSaving] = useState(false)
+  const originalDesktopUrl = useRef<string | null>(initialData?.desktop_image_url ?? null)
+  const originalMobileUrl = useRef<string | null>(initialData?.mobile_image_url ?? null)
+  const uploadedUrlsRef = useRef<Set<string>>(new Set())
+  const handleUploadComplete = (url: string) => { uploadedUrlsRef.current.add(url) }
+  const handleClose = () => {
+    const toClean = new Set(uploadedUrlsRef.current)
+    uploadedUrlsRef.current.clear()
+    onClose()
+    if (toClean.size > 0) {
+      deleteStorageFilesByUrls(toClean).then((result) => {
+        if (result.failed.length > 0) {
+          result.failed.forEach(({ url, error }) => console.error('[Storage cleanup]', url, error))
+          onWarning?.('화면은 닫혀진만 일부 임시 이미지 파일을 정리하지 못했습니다.')
+        }
+      }).catch(console.error)
+    }
+  }
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } =
     useForm<SlideFormData>({
@@ -140,7 +160,28 @@ function SlideForm({
       } else {
         await heroSlidesService.create(payload)
       }
+      const savedDesktop = payload.desktop_image_url ?? null
+      const savedMobile = payload.mobile_image_url ?? null
+      if (savedDesktop !== null) uploadedUrlsRef.current.delete(savedDesktop)
+      if (savedMobile !== null) uploadedUrlsRef.current.delete(savedMobile)
+      const toClean = new Set(uploadedUrlsRef.current)
+      uploadedUrlsRef.current.clear()
+      const prevDesktop = originalDesktopUrl.current
+      const prevMobile = originalMobileUrl.current
+      originalDesktopUrl.current = savedDesktop
+      originalMobileUrl.current = savedMobile
       onSuccess()
+      const urlsToDelete = new Set(toClean)
+      if (prevDesktop !== null && prevDesktop !== savedDesktop) urlsToDelete.add(prevDesktop)
+      if (prevMobile !== null && prevMobile !== savedMobile) urlsToDelete.add(prevMobile)
+      if (urlsToDelete.size > 0) {
+        deleteStorageFilesByUrls(urlsToDelete).then((result) => {
+          if (result.failed.length > 0) {
+            result.failed.forEach(({ url, error }) => console.error('[Storage cleanup]', url, error))
+            onWarning?.('내용은 저장되었지만 일부 임시 이미지 파일을 정리하지 못했습니다.')
+          }
+        }).catch(console.error)
+      }
     } finally {
       setSaving(false)
     }
@@ -153,7 +194,7 @@ function SlideForm({
           <h2 className="font-display text-lg font-light">
             {initialData ? 'Hero 슬라이드 편집' : 'Hero 슬라이드 추가'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-brand-black">
+          <button onClick={handleClose} className="text-gray-400 hover:text-brand-black">
             <X size={20} />
           </button>
         </div>
@@ -202,12 +243,14 @@ function SlideForm({
               label="데스크톱 이미지"
               value={desktopImageUrl}
               onChange={(url) => setValue('desktop_image_url', url)}
+              onUploadComplete={handleUploadComplete}
               folder="hero/desktop"
             />
             <ImageUploadField
               label="모바일 이미지 (선택)"
               value={mobileImageUrl}
               onChange={(url) => setValue('mobile_image_url', url)}
+              onUploadComplete={handleUploadComplete}
               folder="hero/mobile"
             />
           </div>
@@ -315,7 +358,7 @@ function SlideForm({
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black"
             >
               취소
@@ -344,6 +387,7 @@ export default function AdminHeroPage() {
   const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [reorderingId, setReorderingId] = useState<string | null>(null)
+  const [storageWarning, setStorageWarning] = useState<string | null>(null)
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['hero-slides'] })
@@ -393,6 +437,12 @@ export default function AdminHeroPage() {
 
   return (
     <div>
+      {storageWarning && (
+        <div className="flex items-center justify-between gap-3 mb-4 px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-sans">
+          <span>{storageWarning}</span>
+          <button type="button" onClick={() => setStorageWarning(null)} className="shrink-0 text-amber-600 hover:text-amber-900">✕</button>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display text-2xl font-light text-brand-black">Hero 슬라이드</h1>
@@ -539,6 +589,7 @@ export default function AdminHeroPage() {
           defaultOrder={nextOrder}
           onClose={() => { setFormOpen(false); setEditingSlide(null) }}
           onSuccess={handleSuccess}
+          onWarning={setStorageWarning}
         />
       )}
     </div>
