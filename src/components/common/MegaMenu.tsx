@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { useSpaces } from "../../hooks/useData";
 
 interface MegaMenuProps {
   activeItem: string | null;
@@ -136,11 +137,34 @@ function CtaLink({ href, label }: { href: string; label: string }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
+// Category image fallbacks (same as SpacesPreviewSection)
+const SPACE_IMAGES_FALLBACK: Record<string, string> = {
+  cafe: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=480&q=75',
+  garden: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=480&q=75',
+  studio: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=480&q=75',
+  storage: 'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=480&q=75',
+  hall: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=480&q=75',
+  other: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=480&q=75',
+}
+
 export default function MegaMenu({
   activeItem,
   onMegaEnter,
   onMegaLeave,
 }: MegaMenuProps) {
+  const { data: spacesData } = useSpaces()
+
+  // DB 데이터를 메뉴 카드 형식으로 변환, 없으면 정적 SPACES 사용
+  const menuSpaces = (spacesData && spacesData.length > 0)
+    ? spacesData.slice(0, 4).map((s) => ({
+        label: s.name_en || s.name,
+        ko: s.name,
+        desc: s.description?.slice(0, 30) ?? '',
+        cap: s.capacity ? `${s.capacity}명` : '',
+        href: `/spaces/${s.slug}`,
+        img: s.cover_image_url || SPACE_IMAGES_FALLBACK[s.category] || SPACE_IMAGES_FALLBACK.other,
+      }))
+    : SPACES
   return (
     <AnimatePresence>
       {activeItem && (
@@ -175,7 +199,7 @@ export default function MegaMenu({
                   animate="show"
                   className="grid grid-cols-5 gap-6 lg:gap-8"
                 >
-                  {SPACES.map((s) => (
+                  {menuSpaces.map((s) => (
                     <motion.div key={s.label} variants={child}>
                       <Link to={s.href} className="group block">
                         <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3">

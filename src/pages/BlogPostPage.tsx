@@ -6,6 +6,8 @@ import { ko } from 'date-fns/locale'
 import { useBlogPost } from '../hooks/useData'
 import AnimatedSection from '../components/common/AnimatedSection'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FALLBACK: Record<string, any> = {
@@ -101,16 +103,54 @@ export default function BlogPostPage() {
               )}
             </div>
 
-            <div className="prose prose-neutral max-w-none font-sans text-brand-muted leading-relaxed">
-              {displayPost.content?.split('\n\n').map((para: string, i: number) => {
-                if (para.startsWith('## ')) {
-                  return <h2 key={i} className="font-display text-xl font-light text-brand-black mt-8 mb-3">{para.replace('## ', '')}</h2>
-                }
-                if (para.startsWith('# ')) {
-                  return <h3 key={i} className="font-display text-2xl font-light text-brand-black mt-10 mb-4">{para.replace('# ', '')}</h3>
-                }
-                return <p key={i} className="mb-4 text-brand-muted leading-relaxed">{para}</p>
-              })}
+            <div className="max-w-none">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h1: ({children}) => <h1 className="font-display text-2xl font-light text-brand-black mt-10 mb-4 leading-tight">{children}</h1>,
+                  h2: ({children}) => <h2 className="font-display text-xl font-light text-brand-black mt-8 mb-3 leading-tight">{children}</h2>,
+                  h3: ({children}) => <h3 className="font-display text-lg font-light text-brand-black mt-6 mb-2">{children}</h3>,
+                  p: ({children}) => <p className="font-sans text-[15px] text-brand-muted leading-relaxed mb-5">{children}</p>,
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  a: ({href, children}: any) => (
+                    <a
+                      href={href ?? '#'}
+                      className="text-brand-accent underline underline-offset-2 hover:opacity-70 transition-opacity"
+                      {...(href?.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    >{children}</a>
+                  ),
+                  ul: ({children}) => <ul className="list-disc pl-6 mb-5 space-y-1.5 font-sans text-[15px] text-brand-muted">{children}</ul>,
+                  ol: ({children}) => <ol className="list-decimal pl-6 mb-5 space-y-1.5 font-sans text-[15px] text-brand-muted">{children}</ol>,
+                  li: ({children}) => <li className="leading-relaxed">{children}</li>,
+                  blockquote: ({children}) => (
+                    <blockquote className="border-l-[3px] border-brand-accent pl-5 my-6 text-brand-muted italic">{children}</blockquote>
+                  ),
+                  pre: ({children}) => (
+                    <pre className="bg-brand-cream p-4 rounded overflow-x-auto mb-5 text-sm font-mono leading-relaxed">{children}</pre>
+                  ),
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  code: ({children, className}: any) => {
+                    const isBlock = !!className
+                    if (isBlock) return <code className={`${className} font-mono text-sm`}>{children}</code>
+                    return <code className="bg-brand-cream px-1.5 py-0.5 text-sm font-mono rounded text-brand-black">{children}</code>
+                  },
+                  strong: ({children}) => <strong className="font-semibold text-brand-black">{children}</strong>,
+                  em: ({children}) => <em className="italic">{children}</em>,
+                  img: ({src, alt}) => src ? (
+                    <img src={src} alt={alt ?? ''} className="w-full my-6 object-cover" loading="lazy" />
+                  ) : null,
+                  hr: () => <hr className="border-brand-border my-8" />,
+                  table: ({children}) => (
+                    <div className="overflow-x-auto mb-5">
+                      <table className="w-full text-sm font-sans border-collapse">{children}</table>
+                    </div>
+                  ),
+                  th: ({children}) => <th className="text-left border-b border-brand-border pb-2 pr-4 font-semibold text-brand-black">{children}</th>,
+                  td: ({children}) => <td className="border-b border-brand-line py-2 pr-4 text-brand-muted">{children}</td>,
+                }}
+              >
+                {displayPost.content ?? ''}
+              </ReactMarkdown>
             </div>
 
             {/* Tags */}

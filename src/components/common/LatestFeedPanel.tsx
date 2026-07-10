@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowUpRight } from "lucide-react";
+import { format } from "date-fns";
+import { useUpcomingPrograms, useBlogPosts, useFeaturedMedia } from "../../hooks/useData";
 
 interface LatestFeedPanelProps {
   open: boolean;
@@ -60,7 +62,14 @@ const FEED = [
   },
 ];
 
-type FeedItem = (typeof FEED)[number];
+type FeedItem = {
+  type: string;
+  label: string;
+  date: string;
+  href: string;
+  isNew: boolean;
+  external: boolean;
+}
 
 function FeedRow({ item, onClose }: { item: FeedItem; onClose: () => void }) {
   const inner = (
@@ -112,6 +121,68 @@ export default function LatestFeedPanel({
   open,
   onClose,
 }: LatestFeedPanelProps) {
+  const { data: programs } = useUpcomingPrograms(3);
+  const { data: blogResult } = useBlogPosts({ limit: 3 });
+  const { data: mediaItems } = useFeaturedMedia(3);
+
+  const sevenDaysAgo = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 7);
+    return d;
+  }, []);
+
+  const liveFeed = useMemo((): FeedItem[] => {
+    const items: FeedItem[] = [];
+    const blogPosts = blogResult?.data ?? [];
+
+    // Programs (최대 2)
+    for (const p of (programs ?? []).slice(0, 2)) {
+      const dateStr = p.start_date
+        ? format(new Date(p.start_date), 'yyyy.MM.dd')
+        : '';
+      items.push({
+        type: 'Program',
+        label: p.title,
+        date: dateStr,
+        href: `/programs/${p.slug}`,
+        isNew: new Date(p.created_at) > sevenDaysAgo,
+        external: false,
+      });
+    }
+
+    // Blog (최대 2)
+    for (const post of blogPosts.slice(0, 2)) {
+      const pubDate = post.published_at ?? post.created_at;
+      items.push({
+        type: 'Blog',
+        label: post.title,
+        date: pubDate ? format(new Date(pubDate), 'yyyy.MM.dd') : '',
+        href: `/blog/${post.slug}`,
+        isNew: pubDate ? new Date(pubDate) > sevenDaysAgo : false,
+        external: false,
+      });
+    }
+
+    // Media (최대 2)
+    for (const m of (mediaItems ?? []).slice(0, 2)) {
+      const typeLabel =
+        m.platform === 'youtube' ? 'YouTube' :
+        m.platform === 'instagram' ? 'Instagram' : 'X';
+      items.push({
+        type: typeLabel,
+        label: m.title ?? `${typeLabel} 콘텐츠`,
+        date: m.published_at ? format(new Date(m.published_at), 'yyyy.MM.dd') : '',
+        href: m.url,
+        isNew: m.published_at ? new Date(m.published_at) > sevenDaysAgo : false,
+        external: true,
+      });
+    }
+
+    return items;
+  }, [programs, blogResult, mediaItems, sevenDaysAgo]);
+
+  // DB 데이터 있으면 사용, 없으면 FEED 정적 데이터 사용
+  const displayFeed = liveFeed.length > 0 ? liveFeed.slice(0, 6) : FEED;
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -167,7 +238,7 @@ export default function LatestFeedPanel({
             {/* Feed */}
             <div className="flex-1 overflow-y-auto">
               <div className="px-8 py-2">
-                {FEED.map((item, i) => (
+                {displayFeed.map((item, i) => (
                   <motion.div
                     key={item.label}
                     initial={{ opacity: 0, x: 16 }}
