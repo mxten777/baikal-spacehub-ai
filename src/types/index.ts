@@ -356,6 +356,111 @@ export interface HeroSlide {
   cta?: { label: string; href: string };
 }
 
+// ============================================================
+// PHOTO CURATOR (Sprint 3 + 4)
+// ============================================================
+
+export type PhotoUploadStatus = "completed" | "delete_pending" | "error";
+
+// Sprint 4: separate from the Space SpaceCategory (cafe/garden/studio/storage/hall/other)
+export type PhotoSpaceCategory =
+  | "cafe" | "garden" | "studio" | "exterior" | "program"
+  | "event" | "exhibition" | "performance" | "food" | "people"
+  | "other" | "unclassified";
+
+export type PhotoType =
+  | "hero" | "representative" | "interior" | "exterior" | "detail"
+  | "people" | "event" | "promotional" | "archive" | "general";
+
+export type PhotoSortOption = "newest" | "oldest" | "name_asc" | "name_desc";
+
+/** Row returned from the public.photos table */
+export interface PhotoRecord {
+  id: UUID;
+  original_name: string;
+  storage_path: string;
+  public_url: string | null;
+  mime_type: string;
+  file_size: number;
+  width: number | null;
+  height: number | null;
+  upload_status: PhotoUploadStatus;
+  // Sprint 4 management columns
+  space_category: PhotoSpaceCategory;
+  photo_type: PhotoType;
+  tags: string[];
+  is_featured: boolean;
+  is_favorite: boolean;
+  admin_memo: string | null;
+  uploaded_by: string;
+  // Sprint 5-A: AI analysis columns
+  ai_analysis_status: AiAnalysisStatus;
+  ai_quality_score: number | null;
+  ai_space_category: PhotoSpaceCategory | null;
+  ai_photo_type: PhotoType | null;
+  ai_tags: string[];
+  ai_description: string | null;
+  ai_featured_score: number | null;
+  ai_analyzed_at: ISODateString | null;
+  ai_error_message: string | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+export type UpdatePhotoRecordInput = Partial<
+  Pick<
+    PhotoRecord,
+    | "space_category"
+    | "photo_type"
+    | "tags"
+    | "is_featured"
+    | "is_favorite"
+    | "admin_memo"
+  >
+>;
+
+// Sprint 5-A: AI analysis types
+export type AiAnalysisStatus =
+  | "not_requested"
+  | "processing"
+  | "completed"
+  | "error";
+
+/** Shape of data returned by an AI analysis operation (Sprint 5-B+) */
+export interface PhotoAnalysisResult {
+  qualityScore: number;
+  spaceCategory: PhotoSpaceCategory;
+  photoType: PhotoType;
+  tags: string[];
+  description: string;
+  featuredScore: number;
+}
+
+/** Patch type for writing AI results back to the photos table */
+export interface PhotoAnalysisUpdateInput {
+  ai_analysis_status: AiAnalysisStatus;
+  ai_quality_score?: number | null;
+  ai_space_category?: PhotoSpaceCategory | null;
+  ai_photo_type?: PhotoType | null;
+  ai_tags?: string[];
+  ai_description?: string | null;
+  ai_featured_score?: number | null;
+  ai_analyzed_at?: string | null;
+  ai_error_message?: string | null;
+}
+
+/** Input for inserting a new photo record */
+export interface CreatePhotoRecordInput {
+  original_name: string;
+  storage_path: string;
+  public_url: string | null;
+  mime_type: string;
+  file_size: number;
+  width: number | null;
+  height: number | null;
+  uploaded_by: string;
+}
+
 export interface SeoMeta {
   title: string;
   description: string;

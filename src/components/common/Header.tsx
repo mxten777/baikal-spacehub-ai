@@ -157,7 +157,11 @@ export default function Header() {
                         : "border-transparent hover:border-current";
                       return `block px-[13px] py-2 font-sans text-[10.5px] font-medium tracking-[0.16em] uppercase border-b transition-colors duration-200 ${border} ${textColor}`;
                     }}
-                    style={lightText ? { textShadow: "0 1px 6px rgba(0,0,0,0.55)" } : undefined}
+                    style={
+                      lightText
+                        ? { textShadow: "0 1px 6px rgba(0,0,0,0.55)" }
+                        : undefined
+                    }
                   >
                     {item.label}
                   </NavLink>

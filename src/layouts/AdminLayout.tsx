@@ -2,6 +2,7 @@ import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Image,
+  Images,
   Calendar,
   Archive,
   FileText,
@@ -31,6 +32,7 @@ const adminNav = [
   { label: "콘텐츠 소스", href: "/admin/content-sources", icon: Rss },
   { label: "외부 콘텐츠", href: "/admin/external-content", icon: Globe2 },
   { label: "예약 관리", href: "/admin/reservations", icon: CalendarCheck },
+  { label: "AI 사진 큐레이터", href: "/admin/photo-curator", icon: Images },
   { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
