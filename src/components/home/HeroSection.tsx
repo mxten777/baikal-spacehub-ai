@@ -122,7 +122,7 @@ export default function HeroSection() {
             </p>
             <h1
               className="font-display font-light text-white whitespace-pre-line mb-7"
-              style={{ fontSize: 'clamp(3rem, 7vw, 7rem)', letterSpacing: '-0.03em', lineHeight: '1.02' }}
+              style={{ fontSize: 'clamp(2rem, 4.5vw, 4.5rem)', letterSpacing: '-0.03em', lineHeight: '1.08' }}
             >
               {slide.title}
             </h1>

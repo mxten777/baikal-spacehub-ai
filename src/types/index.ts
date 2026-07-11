@@ -595,3 +595,41 @@ export interface NormalizedContent {
   platform: ContentPlatform;
   metadata_json?: Record<string, unknown>;
 }
+
+// ============================================================
+// ABOUT PAGE CMS
+// ============================================================
+export interface AboutTimelineItem {
+  year: string;
+  title: string;
+  desc: string;
+}
+
+export interface AboutValueItem {
+  icon: string;
+  title: string;
+  desc: string;
+}
+
+export interface AboutContent {
+  id: UUID;
+  hero_image_url: string;
+  hero_eyebrow: string;
+  hero_title_line1: string;
+  hero_title_line2: string;
+  mission_quote: string;
+  mission_description: string;
+  story_eyebrow: string;
+  story_title_line1: string;
+  story_title_line2: string;
+  story_paragraph_1: string;
+  story_paragraph_2: string;
+  story_paragraph_3: string;
+  timeline: AboutTimelineItem[];
+  values_eyebrow: string;
+  values_title: string;
+  brand_values: AboutValueItem[];
+  cta_title: string;
+  cta_description: string;
+  updated_at: ISODateString;
+}

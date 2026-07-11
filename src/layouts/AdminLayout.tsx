@@ -26,6 +26,7 @@ import type { User } from "@supabase/supabase-js";
 const adminNav = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
   { label: "Hero 슬라이드", href: "/admin/hero", icon: MonitorPlay },
+  { label: "About 페이지", href: "/admin/about", icon: UserCircle2 },
   { label: "Spaces", href: "/admin/spaces", icon: Image },
   { label: "Programs", href: "/admin/programs", icon: Calendar },
   { label: "Archive", href: "/admin/archive", icon: Archive },
