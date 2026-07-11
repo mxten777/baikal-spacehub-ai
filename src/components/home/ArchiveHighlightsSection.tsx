@@ -81,7 +81,7 @@ export default function ArchiveHighlightsSection() {
                 }`}
               >
                 <img
-                  src={item.cover_image_url ?? ''}
+                  src={item.cover_image_url ?? ""}
                   alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"

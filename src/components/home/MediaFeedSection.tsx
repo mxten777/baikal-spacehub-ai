@@ -1,19 +1,25 @@
-import { Link } from 'react-router-dom'
-import { ArrowRight, Play } from 'lucide-react'
-import { useFeaturedExternalContents, useFeaturedMedia } from '../../hooks/useData'
-import AnimatedSection from '../common/AnimatedSection'
-import SectionHeader from '../common/SectionHeader'
+import { Link } from "react-router-dom";
+import { ArrowRight, Play } from "lucide-react";
+import {
+  useFeaturedExternalContents,
+  useFeaturedMedia,
+} from "../../hooks/useData";
+import AnimatedSection from "../common/AnimatedSection";
+import SectionHeader from "../common/SectionHeader";
 
 const PLATFORM_BADGE: Record<string, { label: string; color: string }> = {
-  youtube: { label: 'YouTube', color: 'bg-red-600' },
-  instagram: { label: 'Instagram', color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-  x: { label: 'X', color: 'bg-black' },
-  rss: { label: 'Blog', color: 'bg-orange-500' },
-}
+  youtube: { label: "YouTube", color: "bg-red-600" },
+  instagram: {
+    label: "Instagram",
+    color: "bg-gradient-to-r from-purple-500 to-pink-500",
+  },
+  x: { label: "X", color: "bg-black" },
+  rss: { label: "Blog", color: "bg-orange-500" },
+};
 
 export default function MediaFeedSection() {
-  const { data: featured } = useFeaturedExternalContents(6)
-  const { data: legacyMedia } = useFeaturedMedia(6)
+  const { data: featured } = useFeaturedExternalContents(6);
+  const { data: legacyMedia } = useFeaturedMedia(6);
 
   // external_contents의 featured 항목 우선, 없으면 legacy media_items
   const items =
@@ -31,9 +37,9 @@ export default function MediaFeedSection() {
           title: m.title,
           thumbnail_url: m.thumbnail_url,
           url: m.url,
-        }))
+        }));
 
-  if (items.length === 0) return null
+  if (items.length === 0) return null;
 
   return (
     <section className="section-padding bg-brand-white">
@@ -44,18 +50,26 @@ export default function MediaFeedSection() {
             title="더릿의 이야기"
             subtitle="YouTube, Instagram, X에서 더릿의 다양한 콘텐츠를 만나보세요"
           />
-          <Link to="/media" className="btn-ghost text-brand-black shrink-0 self-end mb-1">
+          <Link
+            to="/media"
+            className="btn-ghost text-brand-black shrink-0 self-end mb-1"
+          >
             All Media <ArrowRight size={16} />
           </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {items.slice(0, 3).map((item, i) => {
-            const badge = PLATFORM_BADGE[item.platform] ?? PLATFORM_BADGE.youtube
-            const isVideo = item.platform === 'youtube'
+            const badge =
+              PLATFORM_BADGE[item.platform] ?? PLATFORM_BADGE.youtube;
+            const isVideo = item.platform === "youtube";
 
             return (
-              <AnimatedSection key={item.id} animation="fade-up" delay={i * 100}>
+              <AnimatedSection
+                key={item.id}
+                animation="fade-up"
+                delay={i * 100}
+              >
                 <a
                   href={item.url}
                   target="_blank"
@@ -79,7 +93,9 @@ export default function MediaFeedSection() {
                   )}
 
                   <div className="absolute top-3 left-3">
-                    <span className={`font-sans text-[9px] font-medium tracking-widest uppercase text-white px-2 py-1 ${badge.color}`}>
+                    <span
+                      className={`font-sans text-[9px] font-medium tracking-widest uppercase text-white px-2 py-1 ${badge.color}`}
+                    >
                       {badge.label}
                     </span>
                   </div>
@@ -91,10 +107,10 @@ export default function MediaFeedSection() {
                   </div>
                 </a>
               </AnimatedSection>
-            )
+            );
           })}
         </div>
       </div>
     </section>
-  )
+  );
 }

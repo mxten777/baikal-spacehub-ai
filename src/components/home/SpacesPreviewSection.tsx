@@ -1,27 +1,66 @@
-import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
-import { useSpaces } from '../../hooks/useData'
-import AnimatedSection from '../common/AnimatedSection'
-import SectionHeader from '../common/SectionHeader'
-import LoadingSpinner from '../common/LoadingSpinner'
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { useSpaces } from "../../hooks/useData";
+import AnimatedSection from "../common/AnimatedSection";
+import SectionHeader from "../common/SectionHeader";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const SPACE_IMAGES: Record<string, string> = {
-  cafe: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80',
-  garden: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80',
-  studio: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80',
-  storage: 'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&q=80',
-}
+  cafe: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80",
+  garden:
+    "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80",
+  studio:
+    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80",
+  storage:
+    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&q=80",
+};
 
 const FALLBACK_SPACES = [
-  { id: '1', slug: 'cafe', name: '카페', name_en: 'Cafe', category: 'cafe', short_description: '따뜻한 분위기의 문화 카페 공간', capacity: 50 },
-  { id: '2', slug: 'garden', name: '가든', name_en: 'Garden', category: 'garden', short_description: '자연과 어우러진 야외 정원 공간', capacity: 80 },
-  { id: '3', slug: 'studio', name: '스튜디오', name_en: 'Studio', category: 'studio', short_description: '전문 촬영 및 공연을 위한 스튜디오', capacity: 30 },
-  { id: '4', slug: 'storage', name: '스토리지', name_en: 'Storage', category: 'storage', short_description: '다목적 전시 및 행사 공간', capacity: 100 },
-]
+  {
+    id: "1",
+    slug: "cafe",
+    name: "카페",
+    name_en: "Cafe",
+    category: "cafe",
+    short_description: "따뜻한 분위기의 문화 카페 공간",
+    capacity: 50,
+  },
+  {
+    id: "2",
+    slug: "garden",
+    name: "가든",
+    name_en: "Garden",
+    category: "garden",
+    short_description: "자연과 어우러진 야외 정원 공간",
+    capacity: 80,
+  },
+  {
+    id: "3",
+    slug: "studio",
+    name: "스튜디오",
+    name_en: "Studio",
+    category: "studio",
+    short_description: "전문 촬영 및 공연을 위한 스튜디오",
+    capacity: 30,
+  },
+  {
+    id: "4",
+    slug: "storage",
+    name: "스토리지",
+    name_en: "Storage",
+    category: "storage",
+    short_description: "다목적 전시 및 행사 공간",
+    capacity: 100,
+  },
+];
 
 export default function SpacesPreviewSection() {
-  const { data: spaces, isLoading } = useSpaces()
-  const displaySpaces = (spaces && spaces.length > 0 ? spaces : (FALLBACK_SPACES as unknown as NonNullable<typeof spaces>)).slice(0, 4)
+  const { data: spaces, isLoading } = useSpaces();
+  const displaySpaces = (
+    spaces && spaces.length > 0
+      ? spaces
+      : (FALLBACK_SPACES as unknown as NonNullable<typeof spaces>)
+  ).slice(0, 4);
 
   return (
     <section className="section-padding bg-brand-white">
@@ -32,7 +71,10 @@ export default function SpacesPreviewSection() {
             title="공간을 경험하다"
             subtitle="카페, 가든, 스튜디오, 스토리지 — 각각의 공간은 독자적인 분위기와 기능을 갖춘 프리미엄 문화 공간입니다."
           />
-          <Link to="/spaces" className="btn-ghost text-brand-black shrink-0 self-end mb-1">
+          <Link
+            to="/spaces"
+            className="btn-ghost text-brand-black shrink-0 self-end mb-1"
+          >
             View All <ArrowRight size={14} />
           </Link>
         </div>
@@ -42,14 +84,22 @@ export default function SpacesPreviewSection() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
             {displaySpaces.map((space, i) => (
-              <AnimatedSection key={space.id} animation="fade-up" delay={i * 80}>
+              <AnimatedSection
+                key={space.id}
+                animation="fade-up"
+                delay={i * 80}
+              >
                 <Link
                   to={`/spaces/${space.slug}`}
                   className="group block overflow-hidden bg-brand-cream"
                 >
                   <div className="relative overflow-hidden aspect-[3/4]">
                     <img
-                      src={space.cover_image_url || SPACE_IMAGES[space.category] || SPACE_IMAGES.studio}
+                      src={
+                        space.cover_image_url ||
+                        SPACE_IMAGES[space.category] ||
+                        SPACE_IMAGES.studio
+                      }
                       alt={space.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
@@ -61,7 +111,10 @@ export default function SpacesPreviewSection() {
                       <p className="font-sans text-[9px] tracking-[0.22em] uppercase text-white/50 mb-1.5">
                         {space.name_en}
                       </p>
-                      <h3 className="font-display text-[1.35rem] font-light text-white" style={{ letterSpacing: '-0.01em' }}>
+                      <h3
+                        className="font-display text-[1.35rem] font-light text-white"
+                        style={{ letterSpacing: "-0.01em" }}
+                      >
                         {space.name}
                       </h3>
                     </div>
@@ -81,5 +134,5 @@ export default function SpacesPreviewSection() {
         )}
       </div>
     </section>
-  )
+  );
 }
