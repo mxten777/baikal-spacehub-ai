@@ -1,7 +1,7 @@
 -- ============================================================
--- The Lit — Migration 007: photos AI analysis columns (Sprint 5-A)
+-- The Lit ??Migration 007: photos AI analysis columns (Sprint 5-A)
 -- Adds scaffold columns for future AI analysis integration.
--- No AI API is connected yet — status defaults to not_requested.
+-- No AI API is connected yet ??status defaults to not_requested.
 -- Run via: Supabase Dashboard > SQL Editor
 -- ============================================================
 
@@ -30,6 +30,6 @@ ALTER TABLE public.photos
   ADD COLUMN IF NOT EXISTS ai_analyzed_at     TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS ai_error_message   TEXT;
 
--- ── RLS unchanged ─────────────────────────────────────────────────────────────
+-- ?? RLS unchanged ?????????????????????????????????????????????????????????????
 -- Existing admin select/insert/update/delete policies from 005 already
--- cover the new AI columns — no new policies needed.
+-- cover the new AI columns ??no new policies needed.
