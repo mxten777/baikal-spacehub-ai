@@ -9,8 +9,8 @@ const FALLBACK_ARCHIVE = [
     id: "1",
     slug: "winter-exhibition-2025",
     title: "겨울 빛 — 설치 전시",
-    held_date: "2025-12-01",
-    cover_image:
+    date: "2025-12-01",
+    cover_image_url:
       "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80",
     category: "exhibition",
   },
@@ -18,8 +18,8 @@ const FALLBACK_ARCHIVE = [
     id: "2",
     slug: "autumn-concert-2025",
     title: "가을 콘서트 2025",
-    held_date: "2025-10-15",
-    cover_image:
+    date: "2025-10-15",
+    cover_image_url:
       "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80",
     category: "performance",
   },
@@ -27,8 +27,8 @@ const FALLBACK_ARCHIVE = [
     id: "3",
     slug: "brand-event-samsung",
     title: "삼성 브랜드 런칭",
-    held_date: "2025-09-20",
-    cover_image:
+    date: "2025-09-20",
+    cover_image_url:
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
     category: "event",
   },
@@ -36,8 +36,8 @@ const FALLBACK_ARCHIVE = [
     id: "4",
     slug: "photo-workshop-2025",
     title: "필름 사진 워크숍",
-    held_date: "2025-08-10",
-    cover_image:
+    date: "2025-08-10",
+    cover_image_url:
       "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=80",
     category: "workshop",
   },
@@ -81,7 +81,7 @@ export default function ArchiveHighlightsSection() {
                 }`}
               >
                 <img
-                  src={item.cover_image}
+                  src={item.cover_image_url ?? ''}
                   alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
@@ -98,7 +98,7 @@ export default function ArchiveHighlightsSection() {
                     {item.title}
                   </h3>
                   <p className="font-sans text-[10px] tracking-[0.1em] text-white/50 mt-1.5">
-                    {item.held_date?.substring(0, 7)}
+                    {item.date?.substring(0, 7)}
                   </p>
                 </div>
               </Link>

@@ -161,7 +161,7 @@ export default function SpaceDetailPage() {
     );
 
   const images =
-    displaySpace.gallery ||
+    displaySpace.images ||
     SPACE_IMAGES[displaySpace.category] ||
     Object.values(SPACE_IMAGES)[0];
 
@@ -178,7 +178,7 @@ export default function SpaceDetailPage() {
       {/* Hero image */}
       <div className="relative h-[70vh] min-h-[500px]">
         <img
-          src={images[0] || displaySpace.cover_image}
+          src={images[0] || displaySpace.cover_image_url}
           alt={displaySpace.name}
           className="w-full h-full object-cover"
         />

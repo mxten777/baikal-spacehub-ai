@@ -12,7 +12,7 @@ const FALLBACK: Record<string, any> = {
   'exhibition-spring-2026': {
     id: '1', slug: 'exhibition-spring-2026', title: '봄 기억 — 사진전', title_en: 'Spring Memory — Photography',
     category: 'exhibition', status: 'upcoming', start_date: '2026-03-15', end_date: '2026-04-15',
-    location: '스토리지', organizer: 'The Lit Curation Team',
+    venue: '스토리지', organizer: 'The Lit Curation Team',
     description: `봄의 기억은 언제나 특별합니다. 
 
 이번 전시 『봄 기억』은 일상 속 봄의 순간—벚꽃 아래 스쳐 지나가는 사람들, 창문으로 들어오는 따스한 빛, 공원에서 웃음 짓는 아이들—을 섬세하게 포착한 사진 작품들로 구성됩니다.
@@ -20,8 +20,8 @@ const FALLBACK: Record<string, any> = {
 참여 작가 7인이 각자의 시선으로 바라본 봄의 이야기가 더릿 스토리지 공간을 가득 채울 예정입니다. 사진 한 장 한 장에 담긴 봄의 온기를 느껴보세요.
 
 관람은 무료이며, 오프닝 리셉션은 3월 15일 오후 6시에 진행됩니다.`,
-    poster_image: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=1200&q=80',
-    is_free: false, price: 8000, max_participants: null, reservation_link: 'https://thelit.kr/reservation',
+    cover_image_url: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=1200&q=80',
+    is_free: false, price: 8000, capacity: null, registration_url: 'https://thelit.kr/reservation',
     tags: ['사진', '봄', '전시', '그룹전'],
   },
 }
@@ -48,7 +48,7 @@ export default function ProgramDetailPage() {
       <Helmet>
         <title>{displayProgram.title} — The Lit</title>
         <meta name="description" content={displayProgram.description?.substring(0, 160)} />
-        <meta property="og:image" content={displayProgram.poster_image} />
+        <meta property="og:image" content={displayProgram.cover_image_url} />
       </Helmet>
 
       {/* Hero */}
@@ -62,7 +62,7 @@ export default function ProgramDetailPage() {
             {/* Poster */}
             <AnimatedSection animation="fade-up">
               <img
-                src={displayProgram.poster_image}
+                src={displayProgram.cover_image_url}
                 alt={displayProgram.title}
                 className="w-full aspect-[3/4] object-cover max-h-[600px]"
               />
@@ -88,12 +88,12 @@ export default function ProgramDetailPage() {
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <MapPin size={15} className="text-brand-accent shrink-0" />
-                    <span className="text-brand-muted">더릿 {displayProgram.location}</span>
+                    <span className="text-brand-muted">더릿 {displayProgram.venue}</span>
                   </div>
-                  {displayProgram.max_participants && (
+                  {displayProgram.capacity && (
                     <div className="flex items-center gap-3 text-sm">
                       <Users size={15} className="text-brand-accent shrink-0" />
-                      <span className="text-brand-muted">최대 {displayProgram.max_participants}명</span>
+                      <span className="text-brand-muted">최대 {displayProgram.capacity}명</span>
                     </div>
                   )}
                 </div>
@@ -109,9 +109,9 @@ export default function ProgramDetailPage() {
                 {/* CTA */}
                 {isActive && (
                   <div className="flex flex-col gap-3">
-                    {displayProgram.reservation_link ? (
+                    {displayProgram.registration_url ? (
                       <a
-                        href={displayProgram.reservation_link}
+                        href={displayProgram.registration_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-primary justify-center"

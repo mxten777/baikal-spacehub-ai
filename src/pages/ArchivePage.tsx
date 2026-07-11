@@ -15,12 +15,12 @@ const CATEGORIES = [
 ]
 
 const FALLBACK = [
-  { id: '1', slug: 'winter-exhibition-2025', title: '겨울 빛 — 설치 전시', category: 'exhibition', held_date: '2025-12', cover_image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80', description: '겨울의 고요와 빛의 대화' },
-  { id: '2', slug: 'autumn-concert-2025', title: '가을 콘서트 2025', category: 'performance', held_date: '2025-10', cover_image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80', description: '가을밤을 수놓는 라이브 음악' },
-  { id: '3', slug: 'brand-event-samsung', title: '삼성 브랜드 런칭', category: 'event', held_date: '2025-09', cover_image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80', description: '프리미엄 제품 런칭 이벤트' },
-  { id: '4', slug: 'photo-workshop-2025', title: '필름 사진 워크숍', category: 'workshop', held_date: '2025-08', cover_image: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600&q=80', description: '아날로그 사진의 매력을 발견하다' },
-  { id: '5', slug: 'summer-art-fair', title: '여름 아트페어', category: 'exhibition', held_date: '2025-07', cover_image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=80', description: '신진 작가들의 다양한 작품 전시' },
-  { id: '6', slug: 'talk-show-june', title: '문화 토크쇼 시즌 1', category: 'lecture', held_date: '2025-06', cover_image: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=80', description: '문화 전문가들과 나누는 깊은 대화' },
+  { id: '1', slug: 'winter-exhibition-2025', title: '겨울 빛 — 설치 전시', category: 'exhibition', date: '2025-12', cover_image_url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80', description: '겨울의 고요와 빛의 대화' },
+  { id: '2', slug: 'autumn-concert-2025', title: '가을 콘서트 2025', category: 'performance', date: '2025-10', cover_image_url: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80', description: '가을밤을 수놓는 라이브 음악' },
+  { id: '3', slug: 'brand-event-samsung', title: '삼성 브랜드 런칭', category: 'event', date: '2025-09', cover_image_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80', description: '프리미엄 제품 런칭 이벤트' },
+  { id: '4', slug: 'photo-workshop-2025', title: '필름 사진 워크숍', category: 'workshop', date: '2025-08', cover_image_url: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600&q=80', description: '아날로그 사진의 매력을 발견하다' },
+  { id: '5', slug: 'summer-art-fair', title: '여름 아트페어', category: 'exhibition', date: '2025-07', cover_image_url: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=80', description: '신진 작가들의 다양한 작품 전시' },
+  { id: '6', slug: 'talk-show-june', title: '문화 토크쇼 시즌 1', category: 'lecture', date: '2025-06', cover_image_url: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=80', description: '문화 전문가들과 나누는 깊은 대화' },
 ]
 
 export default function ArchivePage() {
@@ -84,7 +84,7 @@ export default function ArchivePage() {
                     className="group block relative overflow-hidden aspect-[4/3] bg-brand-warm"
                   >
                     <img
-                      src={item.cover_image}
+                      src={item.cover_image_url ?? ''}
                       alt={item.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
@@ -92,7 +92,7 @@ export default function ArchivePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
                     <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                       <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
-                        {item.held_date?.substring(0, 7)} · {CATEGORIES.find(c => c.value === item.category)?.label}
+                        {item.date?.substring(0, 7)} · {CATEGORIES.find(c => c.value === item.category)?.label}
                       </p>
                       <h3 className="font-display text-lg font-light text-white">{item.title}</h3>
                     </div>

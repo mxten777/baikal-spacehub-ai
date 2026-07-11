@@ -21,21 +21,21 @@ const FALLBACK_PROGRAMS = [
     id: '1', slug: 'exhibition-spring-2026', title: '봄 기억 — 사진전',
     category: 'exhibition' as ProgramCategory, status: 'upcoming',
     start_date: '2026-03-15', end_date: '2026-04-15',
-    location: '스토리지', poster_image: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=600&q=80',
+    venue: '스토리지', cover_image_url: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=600&q=80',
     short_description: '일상 속 봄의 순간을 담은 사진 전시',
   },
   {
     id: '2', slug: 'jazz-night-march', title: 'Jazz Night — 봄의 소리',
     category: 'performance' as ProgramCategory, status: 'upcoming',
     start_date: '2026-03-22', end_date: '2026-03-22',
-    location: '카페', poster_image: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=600&q=80',
+    venue: '카페', cover_image_url: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=600&q=80',
     short_description: '봄밤을 수놓는 재즈 라이브 공연',
   },
   {
     id: '3', slug: 'workshop-ceramics', title: '도예 워크숍 — 흙과 손',
     category: 'workshop' as ProgramCategory, status: 'upcoming',
     start_date: '2026-03-29', end_date: '2026-03-29',
-    location: '스튜디오', poster_image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+    venue: '스튜디오', cover_image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
     short_description: '나만의 도자기를 만드는 1일 워크숍',
   },
 ]
@@ -73,7 +73,7 @@ export default function UpcomingProgramsSection() {
                   {/* Image */}
                   <div className="relative overflow-hidden aspect-[4/3]">
                     <img
-                      src={program.poster_image}
+                      src={program.cover_image_url ?? ''}
                       alt={program.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
@@ -110,7 +110,7 @@ export default function UpcomingProgramsSection() {
                       </div>
                       <div className="flex items-center gap-2.5 text-[11px] text-white/35 tracking-wide">
                         <MapPin size={11} className="shrink-0" />
-                        <span>{program.location}</span>
+                        <span>{program.venue}</span>
                       </div>
                     </div>
 

@@ -36,12 +36,12 @@ export default function ContactPage() {
   const email = settings?.contact_email || DEFAULTS.email;
   const address = settings?.address || DEFAULTS.address;
   const businessHours = settings?.business_hours
-    ? `${settings.business_hours}${settings.holiday ? ` · ${settings.holiday}` : ''}`
+    ? `${settings.business_hours}${settings.holiday ? ` · ${settings.holiday}` : ""}`
     : DEFAULTS.hours;
   const instagramUrl = settings?.instagram_url || DEFAULTS.instagram;
   const kakaoUrl = settings?.kakao_channel_url || DEFAULTS.kakao;
   const mapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(address)}`;
-  const phoneHref = `tel:${phone.replace(/[^0-9]/g, '')}`;
+  const phoneHref = `tel:${phone.replace(/[^0-9]/g, "")}`;
 
   return (
     <>

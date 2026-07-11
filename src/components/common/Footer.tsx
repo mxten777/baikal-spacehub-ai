@@ -29,14 +29,15 @@ export default function Footer() {
   const year = new Date().getFullYear();
   const { data: settings } = useSettings();
 
-  const instagramUrl = settings?.instagram_url || "https://instagram.com/thelit_official";
+  const instagramUrl =
+    settings?.instagram_url || "https://instagram.com/thelit_official";
   const youtubeUrl = settings?.youtube_url || "https://youtube.com/@thelit";
   const xUrl = settings?.x_url || "https://x.com/thelit";
   const address = settings?.address || "경기도 하남시 \ubbf8사동 468";
   const phone = settings?.contact_phone || "1661-0288";
   const email = settings?.contact_email || "goworld33@naver.com";
   const mapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(address)}`;
-  const phoneHref = `tel:${phone.replace(/[^0-9]/g, '')}`;
+  const phoneHref = `tel:${phone.replace(/[^0-9]/g, "")}`;
 
   return (
     <footer className="bg-brand-black text-white">

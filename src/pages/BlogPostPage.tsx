@@ -36,7 +36,7 @@ const FALLBACK: Record<string, any> = {
 처음 봤을 때와 두 번째, 세 번째 볼 때 다르게 보이는 것이 좋은 작품입니다. 같은 전시를 여러 번 방문해보세요.
 
 더릿에서는 정기적으로 현대미술 강연과 도슨트 투어를 운영하고 있습니다.`,
-    cover_image: 'https://images.unsplash.com/photo-1541675154750-0444c7d51e8e?w=1200&q=80',
+    cover_image_url: 'https://images.unsplash.com/photo-1541675154750-0444c7d51e8e?w=1200&q=80',
     published_at: '2026-02-15',
     author: { full_name: 'The Lit', avatar_url: '' },
     category: { name: '문화 리뷰', color: '#6366F1' },
@@ -69,9 +69,9 @@ export default function BlogPostPage() {
       </Helmet>
 
       {/* Cover image */}
-      {displayPost.cover_image && (
+      {displayPost.cover_image_url && (
         <div className="h-[50vh] min-h-[400px] relative mt-16 lg:mt-20">
-          <img src={displayPost.cover_image} alt={displayPost.title} className="w-full h-full object-cover" />
+          <img src={displayPost.cover_image_url} alt={displayPost.title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/30" />
         </div>
       )}

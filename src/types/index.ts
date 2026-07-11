@@ -42,11 +42,7 @@ export interface Space {
   features?: string[];
   recommended_use?: string[];
   cover_image_url?: string | null;
-  /** @deprecated use cover_image_url */
-  cover_image?: string;
   images?: string[];
-  /** @deprecated use images */
-  gallery?: string[];
   rental_price_per_hour?: number | null;
   is_available: boolean;
   sort_order: number;
@@ -77,26 +73,16 @@ export interface Program {
   status: ProgramStatus;
   start_date?: ISODateString | null;
   end_date?: ISODateString | null;
-  /** @deprecated use start_date */
-  location?: string;
   venue?: string | null;
   space_id?: UUID;
   space?: Space;
   cover_image_url?: string | null;
-  /** @deprecated use cover_image_url */
-  poster_image?: string;
   images?: string[];
-  /** @deprecated use images */
-  gallery?: string[];
   organizer?: string;
   registration_url?: string | null;
-  /** @deprecated use registration_url */
-  reservation_link?: string;
   is_free?: boolean;
   price?: number | null;
   capacity?: number | null;
-  /** @deprecated use capacity */
-  max_participants?: number;
   tags?: string[];
   is_featured: boolean;
   sort_order?: number;
@@ -115,14 +101,8 @@ export interface ArchiveItem {
   content?: string | null;
   category: string;
   date?: ISODateString | null;
-  /** @deprecated use date */
-  held_date?: ISODateString;
   cover_image_url?: string | null;
-  /** @deprecated use cover_image_url */
-  cover_image?: string;
   images?: string[];
-  /** @deprecated use images */
-  gallery?: string[];
   video_url?: string;
   story?: string;
   tags?: string[];
@@ -155,8 +135,6 @@ export interface BlogPost {
   excerpt?: string | null;
   content: string;
   cover_image_url?: string | null;
-  /** @deprecated use cover_image_url */
-  cover_image?: string;
   author_id?: UUID | null;
   author?: Profile;
   category_id?: UUID | null;
@@ -187,8 +165,6 @@ export interface MediaItem {
   title?: string | null;
   description?: string | null;
   thumbnail_url?: string | null;
-  /** @deprecated use url */
-  media_url?: string;
   embed_url?: string;
   published_at?: ISODateString | null;
   is_featured: boolean;
@@ -206,8 +182,6 @@ export type InquiryStatus = "pending" | "reviewing" | "replied" | "closed";
 export interface Inquiry {
   id: UUID;
   inquiry_type: InquiryType;
-  /** @deprecated use inquiry_type */
-  type?: InquiryType;
   name: string;
   email?: string | null;
   phone?: string | null;

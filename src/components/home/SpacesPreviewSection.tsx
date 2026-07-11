@@ -49,7 +49,7 @@ export default function SpacesPreviewSection() {
                 >
                   <div className="relative overflow-hidden aspect-[3/4]">
                     <img
-                      src={space.cover_image || SPACE_IMAGES[space.category] || SPACE_IMAGES.studio}
+                      src={space.cover_image_url || SPACE_IMAGES[space.category] || SPACE_IMAGES.studio}
                       alt={space.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"

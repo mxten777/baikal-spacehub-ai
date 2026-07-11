@@ -30,7 +30,7 @@ export default function MediaFeedSection() {
           platform: m.platform,
           title: m.title,
           thumbnail_url: m.thumbnail_url,
-          url: m.media_url,
+          url: m.url,
         }))
 
   if (items.length === 0) return null

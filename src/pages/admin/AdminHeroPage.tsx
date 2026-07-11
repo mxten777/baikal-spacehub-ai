@@ -297,7 +297,7 @@ function SlideForm({
                 <label className="block text-xs font-sans text-gray-500 mb-1">버튼 링크</label>
                 <input
                   {...register('secondary_button_link')}
-                  placeholder="예: /contact?type=rental"
+                  placeholder="예: /reservation"
                   className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
                 />
               </div>
