@@ -5,6 +5,7 @@ import { useInquiries } from "../../hooks/useData";
 import { useBlogPosts } from "../../hooks/useData";
 import { useExternalContentStats } from "../../hooks/useData";
 import { useHeroSlides } from "../../hooks/useData";
+import { useAuth } from "../../hooks/useAuth";
 import {
   Image,
   Calendar,
@@ -65,25 +66,32 @@ export default function AdminDashboard() {
   const { data: blogResult } = useBlogPosts({ limit: 1 });
   const { data: extStats } = useExternalContentStats();
   const { data: heroSlides } = useHeroSlides();
+  const { isSuperAdmin } = useAuth();
 
   const pendingExternal =
     extStats?.reduce((sum, s) => sum + (s.pending ?? 0), 0) ?? 0;
 
+  const superAdminStats = isSuperAdmin
+    ? [
+        {
+          icon: SlidersHorizontal,
+          label: "Hero 슬라이드",
+          value: heroSlides?.length ?? 0,
+          href: "/admin/hero",
+          color: "bg-indigo-600",
+        },
+        {
+          icon: Info,
+          label: "About 페이지",
+          value: "편집",
+          href: "/admin/about",
+          color: "bg-teal-600",
+        },
+      ]
+    : [];
+
   const stats = [
-    {
-      icon: SlidersHorizontal,
-      label: "Hero 슬라이드",
-      value: heroSlides?.length ?? 0,
-      href: "/admin/hero-slides",
-      color: "bg-indigo-600",
-    },
-    {
-      icon: Info,
-      label: "About 페이지",
-      value: "편집",
-      href: "/admin/about",
-      color: "bg-teal-600",
-    },
+    ...superAdminStats,
     {
       icon: Image,
       label: "Spaces",
@@ -140,7 +148,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {stats.map((stat) => (
           <StatCard key={stat.label} {...stat} />
         ))}
@@ -170,17 +178,25 @@ export default function AdminDashboard() {
                 href: "/admin/inquiries",
                 icon: MessageSquare,
               },
-              {
-                label: "Hero 슬라이드 편집",
-                href: "/admin/hero-slides",
-                icon: SlidersHorizontal,
-              },
-              { label: "About 페이지 편집", href: "/admin/about", icon: Info },
-              {
-                label: "Content Sources",
-                href: "/admin/content-sources",
-                icon: Globe2,
-              },
+              ...(isSuperAdmin
+                ? [
+                    {
+                      label: "Hero 슬라이드 편집",
+                      href: "/admin/hero",
+                      icon: SlidersHorizontal,
+                    },
+                    {
+                      label: "About 페이지 편집",
+                      href: "/admin/about",
+                      icon: Info,
+                    },
+                    {
+                      label: "Content Sources",
+                      href: "/admin/content-sources",
+                      icon: Globe2,
+                    },
+                  ]
+                : []),
             ].map((action) => (
               <Link
                 key={action.label}
