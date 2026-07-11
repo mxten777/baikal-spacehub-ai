@@ -48,3 +48,19 @@ export const defaultConfig: CaptureConfig = {
     { path: "/contact", filename: "08-contact" },
   ],
 };
+
+export const adminPages: PageConfig[] = [
+  { path: "/admin", filename: "admin-01-dashboard" },
+  { path: "/admin/hero", filename: "admin-02-hero" },
+  { path: "/admin/spaces", filename: "admin-03-spaces" },
+  { path: "/admin/programs", filename: "admin-04-programs" },
+  { path: "/admin/archive", filename: "admin-05-archive" },
+  { path: "/admin/blog", filename: "admin-06-blog" },
+  { path: "/admin/media", filename: "admin-07-media" },
+  { path: "/admin/content-sources", filename: "admin-08-content-sources" },
+  { path: "/admin/external-content", filename: "admin-09-external-content" },
+  { path: "/admin/reservations", filename: "admin-10-reservations" },
+  { path: "/admin/photo-curator", filename: "admin-11-photo-curator" },
+  { path: "/admin/inquiries", filename: "admin-12-inquiries" },
+  { path: "/admin/settings", filename: "admin-13-settings" },
+];

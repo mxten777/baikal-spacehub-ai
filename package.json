@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "capture:pdf": "tsx scripts/capture.ts"
+    "capture:pdf": "tsx scripts/capture.ts",
+    "capture:admin": "tsx scripts/capture.ts --admin"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

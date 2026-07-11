@@ -11,7 +11,31 @@ import { chromium } from "playwright";
 import { PDFDocument } from "pdf-lib";
 import * as fs from "fs";
 import * as path from "path";
-import { defaultConfig, type CaptureConfig } from "./capture.config.js";
+import {
+  defaultConfig,
+  adminPages,
+  type CaptureConfig,
+} from "./capture.config.js";
+
+// ─── .env 로더 ────────────────────────────────────────────────────────────────
+
+function loadDotEnv() {
+  const envPath = path.resolve(".env");
+  if (!fs.existsSync(envPath)) return;
+  const lines = fs.readFileSync(envPath, "utf-8").split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx < 0) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const val = trimmed
+      .slice(eqIdx + 1)
+      .trim()
+      .replace(/^"|"$|^'|'$/g, "");
+    if (!(key in process.env)) process.env[key] = val;
+  }
+}
 
 // ─── 날짜 헬퍼 ─────────────────────────────────────────────────────────────────
 
@@ -25,15 +49,16 @@ function todayStr(): string {
 
 // ─── 경로 설정 ─────────────────────────────────────────────────────────────────
 
-function buildPaths(config: CaptureConfig) {
+function buildPaths(config: CaptureConfig, isAdminMode: boolean) {
   const date = todayStr();
   const root = path.resolve("captures", `${config.siteName}-${date}`);
   const imagesDir = path.join(root, "images");
   const pdfDir = path.join(root, "pdf");
-  const logFile = path.join(root, "log.txt");
+  const logFile = path.join(root, isAdminMode ? "log-admin.txt" : "log.txt");
+  const pdfLabel = isAdminMode ? "admin-capture" : "full-capture";
   const pdfFile = path.join(
     pdfDir,
-    `${config.siteName}-full-capture-${date}.pdf`,
+    `${config.siteName}-${pdfLabel}-${date}.pdf`,
   );
   return { root, imagesDir, pdfDir, logFile, pdfFile };
 }
@@ -148,24 +173,59 @@ async function buildPdf(
   log(`PDF 저장 완료: ${pdfPath}`);
 }
 
+// ─── 관리자 로그인 ────────────────────────────────────────────────────────────
+
+async function loginAsAdmin(
+  page: import("playwright").Page,
+  baseUrl: string,
+  email: string,
+  password: string,
+  log: (msg: string) => void,
+): Promise<boolean> {
+  try {
+    log(`관리자 로그인 중: ${email}`);
+    await page.goto(`${baseUrl}/admin/login`, {
+      waitUntil: "networkidle",
+      timeout: 30_000,
+    });
+    await page.fill('input[type="email"]', email);
+    await page.fill('input[type="password"]', password);
+    await page.click('button[type="submit"]');
+    await page.waitForURL(`${baseUrl}/admin`, { timeout: 15_000 });
+    log(`로그인 완료`);
+    return true;
+  } catch (err) {
+    log(`로그인 실패: ${(err as Error).message}`);
+    return false;
+  }
+}
+
 // ─── 메인 ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  // CLI 인수로 baseUrl 오버라이드 가능
-  const cliUrl = process.argv[2];
+  loadDotEnv();
+
+  // CLI 인수 파싱
+  const args = process.argv.slice(2);
+  const isAdminMode = args.includes("--admin");
+  const cliUrl = args.find((a) => a.startsWith("http"));
+
   const config: CaptureConfig = {
     ...defaultConfig,
     ...(cliUrl ? { baseUrl: cliUrl.replace(/\/$/, "") } : {}),
   };
 
-  const paths = buildPaths(config);
+  const paths = buildPaths(config, isAdminMode);
   fs.mkdirSync(paths.imagesDir, { recursive: true });
   fs.mkdirSync(paths.pdfDir, { recursive: true });
 
   const logger = createLogger(paths.logFile);
   const log = logger.write;
 
-  log(`=== 캡처 시작 ===`);
+  const targetPages = isAdminMode ? adminPages : config.pages;
+  const modeLabel = isAdminMode ? "관리자" : "일반";
+
+  log(`=== 캡처 시작 (${modeLabel} 모드) ===`);
   log(`대상 사이트: ${config.baseUrl}`);
   log(`뷰포트: ${config.viewportWidth}x${config.viewportHeight}`);
   log(`저장 경로: ${paths.root}`);
@@ -176,11 +236,29 @@ async function main() {
   });
   const page = await context.newPage();
 
+  // 관리자 모드: 로그인 선행
+  if (isAdminMode) {
+    const email = process.env.CAPTURE_ADMIN_EMAIL ?? "";
+    const password = process.env.CAPTURE_ADMIN_PASSWORD ?? "";
+    if (!email || !password) {
+      console.error(
+        "오류: .env 파일에 CAPTURE_ADMIN_EMAIL 과 CAPTURE_ADMIN_PASSWORD 를 설정하세요.",
+      );
+      await browser.close();
+      process.exit(1);
+    }
+    const ok = await loginAsAdmin(page, config.baseUrl, email, password, log);
+    if (!ok) {
+      await browser.close();
+      process.exit(1);
+    }
+  }
+
   const capturedImages: string[] = [];
   let successCount = 0;
   let failCount = 0;
 
-  for (const pageConfig of config.pages) {
+  for (const pageConfig of targetPages) {
     const url = `${config.baseUrl}${pageConfig.path}`;
     const imgPath = path.join(paths.imagesDir, `${pageConfig.filename}.png`);
 
