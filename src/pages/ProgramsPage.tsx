@@ -103,7 +103,7 @@ export default function ProgramsPage() {
                     {/* Poster */}
                     <div className="relative overflow-hidden aspect-[3/4]">
                       <img
-                        src={program.cover_image_url}
+                        src={program.cover_image_url ?? undefined}
                         alt={program.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
