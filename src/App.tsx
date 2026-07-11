@@ -33,12 +33,14 @@ import AdminBlogPage from "./pages/admin/AdminBlogPage";
 import AdminMediaPage from "./pages/admin/AdminMediaPage";
 import AdminInquiriesPage from "./pages/admin/AdminInquiriesPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
+import AdminOperatorSettingsPage from "./pages/admin/AdminOperatorSettingsPage";
 import AdminContentSourcesPage from "./pages/admin/AdminContentSourcesPage";
 import AdminExternalContentPage from "./pages/admin/AdminExternalContentPage";
 import AdminReservationsPage from "./pages/admin/AdminReservationsPage";
 import AdminPhotoCuratorPage from "./pages/admin/AdminPhotoCuratorPage";
 import AdminHeroPage from "./pages/admin/AdminHeroPage";
 import AdminAboutPage from "./pages/admin/AdminAboutPage";
+import RoleGuard from "./components/admin/RoleGuard";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -111,19 +113,72 @@ export default function App() {
               <Route path="blog" element={<AdminBlogPage />} />
               <Route path="media" element={<AdminMediaPage />} />
               <Route path="inquiries" element={<AdminInquiriesPage />} />
-              <Route path="settings" element={<AdminSettingsPage />} />
+              {/* 운영 정보 — operator 이상 접근 가능 */}
+              <Route
+                path="operator-settings"
+                element={
+                  <RoleGuard permission="operator_settings">
+                    <AdminOperatorSettingsPage />
+                  </RoleGuard>
+                }
+              />
+              {/* 이하 super_admin 전용 */}
+              <Route
+                path="settings"
+                element={
+                  <RoleGuard permission="system_settings">
+                    <AdminSettingsPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="hero"
+                element={
+                  <RoleGuard permission="hero">
+                    <AdminHeroPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="about"
+                element={
+                  <RoleGuard permission="about">
+                    <AdminAboutPage />
+                  </RoleGuard>
+                }
+              />
               <Route
                 path="content-sources"
-                element={<AdminContentSourcesPage />}
+                element={
+                  <RoleGuard permission="content_sources">
+                    <AdminContentSourcesPage />
+                  </RoleGuard>
+                }
               />
               <Route
                 path="external-content"
-                element={<AdminExternalContentPage />}
+                element={
+                  <RoleGuard permission="external_content">
+                    <AdminExternalContentPage />
+                  </RoleGuard>
+                }
               />
-              <Route path="reservations" element={<AdminReservationsPage />} />
-              <Route path="photo-curator" element={<AdminPhotoCuratorPage />} />
-              <Route path="hero" element={<AdminHeroPage />} />
-              <Route path="about" element={<AdminAboutPage />} />
+              <Route
+                path="reservations"
+                element={
+                  <RoleGuard permission="reservations">
+                    <AdminReservationsPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="photo-curator"
+                element={
+                  <RoleGuard permission="photo_curator">
+                    <AdminPhotoCuratorPage />
+                  </RoleGuard>
+                }
+              />
             </Route>
 
             {/* 404 fallback */}

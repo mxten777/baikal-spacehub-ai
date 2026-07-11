@@ -18,32 +18,113 @@ import {
   UserCircle2,
   CalendarCheck,
   MonitorPlay,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import { useAuth } from "../hooks/useAuth";
+import type { Permission } from "../types";
+import { ROLE_LABELS } from "../lib/permissions";
 
-const adminNav = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
-  { label: "Hero 슬라이드", href: "/admin/hero", icon: MonitorPlay },
-  { label: "About 페이지", href: "/admin/about", icon: UserCircle2 },
-  { label: "Spaces", href: "/admin/spaces", icon: Image },
-  { label: "Programs", href: "/admin/programs", icon: Calendar },
-  { label: "Archive", href: "/admin/archive", icon: Archive },
-  { label: "Blog", href: "/admin/blog", icon: FileText },
-  { label: "Media", href: "/admin/media", icon: Video },
-  { label: "콘텐츠 소스", href: "/admin/content-sources", icon: Rss },
-  { label: "외부 콘텐츠", href: "/admin/external-content", icon: Globe2 },
-  { label: "예약 관리", href: "/admin/reservations", icon: CalendarCheck },
-  { label: "AI 사진 큐레이터", href: "/admin/photo-curator", icon: Images },
-  { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ElementType;
+  exact?: boolean;
+  permission: Permission;
+}
+
+// operator 메뉴 (THE LIT 운영자)
+const operatorNav: NavItem[] = [
+  {
+    label: "Dashboard",
+    href: "/admin",
+    icon: LayoutDashboard,
+    exact: true,
+    permission: "dashboard",
+  },
+  { label: "Spaces", href: "/admin/spaces", icon: Image, permission: "spaces" },
+  {
+    label: "Programs",
+    href: "/admin/programs",
+    icon: Calendar,
+    permission: "programs",
+  },
+  {
+    label: "Archive",
+    href: "/admin/archive",
+    icon: Archive,
+    permission: "archive",
+  },
+  { label: "Blog", href: "/admin/blog", icon: FileText, permission: "blog" },
+  { label: "Media", href: "/admin/media", icon: Video, permission: "media" },
+  {
+    label: "Inquiries",
+    href: "/admin/inquiries",
+    icon: MessageSquare,
+    permission: "inquiries",
+  },
+  {
+    label: "운영 정보",
+    href: "/admin/operator-settings",
+    icon: SlidersHorizontal,
+    permission: "operator_settings",
+  },
+];
+
+// super_admin 전용 추가 메뉴 (바이칼시스템즈)
+const superAdminNav: NavItem[] = [
+  {
+    label: "Hero 슬라이드",
+    href: "/admin/hero",
+    icon: MonitorPlay,
+    permission: "hero",
+  },
+  {
+    label: "About 페이지",
+    href: "/admin/about",
+    icon: UserCircle2,
+    permission: "about",
+  },
+  {
+    label: "시스템 설정",
+    href: "/admin/settings",
+    icon: Settings,
+    permission: "system_settings",
+  },
+  // Phase 2 예정 (super_admin에게만 노출)
+  {
+    label: "콘텐츠 소스",
+    href: "/admin/content-sources",
+    icon: Rss,
+    permission: "content_sources",
+  },
+  {
+    label: "외부 콘텐츠",
+    href: "/admin/external-content",
+    icon: Globe2,
+    permission: "external_content",
+  },
+  {
+    label: "예약 관리",
+    href: "/admin/reservations",
+    icon: CalendarCheck,
+    permission: "reservations",
+  },
+  {
+    label: "AI 사진 큐레이터",
+    href: "/admin/photo-curator",
+    icon: Images,
+    permission: "photo_curator",
+  },
 ];
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
+  const { role, isSuperAdmin, hasPermission } = useAuth();
 
   // md+(768px) 이상에서는 사이드바 기본 열림
   useEffect(() => {
@@ -66,9 +147,14 @@ export default function AdminLayout() {
   const emailShort =
     emailDisplay.length > 20 ? emailDisplay.slice(0, 18) + "…" : emailDisplay;
 
+  // role 기반 nav 조합: operator 메뉴 + super_admin 추가 메뉴
+  const visibleNav = [
+    ...operatorNav.filter((item) => hasPermission(item.permission)),
+    ...(isSuperAdmin ? superAdminNav : []),
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Mobile backdrop overlay — closes sidebar on tap */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-20 md:hidden"
@@ -108,7 +194,7 @@ export default function AdminLayout() {
 
         {/* Nav items */}
         <nav className="py-4">
-          {adminNav.map((item) => (
+          {visibleNav.map((item) => (
             <NavLink
               key={item.href}
               to={item.href}
@@ -138,12 +224,25 @@ export default function AdminLayout() {
           {sidebarOpen && user && (
             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
               <UserCircle2 size={16} className="shrink-0 text-brand-accent" />
-              <span
-                className="text-xs text-white/70 truncate"
-                title={emailDisplay}
-              >
-                {emailShort}
-              </span>
+              <div className="min-w-0">
+                <span
+                  className="text-xs text-white/70 truncate block"
+                  title={emailDisplay}
+                >
+                  {emailShort}
+                </span>
+                {role && (
+                  <span
+                    className={`text-[10px] font-medium px-1.5 py-0.5 rounded mt-0.5 inline-block ${
+                      role === "super_admin"
+                        ? "bg-brand-accent/20 text-brand-accent"
+                        : "bg-white/10 text-white/50"
+                    }`}
+                  >
+                    {ROLE_LABELS[role]}
+                  </span>
+                )}
+              </div>
             </div>
           )}
           <button

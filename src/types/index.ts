@@ -8,12 +8,38 @@ export type ISODateString = string;
 // ============================================================
 // USER & AUTH
 // ============================================================
+// Role 타입 — super_admin(바이칼시스템즈) / operator(THE LIT 운영자) / viewer
+export type AdminRole = "super_admin" | "operator" | "viewer";
+
+// 개별 권한 키 목록
+export type Permission =
+  | "dashboard"
+  | "spaces"
+  | "programs"
+  | "archive"
+  | "blog"
+  | "media"
+  | "inquiries"
+  | "operator_settings" // 운영 정보 (연락처·주소·SNS 등)
+  | "hero" // Hero 슬라이드 관리
+  | "about" // About 페이지 관리
+  | "system_settings" // 시스템 설정 (SEO·API·도메인 등)
+  | "storage" // Storage 관리
+  | "users" // 사용자·계정 관리
+  | "security" // 보안·키 관리
+  | "backup" // 백업·복구
+  // Phase 2 예정
+  | "content_sources"
+  | "external_content"
+  | "reservations"
+  | "photo_curator";
+
 export interface Profile {
   id: UUID;
   email: string;
   full_name?: string;
   avatar_url?: string;
-  role: "admin" | "editor" | "viewer";
+  role: AdminRole;
   created_at: ISODateString;
   updated_at: ISODateString;
 }
