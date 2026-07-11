@@ -16,6 +16,7 @@ import {
   Rss,
   Globe2,
   UserCircle2,
+  Users,
   CalendarCheck,
   MonitorPlay,
   SlidersHorizontal,
@@ -93,6 +94,12 @@ const superAdminNav: NavItem[] = [
     icon: Settings,
     permission: "system_settings",
   },
+  {
+    label: "사용자 관리",
+    href: "/admin/users",
+    icon: Users,
+    permission: "users",
+  },
   // Phase 2 예정 (super_admin에게만 노출)
   {
     label: "콘텐츠 소스",
@@ -166,7 +173,7 @@ export default function AdminLayout() {
           Mobile: slides in/out via translate-x (w-60 always), backdrop behind
           Desktop (md+): translate-x-0 always; w-16 collapsed or w-60 expanded */}
       <aside
-        className={`fixed left-0 top-0 h-full z-30 bg-brand-black text-white transition-all duration-300 overflow-hidden
+        className={`fixed left-0 top-0 h-full z-30 bg-brand-black text-white transition-all duration-300 flex flex-col overflow-hidden
           ${
             sidebarOpen
               ? "w-60 translate-x-0"
@@ -174,7 +181,7 @@ export default function AdminLayout() {
           }`}
       >
         {/* Sidebar header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-white/10">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-white/10 shrink-0">
           {sidebarOpen && (
             <Link
               to="/"
@@ -193,7 +200,7 @@ export default function AdminLayout() {
         </div>
 
         {/* Nav items */}
-        <nav className="py-4">
+        <nav className="flex-1 overflow-y-auto py-4">
           {visibleNav.map((item) => (
             <NavLink
               key={item.href}
@@ -220,7 +227,7 @@ export default function AdminLayout() {
         </nav>
 
         {/* User info + Logout */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-white/10">
+        <div className="shrink-0 border-t border-white/10">
           {sidebarOpen && user && (
             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
               <UserCircle2 size={16} className="shrink-0 text-brand-accent" />

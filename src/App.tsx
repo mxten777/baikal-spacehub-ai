@@ -40,6 +40,7 @@ import AdminReservationsPage from "./pages/admin/AdminReservationsPage";
 import AdminPhotoCuratorPage from "./pages/admin/AdminPhotoCuratorPage";
 import AdminHeroPage from "./pages/admin/AdminHeroPage";
 import AdminAboutPage from "./pages/admin/AdminAboutPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import RoleGuard from "./components/admin/RoleGuard";
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -144,6 +145,14 @@ export default function App() {
                 element={
                   <RoleGuard permission="about">
                     <AdminAboutPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="users"
+                element={
+                  <RoleGuard permission="users">
+                    <AdminUsersPage />
                   </RoleGuard>
                 }
               />
