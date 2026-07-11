@@ -374,13 +374,30 @@ export type PhotoUploadStatus = "completed" | "delete_pending" | "error";
 
 // Sprint 4: separate from the Space SpaceCategory (cafe/garden/studio/storage/hall/other)
 export type PhotoSpaceCategory =
-  | "cafe" | "garden" | "studio" | "exterior" | "program"
-  | "event" | "exhibition" | "performance" | "food" | "people"
-  | "other" | "unclassified";
+  | "cafe"
+  | "garden"
+  | "studio"
+  | "exterior"
+  | "program"
+  | "event"
+  | "exhibition"
+  | "performance"
+  | "food"
+  | "people"
+  | "other"
+  | "unclassified";
 
 export type PhotoType =
-  | "hero" | "representative" | "interior" | "exterior" | "detail"
-  | "people" | "event" | "promotional" | "archive" | "general";
+  | "hero"
+  | "representative"
+  | "interior"
+  | "exterior"
+  | "detail"
+  | "people"
+  | "event"
+  | "promotional"
+  | "archive"
+  | "general";
 
 export type PhotoSortOption = "newest" | "oldest" | "name_asc" | "name_desc";
 
@@ -611,6 +628,11 @@ export interface AboutValueItem {
   desc: string;
 }
 
+export interface BrandIntroPillar {
+  label: string;
+  en: string;
+}
+
 export interface AboutContent {
   id: UUID;
   hero_image_url: string;
@@ -631,5 +653,12 @@ export interface AboutContent {
   brand_values: AboutValueItem[];
   cta_title: string;
   cta_description: string;
+  brand_intro_eyebrow: string;
+  brand_intro_title_line1: string;
+  brand_intro_title_line2: string;
+  brand_intro_paragraph_1: string;
+  brand_intro_paragraph_2: string;
+  brand_intro_image_url: string;
+  brand_intro_pillars: BrandIntroPillar[];
   updated_at: ISODateString;
 }
