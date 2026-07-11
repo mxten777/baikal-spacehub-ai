@@ -37,8 +37,8 @@ import AdminContentSourcesPage from "./pages/admin/AdminContentSourcesPage";
 import AdminExternalContentPage from "./pages/admin/AdminExternalContentPage";
 import AdminReservationsPage from "./pages/admin/AdminReservationsPage";
 import AdminPhotoCuratorPage from "./pages/admin/AdminPhotoCuratorPage";
-import AdminHeroPage from './pages/admin/AdminHeroPage';
-import AdminAboutPage from './pages/admin/AdminAboutPage';
+import AdminHeroPage from "./pages/admin/AdminHeroPage";
+import AdminAboutPage from "./pages/admin/AdminAboutPage";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -121,10 +121,7 @@ export default function App() {
                 element={<AdminExternalContentPage />}
               />
               <Route path="reservations" element={<AdminReservationsPage />} />
-              <Route
-                path="photo-curator"
-                element={<AdminPhotoCuratorPage />}
-              />
+              <Route path="photo-curator" element={<AdminPhotoCuratorPage />} />
               <Route path="hero" element={<AdminHeroPage />} />
               <Route path="about" element={<AdminAboutPage />} />
             </Route>

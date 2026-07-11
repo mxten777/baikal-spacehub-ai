@@ -6,7 +6,7 @@ import { Check, Loader2, Plus, Trash2 } from 'lucide-react'
 const DEFAULT_KEYS = [
   { key: 'site_name', label: '사이트명', placeholder: 'The Lit' },
   { key: 'site_description', label: '사이트 설명', placeholder: '복합문화공간 플랫폼' },
-  { key: 'contact_email', label: '연락처 이메일', placeholder: 'hello@thelit.kr' },
+  { key: 'contact_email', label: '연락처 이메일', placeholder: 'goworld33@naver.com' },
   { key: 'contact_phone', label: '연락처 전화번호', placeholder: '+82-XX-XXXX-XXXX' },
   { key: 'address', label: '주소', placeholder: '서울시 ...' },
   { key: 'instagram_url', label: 'Instagram URL', placeholder: 'https://instagram.com/...' },

@@ -206,7 +206,7 @@ CREATE TABLE IF NOT EXISTS public.settings (
 INSERT INTO public.settings (key, value) VALUES
   ('site_name', 'The Lit'),
   ('site_description', '문화를 경험하는 공간, The Lit'),
-  ('contact_email', 'hello@thelit.kr'),
+  ('contact_email', 'goworld33@naver.com'),
   ('contact_phone', ''),
   ('address', ''),
   ('instagram_url', ''),
