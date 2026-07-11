@@ -6,11 +6,11 @@ import { useSettings } from "../../hooks/useData";
 type TransportTab = "subway" | "bus" | "car";
 
 const KAKAO_MAP_URL =
-  "https://map.kakao.com/link/map/더릿,37.5572,127.2040";
+  "https://map.kakao.com/?q=경기도+하남시+미사동+468";
 const NAVER_MAP_URL =
   "https://map.naver.com/v5/search/경기도%20하남시%20미사동%20468";
 const GOOGLE_MAP_URL =
-  "https://maps.google.com/?q=37.5572,127.2040";
+  "https://maps.google.com/?q=경기도+하남시+미사동+468";
 
 const TRANSPORT: Record<
   TransportTab,
@@ -77,13 +77,14 @@ export default function LocationSection() {
             {/* Map embed */}
             <div className="relative overflow-hidden shadow-sm" style={{ aspectRatio: "4/3" }}>
               <iframe
-                src="https://www.openstreetmap.org/export/embed.html?bbox=127.196%2C37.549%2C127.212%2C37.565&layer=mapnik&marker=37.557%2C127.204"
+                src="https://maps.google.com/maps?q=경기도+하남시+미사동+468&output=embed&hl=ko&z=17"
                 width="100%"
                 height="100%"
                 className="absolute inset-0 border-0"
                 allowFullScreen
                 loading="lazy"
                 title="The Lit 위치"
+                referrerPolicy="no-referrer-when-downgrade"
               />
               {/* Overlay label */}
               <div className="absolute bottom-0 left-0 right-0 bg-brand-black/80 backdrop-blur-sm px-4 py-3 flex items-center gap-2">
