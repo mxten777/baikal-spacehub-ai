@@ -21,7 +21,7 @@ const footerLinks = {
     { label: "Blog", href: "/blog" },
     { label: "Media", href: "/media" },
     { label: "Contact", href: "/contact" },
-    { label: "Reserve Space", href: "/contact?type=rental" },
+    { label: "Reserve Space", href: "/reservation" },
   ],
 };
 

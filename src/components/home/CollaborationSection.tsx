@@ -8,21 +8,21 @@ const collabTypes = [
     title: "브랜드 이벤트",
     description:
       "론칭, 팝업스토어, 기업 행사 등 브랜드의 특별한 순간을 연출합니다.",
-    link: "/contact?type=collaboration",
+    link: "/contact",
   },
   {
     icon: "📷",
     title: "촬영 대관",
     description:
       "광고, 영화, 화보 촬영을 위한 다양한 분위기의 공간을 제공합니다.",
-    link: "/contact?type=rental",
+    link: "/reservation",
   },
   {
     icon: "🏢",
     title: "기업 미팅 & 세미나",
     description:
       "소규모 워크샵부터 대형 컨퍼런스까지 맞춤형 공간 서비스를 제공합니다.",
-    link: "/contact?type=collaboration",
+    link: "/contact",
   },
 ];
 

@@ -307,7 +307,7 @@ export default function SpaceDetailPage() {
 
                   {/* CTA */}
                   <Link
-                    to={`/contact?type=rental&space=${displaySpace.id}`}
+                    to={`/reservation?space=${displaySpace.id}`}
                     className="btn-primary w-full justify-center"
                   >
                     대관 문의 <ArrowRight size={16} />

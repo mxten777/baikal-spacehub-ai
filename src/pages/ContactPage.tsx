@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams, Navigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import {
@@ -24,7 +24,13 @@ const DEFAULTS = {
 } as const;
 
 export default function ContactPage() {
+  const [searchParams] = useSearchParams();
   const { data: settings } = useSettings();
+
+  // /contact?type=rental → /reservation 리다이렉트
+  if (searchParams.get("type") === "rental") {
+    return <Navigate to="/reservation" replace />;
+  }
 
   const phone = settings?.contact_phone || DEFAULTS.phone;
   const email = settings?.contact_email || DEFAULTS.email;

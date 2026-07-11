@@ -175,7 +175,7 @@ export default function SpacesPage() {
           <p className="font-sans text-sm text-brand-muted mb-8">
             맞춤형 공간 구성과 특별 요청 사항은 문의 주세요.
           </p>
-          <Link to="/contact?type=rental" className="btn-primary">
+          <Link to="/reservation" className="btn-primary">
             대관 문의하기 <ArrowRight size={16} />
           </Link>
         </div>
