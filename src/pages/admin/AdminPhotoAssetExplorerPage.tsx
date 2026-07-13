@@ -1,50 +1,66 @@
-import { useParams, Link } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, Loader2, Upload, X, Trash2, ImageOff } from 'lucide-react'
-import { useRef, useState, useCallback, useMemo } from 'react'
-import { getPhotoProjectById, getProjectPhotoCounts, getProjectPhotosByCell } from '../../services/photoProjects'
-import { uploadProjectPhoto, deletePhoto } from '../../services/photoStorage'
-import { markPhotoDeletePending, deletePhotoRecord } from '../../services/photoRepository'
-import { useAuth } from '../../hooks/useAuth'
-import type { PhotoRecord, ProjectCategory, ProjectStage } from '../../types'
-import PhotoDetailPanel from '../../components/admin/photo-projects/PhotoDetailPanel'
+import { useParams, Link } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Loader2, Upload, X, Trash2, ImageOff } from "lucide-react";
+import { useRef, useState, useCallback, useMemo } from "react";
+import {
+  getPhotoProjectById,
+  getProjectPhotoCounts,
+  getProjectPhotosByCell,
+} from "../../services/photoProjects";
+import { uploadProjectPhoto, deletePhoto } from "../../services/photoStorage";
+import {
+  markPhotoDeletePending,
+  deletePhotoRecord,
+} from "../../services/photoRepository";
+import { useAuth } from "../../hooks/useAuth";
+import type { PhotoRecord, ProjectCategory, ProjectStage } from "../../types";
+import PhotoDetailPanel from "../../components/admin/photo-projects/PhotoDetailPanel";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const CATEGORIES: { key: ProjectCategory; label: string }[] = [
-  { key: 'main',           label: 'Main' },
-  { key: 'wedding',        label: 'Wedding' },
-  { key: 'space',          label: 'Space' },
-  { key: 'food_beverage',  label: 'F&B' },
-  { key: 'archive',        label: 'Archive' },
-  { key: 'online_wedding', label: 'Online Wedding' },
-  { key: 'online_space',   label: 'Online Space' },
-  { key: 'contact',        label: 'Contact' },
-  { key: 'about',          label: 'About' },
-]
+  { key: "main", label: "Main" },
+  { key: "wedding", label: "Wedding" },
+  { key: "space", label: "Space" },
+  { key: "food_beverage", label: "F&B" },
+  { key: "archive", label: "Archive" },
+  { key: "online_wedding", label: "Online Wedding" },
+  { key: "online_space", label: "Online Space" },
+  { key: "contact", label: "Contact" },
+  { key: "about", label: "About" },
+];
 
 const STAGES: { key: ProjectStage; label: string }[] = [
-  { key: 'source',   label: 'Source' },
-  { key: 'selected', label: 'Selected' },
-  { key: 'edited',   label: 'Edited' },
-  { key: 'web',      label: 'Web' },
-  { key: 'pdf',      label: 'PDF' },
-]
+  { key: "source", label: "Source" },
+  { key: "selected", label: "Selected" },
+  { key: "edited", label: "Edited" },
+  { key: "web", label: "Web" },
+  { key: "pdf", label: "PDF" },
+];
 
 // ─── Stage Upload Cell ────────────────────────────────────────────────────────
 
-interface CellProgress { done: number; total: number }
-
-interface StageUploadCellProps {
-  count: number
-  progress: CellProgress | null
-  error: string | null
-  onUploadClick: () => void
-  onViewClick: () => void
+interface CellProgress {
+  done: number;
+  total: number;
 }
 
-function StageUploadCell({ count, progress, error, onUploadClick, onViewClick }: StageUploadCellProps) {
-  const isUploading = progress !== null
+interface StageUploadCellProps {
+  count: number;
+  progress: CellProgress | null;
+  error: string | null;
+  onUploadClick: () => void;
+  onViewClick: () => void;
+}
+
+function StageUploadCell({
+  count,
+  progress,
+  error,
+  onUploadClick,
+  onViewClick,
+}: StageUploadCellProps) {
+  const isUploading = progress !== null;
   return (
     <td className="px-3 py-4 text-center border-l border-gray-100">
       <div className="inline-flex items-center gap-1">
@@ -53,13 +69,19 @@ function StageUploadCell({ count, progress, error, onUploadClick, onViewClick }:
           type="button"
           onClick={count > 0 && !isUploading ? onViewClick : undefined}
           disabled={isUploading || count === 0}
-          title={isUploading ? `업로드 중 ${progress!.done}/${progress!.total}` : count > 0 ? `${count}장 보기` : '사진 없음'}
+          title={
+            isUploading
+              ? `업로드 중 ${progress!.done}/${progress!.total}`
+              : count > 0
+                ? `${count}장 보기`
+                : "사진 없음"
+          }
           className={`text-xs font-sans tabular-nums px-2 py-0.5 transition-colors ${
             isUploading
-              ? 'bg-blue-100 text-blue-600 cursor-default'
+              ? "bg-blue-100 text-blue-600 cursor-default"
               : count > 0
-              ? 'bg-brand-black text-white hover:bg-gray-700 cursor-pointer'
-              : 'bg-gray-100 text-gray-400 cursor-default'
+                ? "bg-brand-black text-white hover:bg-gray-700 cursor-pointer"
+                : "bg-gray-100 text-gray-400 cursor-default"
           }`}
         >
           {isUploading ? `${progress!.done}/${progress!.total}` : count}
@@ -80,29 +102,37 @@ function StageUploadCell({ count, progress, error, onUploadClick, onViewClick }:
         <p className="mt-0.5 text-[10px] text-red-500 leading-tight">{error}</p>
       )}
     </td>
-  )
+  );
 }
 
 // ─── Category Row ─────────────────────────────────────────────────────────────
 
 interface CategoryRowProps {
-  category: ProjectCategory
-  label: string
-  counts: Record<string, number>
-  progress: Record<string, CellProgress>
-  errors: Record<string, string>
-  onUploadClick: (category: ProjectCategory, stage: ProjectStage) => void
-  onViewClick: (category: ProjectCategory, stage: ProjectStage) => void
+  category: ProjectCategory;
+  label: string;
+  counts: Record<string, number>;
+  progress: Record<string, CellProgress>;
+  errors: Record<string, string>;
+  onUploadClick: (category: ProjectCategory, stage: ProjectStage) => void;
+  onViewClick: (category: ProjectCategory, stage: ProjectStage) => void;
 }
 
-function CategoryRow({ category, label, counts, progress, errors, onUploadClick, onViewClick }: CategoryRowProps) {
+function CategoryRow({
+  category,
+  label,
+  counts,
+  progress,
+  errors,
+  onUploadClick,
+  onViewClick,
+}: CategoryRowProps) {
   return (
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-6 py-4 border-r border-gray-100">
         <span className="font-sans text-sm text-brand-black">{label}</span>
       </td>
-      {STAGES.map(stage => {
-        const key = `${category}/${stage.key}`
+      {STAGES.map((stage) => {
+        const key = `${category}/${stage.key}`;
         return (
           <StageUploadCell
             key={stage.key}
@@ -112,65 +142,92 @@ function CategoryRow({ category, label, counts, progress, errors, onUploadClick,
             onUploadClick={() => onUploadClick(category, stage.key)}
             onViewClick={() => onViewClick(category, stage.key)}
           />
-        )
+        );
       })}
     </tr>
-  )
+  );
 }
 
 // ─── Cell Photo Slideout ──────────────────────────────────────────────────────
 
 interface CellPhotoSlideoutProps {
-  projectId: string
-  category: ProjectCategory
-  stage: ProjectStage
-  onClose: () => void
-  onCountChanged: () => void
+  projectId: string;
+  category: ProjectCategory;
+  stage: ProjectStage;
+  onClose: () => void;
+  onCountChanged: () => void;
 }
 
-function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged }: CellPhotoSlideoutProps) {
-  const queryClient = useQueryClient()
-  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set())
-  const [deleteErrors, setDeleteErrors] = useState<Record<string, string>>({})
-  const [selectedPhoto, setSelectedPhoto] = useState<PhotoRecord | null>(null)
+function CellPhotoSlideout({
+  projectId,
+  category,
+  stage,
+  onClose,
+  onCountChanged,
+}: CellPhotoSlideoutProps) {
+  const queryClient = useQueryClient();
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [deleteErrors, setDeleteErrors] = useState<Record<string, string>>({});
+  const [selectedPhoto, setSelectedPhoto] = useState<PhotoRecord | null>(null);
 
   const queryKey = useMemo(
-    () => ['project-cell-photos', projectId, category, stage],
-    [projectId, category, stage]
-  )
+    () => ["project-cell-photos", projectId, category, stage],
+    [projectId, category, stage],
+  );
 
-  const { data: photos = [], isLoading, isError } = useQuery({
+  const {
+    data: photos = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey,
     queryFn: () => getProjectPhotosByCell(projectId, category, stage),
-  })
+  });
 
-  const handlePhotoSaved = useCallback((updated: PhotoRecord) => {
-    setSelectedPhoto(updated)
-    queryClient.setQueryData(queryKey, (old: PhotoRecord[] | undefined) =>
-      old ? old.map(p => p.id === updated.id ? updated : p) : old
-    )
-  }, [queryClient, queryKey])
+  const handlePhotoSaved = useCallback(
+    (updated: PhotoRecord) => {
+      setSelectedPhoto(updated);
+      queryClient.setQueryData(queryKey, (old: PhotoRecord[] | undefined) =>
+        old ? old.map((p) => (p.id === updated.id ? updated : p)) : old,
+      );
+    },
+    [queryClient, queryKey],
+  );
 
-  const handleDelete = useCallback(async (photo: PhotoRecord) => {
-    setDeletingIds(prev => new Set(prev).add(photo.id))
-    setDeleteErrors(prev => { const n = { ...prev }; delete n[photo.id]; return n })
-    try {
-      await markPhotoDeletePending(photo.id)
-      await deletePhoto(photo.storage_path)
-      await deletePhotoRecord(photo.id)
-      queryClient.invalidateQueries({ queryKey })
-      queryClient.invalidateQueries({ queryKey: ['project-photo-counts', projectId] })
-      onCountChanged()
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : '삭제 실패'
-      setDeleteErrors(prev => ({ ...prev, [photo.id]: msg }))
-    } finally {
-      setDeletingIds(prev => { const n = new Set(prev); n.delete(photo.id); return n })
-    }
-  }, [queryClient, queryKey, projectId, onCountChanged])
+  const handleDelete = useCallback(
+    async (photo: PhotoRecord) => {
+      setDeletingIds((prev) => new Set(prev).add(photo.id));
+      setDeleteErrors((prev) => {
+        const n = { ...prev };
+        delete n[photo.id];
+        return n;
+      });
+      try {
+        await markPhotoDeletePending(photo.id);
+        await deletePhoto(photo.storage_path);
+        await deletePhotoRecord(photo.id);
+        queryClient.invalidateQueries({ queryKey });
+        queryClient.invalidateQueries({
+          queryKey: ["project-photo-counts", projectId],
+        });
+        onCountChanged();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "삭제 실패";
+        setDeleteErrors((prev) => ({ ...prev, [photo.id]: msg }));
+      } finally {
+        setDeletingIds((prev) => {
+          const n = new Set(prev);
+          n.delete(photo.id);
+          return n;
+        });
+      }
+    },
+    [queryClient, queryKey, projectId, onCountChanged],
+  );
 
-  const categoryLabel = CATEGORIES.find(c => c.key === category)?.label ?? category
-  const stageLabel = STAGES.find(s => s.key === stage)?.label ?? stage
+  const categoryLabel =
+    CATEGORIES.find((c) => c.key === category)?.label ?? category;
+  const stageLabel = STAGES.find((s) => s.key === stage)?.label ?? stage;
 
   return (
     <>
@@ -185,7 +242,11 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
       <aside
         className="fixed right-0 top-0 bottom-0 w-[420px] max-w-full bg-white border-l border-gray-200 z-50 flex flex-col shadow-xl"
         role="dialog"
-        aria-label={selectedPhoto ? `${selectedPhoto.original_name} 상세` : `${categoryLabel} / ${stageLabel} 사진 목록`}
+        aria-label={
+          selectedPhoto
+            ? `${selectedPhoto.original_name} 상세`
+            : `${categoryLabel} / ${stageLabel} 사진 목록`
+        }
       >
         {selectedPhoto ? (
           /* ── Photo Detail View ── */
@@ -201,8 +262,12 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
               <div>
-                <p className="font-sans text-xs text-gray-400 uppercase tracking-wider">{categoryLabel}</p>
-                <p className="font-display text-lg font-light text-brand-black">{stageLabel}</p>
+                <p className="font-sans text-xs text-gray-400 uppercase tracking-wider">
+                  {categoryLabel}
+                </p>
+                <p className="font-display text-lg font-light text-brand-black">
+                  {stageLabel}
+                </p>
               </div>
               <button
                 type="button"
@@ -218,7 +283,10 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
             <div className="flex-1 overflow-y-auto p-4">
               {isLoading && (
                 <div className="flex items-center justify-center h-32">
-                  <Loader2 size={20} className="animate-spin text-brand-muted" />
+                  <Loader2
+                    size={20}
+                    className="animate-spin text-brand-muted"
+                  />
                 </div>
               )}
               {isError && (
@@ -234,12 +302,12 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
               )}
               {!isLoading && photos.length > 0 && (
                 <ul className="grid grid-cols-2 gap-3">
-                  {photos.map(photo => {
-                    const isDeleting = deletingIds.has(photo.id)
+                  {photos.map((photo) => {
+                    const isDeleting = deletingIds.has(photo.id);
                     return (
                       <li
                         key={photo.id}
-                        className={`relative group bg-gray-50 border border-gray-100 cursor-pointer hover:border-gray-400 transition-colors ${isDeleting ? 'pointer-events-none' : ''}`}
+                        className={`relative group bg-gray-50 border border-gray-100 cursor-pointer hover:border-gray-400 transition-colors ${isDeleting ? "pointer-events-none" : ""}`}
                         onClick={() => !isDeleting && setSelectedPhoto(photo)}
                       >
                         {/* Thumbnail */}
@@ -247,7 +315,7 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
                           <img
                             src={photo.public_url}
                             alt={photo.original_name}
-                            className={`w-full aspect-square object-cover transition-opacity ${isDeleting ? 'opacity-30' : ''}`}
+                            className={`w-full aspect-square object-cover transition-opacity ${isDeleting ? "opacity-30" : ""}`}
                             loading="lazy"
                           />
                         ) : (
@@ -260,7 +328,10 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
                         {!isDeleting && (
                           <button
                             type="button"
-                            onClick={e => { e.stopPropagation(); handleDelete(photo) }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(photo);
+                            }}
                             title="삭제"
                             className="absolute top-1.5 right-1.5 p-1 bg-white/90 border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-300 opacity-0 group-hover:opacity-100 transition-all"
                             aria-label={`${photo.original_name} 삭제`}
@@ -271,7 +342,10 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
 
                         {isDeleting && (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <Loader2 size={18} className="animate-spin text-brand-muted" />
+                            <Loader2
+                              size={18}
+                              className="animate-spin text-brand-muted"
+                            />
                           </div>
                         )}
 
@@ -286,7 +360,7 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
                           </p>
                         )}
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -295,63 +369,86 @@ function CellPhotoSlideout({ projectId, category, stage, onClose, onCountChanged
             {/* Footer */}
             <div className="px-5 py-3 border-t border-gray-100 shrink-0">
               <p className="font-sans text-xs text-gray-400">
-                {photos.length > 0 ? `${photos.length}장` : '없음'} · 클릭 → 상세 편집 &nbsp;·&nbsp; 삭제는 ✕ 아이콘
+                {photos.length > 0 ? `${photos.length}장` : "없음"} · 클릭 →
+                상세 편집 &nbsp;·&nbsp; 삭제는 ✕ 아이콘
               </p>
             </div>
           </>
         )}
       </aside>
     </>
-  )
+  );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminPhotoAssetExplorerPage() {
-  const { projectId } = useParams<{ projectId: string }>()
-  const { user } = useAuth()
-  const queryClient = useQueryClient()
+  const { projectId } = useParams<{ projectId: string }>();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const activeCellRef = useRef<{ category: ProjectCategory; stage: ProjectStage } | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const activeCellRef = useRef<{
+    category: ProjectCategory;
+    stage: ProjectStage;
+  } | null>(null);
 
   // Multi-upload progress: key → { done, total }
-  const [cellProgress, setCellProgress] = useState<Record<string, CellProgress>>({})
-  const [cellErrors, setCellErrors] = useState<Record<string, string>>({})
+  const [cellProgress, setCellProgress] = useState<
+    Record<string, CellProgress>
+  >({});
+  const [cellErrors, setCellErrors] = useState<Record<string, string>>({});
 
   // Drill-down slideout
-  const [activeCell, setActiveCell] = useState<{ category: ProjectCategory; stage: ProjectStage } | null>(null)
+  const [activeCell, setActiveCell] = useState<{
+    category: ProjectCategory;
+    stage: ProjectStage;
+  } | null>(null);
 
-  const { data: project, isLoading, isError } = useQuery({
-    queryKey: ['admin-photo-project', projectId],
+  const {
+    data: project,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["admin-photo-project", projectId],
     queryFn: () => getPhotoProjectById(projectId!),
     enabled: !!projectId,
-  })
+  });
 
   const { data: counts = {} } = useQuery({
-    queryKey: ['project-photo-counts', projectId],
+    queryKey: ["project-photo-counts", projectId],
     queryFn: () => getProjectPhotoCounts(projectId!),
     enabled: !!projectId,
-  })
+  });
 
-  const handleUploadClick = (category: ProjectCategory, stage: ProjectStage) => {
-    if (!fileInputRef.current) return
-    activeCellRef.current = { category, stage }
-    fileInputRef.current.value = ''
-    fileInputRef.current.click()
-  }
+  const handleUploadClick = (
+    category: ProjectCategory,
+    stage: ProjectStage,
+  ) => {
+    if (!fileInputRef.current) return;
+    activeCellRef.current = { category, stage };
+    fileInputRef.current.value = "";
+    fileInputRef.current.click();
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? [])
-    const active = activeCellRef.current
-    if (!files.length || !active || !project || !user) return
+    const files = Array.from(e.target.files ?? []);
+    const active = activeCellRef.current;
+    if (!files.length || !active || !project || !user) return;
 
-    const key = `${active.category}/${active.stage}`
-    setCellErrors(prev => { const n = { ...prev }; delete n[key]; return n })
-    setCellProgress(prev => ({ ...prev, [key]: { done: 0, total: files.length } }))
+    const key = `${active.category}/${active.stage}`;
+    setCellErrors((prev) => {
+      const n = { ...prev };
+      delete n[key];
+      return n;
+    });
+    setCellProgress((prev) => ({
+      ...prev,
+      [key]: { done: 0, total: files.length },
+    }));
 
-    let done = 0
-    const errors: string[] = []
+    let done = 0;
+    const errors: string[] = [];
 
     for (const file of files) {
       try {
@@ -362,30 +459,45 @@ export default function AdminPhotoAssetExplorerPage() {
           stage: active.stage,
           file,
           uploadedBy: user.id,
-        })
-        done++
-        setCellProgress(prev => ({ ...prev, [key]: { done, total: files.length } }))
-        queryClient.invalidateQueries({ queryKey: ['project-photo-counts', projectId] })
+        });
+        done++;
+        setCellProgress((prev) => ({
+          ...prev,
+          [key]: { done, total: files.length },
+        }));
+        queryClient.invalidateQueries({
+          queryKey: ["project-photo-counts", projectId],
+        });
       } catch (err) {
-        errors.push(err instanceof Error ? err.message : '업로드 실패')
-        done++
-        setCellProgress(prev => ({ ...prev, [key]: { done, total: files.length } }))
+        errors.push(err instanceof Error ? err.message : "업로드 실패");
+        done++;
+        setCellProgress((prev) => ({
+          ...prev,
+          [key]: { done, total: files.length },
+        }));
       }
     }
 
-    setCellProgress(prev => { const n = { ...prev }; delete n[key]; return n })
+    setCellProgress((prev) => {
+      const n = { ...prev };
+      delete n[key];
+      return n;
+    });
     if (errors.length > 0) {
-      setCellErrors(prev => ({ ...prev, [key]: `${errors.length}개 실패: ${errors[0]}` }))
+      setCellErrors((prev) => ({
+        ...prev,
+        [key]: `${errors.length}개 실패: ${errors[0]}`,
+      }));
     }
-    activeCellRef.current = null
-  }
+    activeCellRef.current = null;
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-40">
         <Loader2 size={24} className="animate-spin text-brand-muted" />
       </div>
-    )
+    );
   }
 
   if (isError || !project) {
@@ -402,7 +514,7 @@ export default function AdminPhotoAssetExplorerPage() {
           프로젝트를 불러오지 못했습니다.
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -432,13 +544,15 @@ export default function AdminPhotoAssetExplorerPage() {
           <h1 className="font-display text-2xl font-light text-brand-black">
             {project.name}
           </h1>
-          <p className="font-sans text-xs text-gray-400 mt-1">/{project.slug}</p>
+          <p className="font-sans text-xs text-gray-400 mt-1">
+            /{project.slug}
+          </p>
         </div>
         <span
           className={`inline-block mt-1 px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${
-            project.status === 'active'
-              ? 'bg-green-100 text-green-700'
-              : 'bg-gray-100 text-gray-500'
+            project.status === "active"
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-500"
           }`}
         >
           {project.status}
@@ -453,7 +567,7 @@ export default function AdminPhotoAssetExplorerPage() {
               <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase border-r border-gray-200 w-40">
                 Category
               </th>
-              {STAGES.map(stage => (
+              {STAGES.map((stage) => (
                 <th
                   key={stage.key}
                   className="px-4 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase text-center border-l border-gray-200"
@@ -464,7 +578,7 @@ export default function AdminPhotoAssetExplorerPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {CATEGORIES.map(cat => (
+            {CATEGORIES.map((cat) => (
               <CategoryRow
                 key={cat.key}
                 category={cat.key}
@@ -473,7 +587,9 @@ export default function AdminPhotoAssetExplorerPage() {
                 progress={cellProgress}
                 errors={cellErrors}
                 onUploadClick={handleUploadClick}
-                onViewClick={(category, stage) => setActiveCell({ category, stage })}
+                onViewClick={(category, stage) =>
+                  setActiveCell({ category, stage })
+                }
               />
             ))}
           </tbody>
@@ -482,7 +598,8 @@ export default function AdminPhotoAssetExplorerPage() {
 
       {/* Footer note */}
       <p className="mt-4 font-sans text-xs text-gray-400">
-        숫자 배지 클릭 → 사진 목록 보기 / 삭제 &nbsp;·&nbsp; ↑ 아이콘 클릭 → 이미지 업로드 (JPG · PNG · WebP, 10MB 이하, 다중 선택 가능)
+        숫자 배지 클릭 → 사진 목록 보기 / 삭제 &nbsp;·&nbsp; ↑ 아이콘 클릭 →
+        이미지 업로드 (JPG · PNG · WebP, 20MB 이하, 다중 선택 가능)
       </p>
 
       {/* Cell drill-down slideout */}
@@ -493,10 +610,12 @@ export default function AdminPhotoAssetExplorerPage() {
           stage={activeCell.stage}
           onClose={() => setActiveCell(null)}
           onCountChanged={() =>
-            queryClient.invalidateQueries({ queryKey: ['project-photo-counts', projectId] })
+            queryClient.invalidateQueries({
+              queryKey: ["project-photo-counts", projectId],
+            })
           }
         />
       )}
     </div>
-  )
+  );
 }

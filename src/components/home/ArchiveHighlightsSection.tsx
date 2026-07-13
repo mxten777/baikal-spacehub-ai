@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { useArchive } from "../../hooks/useData";
+import { useArchive, usePublicPhotos } from "../../hooks/useData";
 import AnimatedSection from "../common/AnimatedSection";
 import SectionHeader from "../common/SectionHeader";
 
@@ -45,7 +45,15 @@ const FALLBACK_ARCHIVE = [
 
 export default function ArchiveHighlightsSection() {
   const { data: archives } = useArchive({ limit: 4, featured: true });
+  const { data: archivePhotos } = usePublicPhotos("archive", { limit: 8 });
   const items = archives && archives.length > 0 ? archives : FALLBACK_ARCHIVE;
+
+  const pool = archivePhotos ?? [];
+  const getCover = (item: (typeof items)[0], idx: number): string => {
+    if (item.cover_image_url) return item.cover_image_url;
+    if (pool.length > 0) return pool[idx % pool.length]?.public_url ?? "";
+    return "";
+  };
 
   return (
     <section className="section-padding bg-brand-cream">
@@ -81,7 +89,7 @@ export default function ArchiveHighlightsSection() {
                 }`}
               >
                 <img
-                  src={item.cover_image_url ?? ""}
+                  src={getCover(item, i)}
                   alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"

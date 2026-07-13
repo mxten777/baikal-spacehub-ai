@@ -8,6 +8,7 @@ import type {
   PhotoSortOption,
   UpdatePhotoRecordInput,
   PhotoAnalysisUpdateInput,
+  ProjectCategory,
 } from "../types";
 
 const TABLE = "photos";
@@ -28,7 +29,7 @@ export interface GetPhotoRecordsOptions {
 // ─── Read ─────────────────────────────────────────────────────────────────────
 
 export async function getPhotoRecords(
-  options: GetPhotoRecordsOptions = {}
+  options: GetPhotoRecordsOptions = {},
 ): Promise<{ records: PhotoRecord[]; hasMore: boolean }> {
   const {
     offset = 0,
@@ -50,24 +51,32 @@ export async function getPhotoRecords(
     const sArr = s.replace(/[{},]/g, "");
     if (sArr) {
       query = query.or(
-        `original_name.ilike.%${s}%,admin_memo.ilike.%${s}%,tags.cs.{${sArr}}`
+        `original_name.ilike.%${s}%,admin_memo.ilike.%${s}%,tags.cs.{${sArr}}`,
       );
     } else {
       query = query.or(`original_name.ilike.%${s}%,admin_memo.ilike.%${s}%`);
     }
   }
 
-  if (spaceCategory !== "all") query = query.eq("space_category", spaceCategory);
+  if (spaceCategory !== "all")
+    query = query.eq("space_category", spaceCategory);
   if (photoType !== "all") query = query.eq("photo_type", photoType);
   if (featured === "featured") query = query.eq("is_featured", true);
   if (featured === "not_featured") query = query.eq("is_featured", false);
   if (favoriteOnly) query = query.eq("is_favorite", true);
 
   switch (sort) {
-    case "oldest":   query = query.order("created_at", { ascending: true });  break;
-    case "name_asc": query = query.order("original_name", { ascending: true }); break;
-    case "name_desc":query = query.order("original_name", { ascending: false }); break;
-    default:         query = query.order("created_at", { ascending: false }); // newest
+    case "oldest":
+      query = query.order("created_at", { ascending: true });
+      break;
+    case "name_asc":
+      query = query.order("original_name", { ascending: true });
+      break;
+    case "name_desc":
+      query = query.order("original_name", { ascending: false });
+      break;
+    default:
+      query = query.order("created_at", { ascending: false }); // newest
   }
 
   query = query.range(offset, offset + PHOTO_PAGE_SIZE - 1);
@@ -81,7 +90,7 @@ export async function getPhotoRecords(
 // ─── Write ────────────────────────────────────────────────────────────────────
 
 export async function createPhotoRecord(
-  input: CreatePhotoRecordInput
+  input: CreatePhotoRecordInput,
 ): Promise<PhotoRecord> {
   const { data, error } = await supabase
     .from(TABLE)
@@ -94,7 +103,7 @@ export async function createPhotoRecord(
 
 export async function updatePhotoRecord(
   id: string,
-  patch: UpdatePhotoRecordInput
+  patch: UpdatePhotoRecordInput,
 ): Promise<PhotoRecord> {
   const { data, error } = await supabase
     .from(TABLE)
@@ -112,7 +121,7 @@ export async function updatePhotoRecord(
  */
 export async function updatePhotoAnalysis(
   id: string,
-  patch: PhotoAnalysisUpdateInput
+  patch: PhotoAnalysisUpdateInput,
 ): Promise<PhotoRecord> {
   const { data, error } = await supabase
     .from(TABLE)
@@ -137,15 +146,51 @@ async function setStatus(id: string, status: PhotoUploadStatus): Promise<void> {
 export const markPhotoDeletePending = (id: string) =>
   setStatus(id, "delete_pending");
 
-export const markPhotoCompleted = (id: string) =>
-  setStatus(id, "completed");
+export const markPhotoCompleted = (id: string) => setStatus(id, "completed");
 
-export const markPhotoError = (id: string) =>
-  setStatus(id, "error");
+export const markPhotoError = (id: string) => setStatus(id, "error");
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
 
 export async function deletePhotoRecord(id: string): Promise<void> {
   const { error } = await supabase.from(TABLE).delete().eq("id", id);
   if (error) throw new Error(error.message);
+}
+
+// ─── Public photo queries (for public-facing pages) ──────────────────────────
+
+/**
+ * Returns web-ready photos for a given project category.
+ * Used by public pages (SpacesPage, ArchivePage, etc.) to display
+ * real asset-managed photos instead of Unsplash fallbacks.
+ *
+ * project_stage = 'web' means the photo has been cleared for web display.
+ * Results are ordered: featured first, then newest.
+ * Pass null as projectCategory to return web-ready photos across all categories.
+ */
+export async function getPublicPhotosByCategory(
+  projectCategory: ProjectCategory | null,
+  options: { spaceCategory?: PhotoSpaceCategory; limit?: number } = {},
+): Promise<PhotoRecord[]> {
+  const { spaceCategory, limit = 60 } = options;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query = (supabase.from(TABLE).select("*") as any)
+    .eq("project_stage", "web")
+    .eq("upload_status", "completed");
+
+  if (projectCategory) {
+    query = query.eq("project_category", projectCategory);
+  }
+  if (spaceCategory) {
+    query = query.eq("space_category", spaceCategory);
+  }
+
+  const { data, error } = await query
+    .order("is_featured", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+  return (data ?? []) as PhotoRecord[];
 }

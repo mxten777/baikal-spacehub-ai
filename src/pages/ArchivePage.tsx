@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { useArchive } from "../hooks/useData";
+import { useArchive, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 
@@ -80,11 +80,20 @@ const FALLBACK = [
 export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const { data: archives, isLoading } = useArchive();
+  const { data: archivePhotos } = usePublicPhotos("archive");
   const items = archives && archives.length > 0 ? archives : FALLBACK;
   const filtered =
     activeCategory === "all"
       ? items
       : items.filter((a) => a.category === activeCategory);
+
+  // 커버 이미지 해소: DB 콜럼 없으면 자산관리 풍에서 장변
+  const pool = archivePhotos ?? [];
+  const getCover = (item: (typeof items)[0], idx: number): string => {
+    if (item.cover_image_url) return item.cover_image_url;
+    if (pool.length > 0) return pool[idx % pool.length]?.public_url ?? "";
+    return "";
+  };
 
   return (
     <>
@@ -149,7 +158,7 @@ export default function ArchivePage() {
                     className="group block relative overflow-hidden aspect-[4/3] bg-brand-warm"
                   >
                     <img
-                      src={item.cover_image_url ?? ""}
+                      src={getCover(item, i)}
                       alt={item.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"

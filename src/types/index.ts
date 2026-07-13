@@ -524,12 +524,7 @@ export type ProjectCategory =
   | "contact"
   | "about";
 
-export type ProjectStage =
-  | "source"
-  | "selected"
-  | "edited"
-  | "web"
-  | "pdf";
+export type ProjectStage = "source" | "selected" | "edited" | "web" | "pdf";
 
 export type PhotoProjectStatus = "active" | "archived";
 

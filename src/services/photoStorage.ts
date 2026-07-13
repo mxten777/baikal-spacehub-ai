@@ -78,7 +78,7 @@ export function buildProjectStoragePath(
   projectSlug: string,
   category: string,
   stage: string,
-  filename: string
+  filename: string,
 ): string {
   return `${projectSlug}/${category}/${stage}/${filename}`;
 }
@@ -86,7 +86,7 @@ export function buildProjectStoragePath(
 // ─── Project Upload ────────────────────────────────────────────────────────────
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE_MB = 10;
+const MAX_SIZE_MB = 20;
 
 export interface UploadProjectPhotoParams {
   projectId: string;
@@ -104,7 +104,7 @@ export interface UploadProjectPhotoParams {
  * Path: {projectSlug}/{category}/{stage}/{uuid}.{ext}
  */
 export async function uploadProjectPhoto(
-  params: UploadProjectPhotoParams
+  params: UploadProjectPhotoParams,
 ): Promise<PhotoRecord> {
   const { projectId, projectSlug, category, stage, file, uploadedBy } = params;
 
@@ -117,7 +117,12 @@ export async function uploadProjectPhoto(
 
   const ext = getExtension(file.type);
   const filename = `${crypto.randomUUID()}.${ext}`;
-  const storagePath = buildProjectStoragePath(projectSlug, category, stage, filename);
+  const storagePath = buildProjectStoragePath(
+    projectSlug,
+    category,
+    stage,
+    filename,
+  );
 
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
@@ -127,7 +132,9 @@ export async function uploadProjectPhoto(
     throw new Error(toFriendlyError(uploadError));
   }
 
-  const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
+  const { data: urlData } = supabase.storage
+    .from(BUCKET)
+    .getPublicUrl(storagePath);
 
   return createPhotoRecord({
     original_name: file.name,
@@ -152,7 +159,7 @@ export async function uploadProjectPhoto(
  */
 export async function uploadPhoto(
   file: File,
-  userId: string
+  userId: string,
 ): Promise<UploadResult> {
   const storagePath = buildStoragePath(userId, file.type);
 
@@ -178,9 +185,7 @@ export async function uploadPhoto(
  * Delete a single photo from the `photos` bucket by its storage path.
  */
 export async function deletePhoto(storagePath: string): Promise<void> {
-  const { error } = await supabase.storage
-    .from(BUCKET)
-    .remove([storagePath]);
+  const { error } = await supabase.storage.from(BUCKET).remove([storagePath]);
 
   if (error) {
     throw new Error(toFriendlyError(error));
@@ -193,7 +198,7 @@ export async function deletePhoto(storagePath: string): Promise<void> {
  * Returns null if the image cannot be decoded (does not throw).
  */
 export async function extractImageDimensions(
-  file: File
+  file: File,
 ): Promise<{ width: number; height: number } | null> {
   return new Promise((resolve) => {
     const url = URL.createObjectURL(file);

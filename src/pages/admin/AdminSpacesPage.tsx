@@ -311,6 +311,7 @@ function SpaceForm({
             onChange={(url) => setValue("cover_image_url", url)}
             onUploadComplete={handleUploadComplete}
             folder="spaces"
+            photoPickerCategory="space"
           />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             <button

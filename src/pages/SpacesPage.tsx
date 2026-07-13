@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowRight, Users, Maximize2 } from "lucide-react";
-import { useSpaces } from "../hooks/useData";
+import { useSpaces, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { SpaceCategory } from "../types";
@@ -96,6 +96,18 @@ export default function SpacesPage() {
   );
   const displaySpaces = spaces && spaces.length > 0 ? spaces : FALLBACK_SPACES;
 
+  // 자산관리 시스템의 web 단계 사진을 공간 카테고리별로 매핑
+  const { data: spacePhotos } = usePublicPhotos("space");
+  const spacePhotoMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const p of spacePhotos ?? []) {
+      if (p.space_category && p.public_url && !map[p.space_category]) {
+        map[p.space_category] = p.public_url;
+      }
+    }
+    return map;
+  }, [spacePhotos]);
+
   const categories = ["all", "cafe", "garden", "studio", "storage"] as const;
 
   return (
@@ -163,6 +175,7 @@ export default function SpacesPage() {
                       <img
                         src={
                           space.cover_image_url ||
+                          spacePhotoMap[space.category] ||
                           SPACE_IMAGES[space.category] ||
                           SPACE_IMAGES.studio
                         }
