@@ -241,18 +241,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                {/* Map */}
-                <div className="aspect-[4/3] overflow-hidden bg-brand-warm">
-                  <iframe
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=127.196%2C37.549%2C127.212%2C37.565&layer=mapnik&marker=37.557%2C127.204"
-                    width="100%"
-                    height="100%"
-                    className="border-0 grayscale"
-                    allowFullScreen
-                    loading="lazy"
-                    title="The Lit 위치"
-                  />
-                </div>
+
               </div>
             </AnimatedSection>
           </div>

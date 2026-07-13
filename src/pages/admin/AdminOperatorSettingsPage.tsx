@@ -83,7 +83,10 @@ async function getSettings(): Promise<SiteSetting[]> {
 }
 
 async function upsertSetting(key: string, value: string): Promise<void> {
-  await supabase.from("settings").upsert({ key, value }, { onConflict: "key" });
+  const { error } = await supabase
+    .from("settings")
+    .upsert({ key, value }, { onConflict: "key" });
+  if (error) throw new Error(error.message);
 }
 
 export default function AdminOperatorSettingsPage() {
@@ -91,6 +94,7 @@ export default function AdminOperatorSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [savedKey, setSavedKey] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
 
   useEffect(() => {
     getSettings()
@@ -103,6 +107,7 @@ export default function AdminOperatorSettingsPage() {
 
   const handleSave = async (key: string, value: string) => {
     setSavingKey(key);
+    setErrorKey(null);
     try {
       await upsertSetting(key, value);
       setSettings((prev) => {
@@ -122,6 +127,9 @@ export default function AdminOperatorSettingsPage() {
       });
       setSavedKey(key);
       setTimeout(() => setSavedKey(null), 2000);
+    } catch {
+      setErrorKey(key);
+      setTimeout(() => setErrorKey(null), 3000);
     } finally {
       setSavingKey(null);
     }
@@ -164,6 +172,7 @@ export default function AdminOperatorSettingsPage() {
                       initialValue={getSettingValue(key)}
                       saving={savingKey === key}
                       saved={savedKey === key}
+                      error={errorKey === key}
                       onSave={handleSave}
                     />
                   ))}
@@ -192,6 +201,7 @@ function SettingRow({
   initialValue: string;
   saving: boolean;
   saved: boolean;
+  error: boolean;
   onSave: (key: string, value: string) => void;
 }) {
   const [value, setValue] = useState(initialValue);
@@ -201,7 +211,7 @@ function SettingRow({
   }, [initialValue]);
 
   return (
-    <div className="flex items-center gap-4 p-5">
+    <div className={`flex items-center gap-4 p-5 ${error ? "bg-red-50" : ""}`}>
       <div className="w-48 flex-shrink-0">
         <p className="font-sans text-sm text-brand-black">{label}</p>
         <p className="text-[10px] text-gray-400 font-mono mt-0.5">
@@ -219,7 +229,9 @@ function SettingRow({
           onClick={() => onSave(settingKey, value)}
           disabled={saving || value === initialValue}
           className={`flex items-center gap-1.5 px-4 py-2 text-xs font-sans tracking-wider uppercase transition-colors disabled:opacity-40 ${
-            saved
+            error
+              ? "bg-red-600 text-white"
+              : saved
               ? "bg-green-600 text-white"
               : "bg-brand-black text-white hover:bg-brand-muted"
           }`}
@@ -229,7 +241,7 @@ function SettingRow({
           ) : (
             <Check size={12} />
           )}
-          {saved ? "저장됨" : "저장"}
+          {error ? "저장 실패" : saved ? "저장됨" : "저장"}
         </button>
       </div>
     </div>
