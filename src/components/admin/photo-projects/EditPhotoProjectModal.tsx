@@ -110,6 +110,8 @@ export default function EditPhotoProjectModal({
       return
     }
 
+    if (!project) return
+
     setFormError(null)
     setSubmitting(true)
     try {
