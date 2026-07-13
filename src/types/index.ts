@@ -32,7 +32,8 @@ export type Permission =
   | "content_sources"
   | "external_content"
   | "reservations"
-  | "photo_curator";
+  | "photo_curator"
+  | "photo_projects";
 
 export interface Profile {
   id: UUID;
@@ -430,6 +431,14 @@ export interface PhotoRecord {
   ai_featured_score: number | null;
   ai_analyzed_at: ISODateString | null;
   ai_error_message: string | null;
+  // Sprint 6: Photo Projects columns
+  project_id: UUID | null;
+  project_category: ProjectCategory | null;
+  project_stage: ProjectStage | null;
+  // Sprint 7: Photo metadata
+  title: string | null;
+  description: string | null;
+  note: string | null;
   created_at: ISODateString;
   updated_at: ISODateString;
 }
@@ -445,6 +454,14 @@ export type UpdatePhotoRecordInput = Partial<
     | "admin_memo"
   >
 >;
+
+/** Sprint 7: 메타데이터 수정 전용 입력 타입 */
+export interface UpdatePhotoMetaInput {
+  title?: string | null;
+  description?: string | null;
+  tags?: string[];
+  note?: string | null;
+}
 
 // Sprint 5-A: AI analysis types
 export type AiAnalysisStatus =
@@ -486,6 +503,63 @@ export interface CreatePhotoRecordInput {
   width: number | null;
   height: number | null;
   uploaded_by: string;
+  // Photo project fields (optional — null when not part of a project)
+  project_id?: string | null;
+  project_category?: ProjectCategory | null;
+  project_stage?: ProjectStage | null;
+}
+
+// ============================================================
+// PHOTO PROJECTS (Sprint 6)
+// ============================================================
+
+export type ProjectCategory =
+  | "main"
+  | "wedding"
+  | "space"
+  | "food_beverage"
+  | "archive"
+  | "online_wedding"
+  | "online_space"
+  | "contact"
+  | "about";
+
+export type ProjectStage =
+  | "source"
+  | "selected"
+  | "edited"
+  | "web"
+  | "pdf";
+
+export type PhotoProjectStatus = "active" | "archived";
+
+export interface PhotoProject {
+  id: UUID;
+  name: string;
+  slug: string;
+  description: string | null;
+  categories: ProjectCategory[];
+  stages: ProjectStage[];
+  status: PhotoProjectStatus;
+  created_by: UUID | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+export interface CreatePhotoProjectInput {
+  name: string;
+  slug?: string;
+  description?: string;
+  categories: ProjectCategory[];
+  stages?: ProjectStage[];
+}
+
+export interface UpdatePhotoProjectInput {
+  name?: string;
+  description?: string;
+  categories?: ProjectCategory[];
+  stages?: ProjectStage[];
+  status?: PhotoProjectStatus;
 }
 
 export interface SeoMeta {

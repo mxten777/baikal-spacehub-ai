@@ -38,6 +38,8 @@ import AdminContentSourcesPage from "./pages/admin/AdminContentSourcesPage";
 import AdminExternalContentPage from "./pages/admin/AdminExternalContentPage";
 import AdminReservationsPage from "./pages/admin/AdminReservationsPage";
 import AdminPhotoCuratorPage from "./pages/admin/AdminPhotoCuratorPage";
+import AdminPhotoProjectsPage from "./pages/admin/AdminPhotoProjectsPage";
+import AdminPhotoAssetExplorerPage from "./pages/admin/AdminPhotoAssetExplorerPage";
 import AdminHeroPage from "./pages/admin/AdminHeroPage";
 import AdminAboutPage from "./pages/admin/AdminAboutPage";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
@@ -177,6 +179,22 @@ export default function App() {
                 element={
                   <RoleGuard permission="reservations">
                     <AdminReservationsPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="photo-projects"
+                element={
+                  <RoleGuard permission="photo_projects">
+                    <AdminPhotoProjectsPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="photo-projects/:projectId"
+                element={
+                  <RoleGuard permission="photo_projects">
+                    <AdminPhotoAssetExplorerPage />
                   </RoleGuard>
                 }
               />

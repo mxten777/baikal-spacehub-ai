@@ -1,4 +1,6 @@
 import { supabase } from "../lib/supabase";
+import { createPhotoRecord } from "./photoRepository";
+import type { ProjectCategory, ProjectStage, PhotoRecord } from "../types";
 
 const BUCKET = "photos";
 
@@ -56,6 +58,92 @@ function toFriendlyError(error: { message: string }): string {
   return "업로드 중 오류가 발생했습니다.";
 }
 
+/**
+ * Build a structured storage path for photo project assets.
+ *
+ * @param projectSlug  - e.g. "the-lit-2026"
+ * @param category     - e.g. "main" | "wedding" | "portrait"
+ * @param stage        - e.g. "source" | "web" | "print"
+ * @param filename     - e.g. "image.webp" | "main.webp"
+ * @returns            - e.g. "the-lit-2026/main/source/image.webp"
+ *
+ * Examples:
+ *   buildProjectStoragePath("the-lit-2026", "main", "source", "image.webp")
+ *   → "the-lit-2026/main/source/image.webp"
+ *
+ *   buildProjectStoragePath("the-lit-2026", "wedding", "web", "main.webp")
+ *   → "the-lit-2026/wedding/web/main.webp"
+ */
+export function buildProjectStoragePath(
+  projectSlug: string,
+  category: string,
+  stage: string,
+  filename: string
+): string {
+  return `${projectSlug}/${category}/${stage}/${filename}`;
+}
+
+// ─── Project Upload ────────────────────────────────────────────────────────────
+
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_SIZE_MB = 10;
+
+export interface UploadProjectPhotoParams {
+  projectId: string;
+  projectSlug: string;
+  category: ProjectCategory;
+  stage: ProjectStage;
+  file: File;
+  uploadedBy: string;
+}
+
+/**
+ * Upload a file to Storage under the project path structure,
+ * then insert a row into the photos table.
+ *
+ * Path: {projectSlug}/{category}/{stage}/{uuid}.{ext}
+ */
+export async function uploadProjectPhoto(
+  params: UploadProjectPhotoParams
+): Promise<PhotoRecord> {
+  const { projectId, projectSlug, category, stage, file, uploadedBy } = params;
+
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    throw new Error("JPG, PNG, WebP 형식만 가능합니다.");
+  }
+  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    throw new Error(`파일 크기는 ${MAX_SIZE_MB}MB 이하여야 합니다.`);
+  }
+
+  const ext = getExtension(file.type);
+  const filename = `${crypto.randomUUID()}.${ext}`;
+  const storagePath = buildProjectStoragePath(projectSlug, category, stage, filename);
+
+  const { error: uploadError } = await supabase.storage
+    .from(BUCKET)
+    .upload(storagePath, file, { contentType: file.type, upsert: false });
+
+  if (uploadError) {
+    throw new Error(toFriendlyError(uploadError));
+  }
+
+  const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
+
+  return createPhotoRecord({
+    original_name: file.name,
+    storage_path: storagePath,
+    public_url: urlData.publicUrl,
+    mime_type: file.type,
+    file_size: file.size,
+    width: null,
+    height: null,
+    uploaded_by: uploadedBy,
+    project_id: projectId,
+    project_category: category,
+    project_stage: stage,
+  });
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -76,7 +164,6 @@ export async function uploadPhoto(
     });
 
   if (error) {
-    console.error("[photoStorage] upload error:", error);
     throw new Error(toFriendlyError(error));
   }
 
@@ -96,7 +183,6 @@ export async function deletePhoto(storagePath: string): Promise<void> {
     .remove([storagePath]);
 
   if (error) {
-    console.error("[photoStorage] delete error:", error);
     throw new Error(toFriendlyError(error));
   }
 }

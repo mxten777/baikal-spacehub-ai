@@ -1,51 +1,54 @@
-import { useState, useRef } from 'react'
-import { useSpaces } from '../../hooks/useData'
-import { spacesService } from '../../services/spaces'
-import type { Space } from '../../types'
-import { useQueryClient } from '@tanstack/react-query'
-import { Plus, Pencil, Trash2, X, Check, Loader2 } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import ImageUploadField from '../../components/admin/ImageUploadField'
-import { deleteStorageFilesByUrls } from '../../lib/storage'
+import { useState, useRef } from "react";
+import { useSpaces } from "../../hooks/useData";
+import { spacesService } from "../../services/spaces";
+import type { Space } from "../../types";
+import { useQueryClient } from "@tanstack/react-query";
+import { Plus, Pencil, Trash2, X, Check, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ImageUploadField from "../../components/admin/ImageUploadField";
+import { deleteStorageFilesByUrls } from "../../lib/storage";
 
 const spaceSchema = z.object({
-  name: z.string().min(1, '공간명을 입력하세요'),
-  slug: z.string().min(1, 'slug를 입력하세요').regex(/^[a-z0-9-]+$/, '소문자, 숫자, 하이픈만 허용됩니다'),
+  name: z.string().min(1, "공간명을 입력하세요"),
+  slug: z
+    .string()
+    .min(1, "slug를 입력하세요")
+    .regex(/^[a-z0-9-]+$/, "소문자, 숫자, 하이픈만 허용됩니다"),
   description: z.string().optional(),
-  category: z.enum(['cafe', 'garden', 'studio', 'storage', 'hall', 'other']),
+  category: z.enum(["cafe", "garden", "studio", "storage", "hall", "other"]),
   capacity: z.coerce.number().min(0).optional(),
   size_sqm: z.coerce.number().min(0).optional(),
   rental_price_per_hour: z.coerce.number().min(0).optional(),
   is_available: z.boolean().default(true),
   sort_order: z.coerce.number().default(0),
   cover_image_url: z.string().nullable().optional(),
-})
+});
 
-type SpaceFormData = z.infer<typeof spaceSchema>
+type SpaceFormData = z.infer<typeof spaceSchema>;
 
 const CATEGORY_LABELS: Record<string, string> = {
-  cafe: '카페',
-  garden: '가든',
-  studio: '스튜디오',
-  storage: '스토리지',
-  hall: '홀',
-  other: '기타',
-}
+  cafe: "카페",
+  garden: "가든",
+  studio: "스튜디오",
+  storage: "스토리지",
+  hall: "홀",
+  other: "기타",
+};
 
 const defaultValues: SpaceFormData = {
-  name: '',
-  slug: '',
-  description: '',
-  category: 'other',
+  name: "",
+  slug: "",
+  description: "",
+  category: "other",
   capacity: undefined,
   size_sqm: undefined,
   rental_price_per_hour: undefined,
   is_available: true,
   sort_order: 0,
   cover_image_url: null,
-}
+};
 
 function SpaceForm({
   initialData,
@@ -53,36 +56,52 @@ function SpaceForm({
   onSuccess,
   onWarning,
 }: {
-  initialData?: Space
-  onClose: () => void
-  onSuccess: () => void
-  onWarning?: (msg: string) => void
+  initialData?: Space;
+  onClose: () => void;
+  onSuccess: () => void;
+  onWarning?: (msg: string) => void;
 }) {
-  const [saving, setSaving] = useState(false)
-  const originalImageUrl = useRef<string | null>(initialData?.cover_image_url ?? null)
-  const uploadedUrlsRef = useRef<Set<string>>(new Set())
-  const handleUploadComplete = (url: string) => { uploadedUrlsRef.current.add(url) }
+  const [saving, setSaving] = useState(false);
+  const originalImageUrl = useRef<string | null>(
+    initialData?.cover_image_url ?? null,
+  );
+  const uploadedUrlsRef = useRef<Set<string>>(new Set());
+  const handleUploadComplete = (url: string) => {
+    uploadedUrlsRef.current.add(url);
+  };
   const handleClose = () => {
-    const toClean = new Set(uploadedUrlsRef.current)
-    uploadedUrlsRef.current.clear()
-    onClose()
+    const toClean = new Set(uploadedUrlsRef.current);
+    uploadedUrlsRef.current.clear();
+    onClose();
     if (toClean.size > 0) {
-      deleteStorageFilesByUrls(toClean).then((result) => {
-        if (result.failed.length > 0) {
-          result.failed.forEach(({ url, error }) => console.error('[Storage cleanup]', url, error))
-          onWarning?.('화면은 닫혀진만 일부 임시 이미지 파일을 정리하지 못했습니다.')
-        }
-      }).catch(console.error)
+      deleteStorageFilesByUrls(toClean)
+        .then((result) => {
+          if (result.failed.length > 0) {
+            result.failed.forEach(({ url, error }) =>
+              console.error("[Storage cleanup]", url, error),
+            );
+            onWarning?.(
+              "화면은 닫혀진만 일부 임시 이미지 파일을 정리하지 못했습니다.",
+            );
+          }
+        })
+        .catch(console.error);
     }
-  }
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<SpaceFormData>({
+  };
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<SpaceFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(spaceSchema) as any,
     defaultValues: initialData
       ? {
           name: initialData.name,
           slug: initialData.slug,
-          description: initialData.description ?? '',
+          description: initialData.description ?? "",
           category: initialData.category,
           capacity: initialData.capacity ?? undefined,
           size_sqm: initialData.size_sqm ?? undefined,
@@ -92,11 +111,11 @@ function SpaceForm({
           cover_image_url: initialData.cover_image_url ?? null,
         }
       : defaultValues,
-  })
-  const coverImageUrl = watch('cover_image_url')
+  });
+  const coverImageUrl = watch("cover_image_url");
 
   const onSubmit = async (data: SpaceFormData) => {
-    setSaving(true)
+    setSaving(true);
     try {
       const payload = {
         name: data.name,
@@ -109,150 +128,261 @@ function SpaceForm({
         is_available: data.is_available ?? true,
         sort_order: data.sort_order ?? 0,
         cover_image_url: data.cover_image_url ?? null,
-      }
+      };
       if (initialData) {
-        await spacesService.update(initialData.id, payload)
+        await spacesService.update(initialData.id, payload);
       } else {
-        await spacesService.create({ ...payload, is_available: payload.is_available, sort_order: payload.sort_order })
+        await spacesService.create({
+          ...payload,
+          is_available: payload.is_available,
+          sort_order: payload.sort_order,
+        });
       }
-      const savedUrl = payload.cover_image_url
-      if (savedUrl !== null) uploadedUrlsRef.current.delete(savedUrl)
-      const toClean = new Set(uploadedUrlsRef.current)
-      uploadedUrlsRef.current.clear()
-      const prevUrl = originalImageUrl.current
-      originalImageUrl.current = savedUrl
-      onSuccess()
-      const urlsToDelete = new Set(toClean)
-      if (prevUrl !== null && prevUrl !== savedUrl) urlsToDelete.add(prevUrl)
+      const savedUrl = payload.cover_image_url;
+      if (savedUrl !== null) uploadedUrlsRef.current.delete(savedUrl);
+      const toClean = new Set(uploadedUrlsRef.current);
+      uploadedUrlsRef.current.clear();
+      const prevUrl = originalImageUrl.current;
+      originalImageUrl.current = savedUrl;
+      onSuccess();
+      const urlsToDelete = new Set(toClean);
+      if (prevUrl !== null && prevUrl !== savedUrl) urlsToDelete.add(prevUrl);
       if (urlsToDelete.size > 0) {
-        deleteStorageFilesByUrls(urlsToDelete).then((result) => {
-          if (result.failed.length > 0) {
-            result.failed.forEach(({ url, error }) => console.error('[Storage cleanup]', url, error))
-            onWarning?.('내용은 저장되었지만 일부 임시 이미지 파일을 정리하지 못했습니다.')
-          }
-        }).catch(console.error)
+        deleteStorageFilesByUrls(urlsToDelete)
+          .then((result) => {
+            if (result.failed.length > 0) {
+              result.failed.forEach(({ url, error }) =>
+                console.error("[Storage cleanup]", url, error),
+              );
+              onWarning?.(
+                "내용은 저장되었지만 일부 임시 이미지 파일을 정리하지 못했습니다.",
+              );
+            }
+          })
+          .catch(console.error);
       }
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="font-display text-lg font-light">{initialData ? '공간 편집' : '공간 추가'}</h2>
-          <button onClick={handleClose} className="text-gray-400 hover:text-brand-black"><X size={20} /></button>
+          <h2 className="font-display text-lg font-light">
+            {initialData ? "공간 편집" : "공간 추가"}
+          </h2>
+          <button
+            onClick={handleClose}
+            className="text-gray-400 hover:text-brand-black"
+          >
+            <X size={20} />
+          </button>
         </div>
-        <form onSubmit={handleSubmit(onSubmit as any /* eslint-disable-line @typescript-eslint/no-explicit-any */)} className="p-6 space-y-4">
+        <form
+          onSubmit={handleSubmit(
+            onSubmit as any /* eslint-disable-line @typescript-eslint/no-explicit-any */,
+          )}
+          className="p-6 space-y-4"
+        >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">공간명 *</label>
-              <input {...register('name')} placeholder="예: 더 릿 스튜디오 A" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                공간명 *
+              </label>
+              <input
+                {...register("name")}
+                placeholder="예: 더 릿 스튜디오 A"
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
             <div>
-              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">Slug *</label>
-              <input {...register('slug')} placeholder="예: studio-a" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
-              {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>}
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                Slug *
+              </label>
+              <input
+                {...register("slug")}
+                placeholder="예: studio-a"
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+              />
+              {errors.slug && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.slug.message}
+                </p>
+              )}
             </div>
           </div>
           <div>
-            <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">설명</label>
-            <textarea {...register('description')} rows={3} placeholder="예: 자연광이 풍부한 멀티 스튜디오 공간입니다. 촬영, 워크숍, 소규모 공연에 최적화되어 있습니다." className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none" />
+            <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+              설명
+            </label>
+            <textarea
+              {...register("description")}
+              rows={3}
+              placeholder="예: 자연광이 풍부한 멀티 스튜디오 공간입니다. 촬영, 워크숍, 소규모 공연에 최적화되어 있습니다."
+              className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">카테고리</label>
-              <select {...register('category')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black bg-white">
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                카테고리
+              </label>
+              <select
+                {...register("category")}
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black bg-white"
+              >
                 {Object.entries(CATEGORY_LABELS).map(([val, label]) => (
-                  <option key={val} value={val}>{label}</option>
+                  <option key={val} value={val}>
+                    {label}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">수용 인원</label>
-              <input type="number" {...register('capacity')} placeholder="예: 30" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                수용 인원
+              </label>
+              <input
+                type="number"
+                {...register("capacity")}
+                placeholder="예: 30"
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">면적 (㎡)</label>
-              <input type="number" {...register('size_sqm')} placeholder="예: 85" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                면적 (㎡)
+              </label>
+              <input
+                type="number"
+                {...register("size_sqm")}
+                placeholder="예: 85"
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+              />
             </div>
             <div>
-              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">시간당 대여 가격 (₩)</label>
-              <input type="number" {...register('rental_price_per_hour')} placeholder="예: 50000" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                시간당 대여 가격 (₩)
+              </label>
+              <input
+                type="number"
+                {...register("rental_price_per_hour")}
+                placeholder="예: 50000"
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">정렬 순서</label>
-              <input type="number" {...register('sort_order')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                정렬 순서
+              </label>
+              <input
+                type="number"
+                {...register("sort_order")}
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+              />
             </div>
             <div className="flex items-end pb-2">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" {...register('is_available')} className="w-4 h-4" />
-                <span className="text-sm font-sans text-gray-700">대여 가능</span>
+                <input
+                  type="checkbox"
+                  {...register("is_available")}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm font-sans text-gray-700">
+                  대여 가능
+                </span>
               </label>
             </div>
           </div>
           <ImageUploadField
             label="대표 이미지"
             value={coverImageUrl}
-            onChange={(url) => setValue('cover_image_url', url)}
+            onChange={(url) => setValue("cover_image_url", url)}
             onUploadComplete={handleUploadComplete}
             folder="spaces"
           />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-            <button type="button" onClick={handleClose} className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black">취소</button>
-            <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50">
-              {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+            <button
+              type="button"
+              onClick={handleClose}
+              className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50"
+            >
+              {saving ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Check size={14} />
+              )}
               저장
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 }
 
 export default function AdminSpacesPage() {
-  const { data: spaces, isLoading } = useSpaces()
-  const queryClient = useQueryClient()
-  const [formOpen, setFormOpen] = useState(false)
-  const [editingSpace, setEditingSpace] = useState<Space | null>(null)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [storageWarning, setStorageWarning] = useState<string | null>(null)
+  const { data: spaces, isLoading } = useSpaces();
+  const queryClient = useQueryClient();
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingSpace, setEditingSpace] = useState<Space | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
 
   const handleSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['spaces'] })
-    setFormOpen(false)
-    setEditingSpace(null)
-  }
+    queryClient.invalidateQueries({ queryKey: ["spaces"] });
+    setFormOpen(false);
+    setEditingSpace(null);
+  };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('이 공간을 삭제하시겠습니까?')) return
-    setDeletingId(id)
+    if (!confirm("이 공간을 삭제하시겠습니까?")) return;
+    setDeletingId(id);
     try {
-      await spacesService.delete(id)
-      queryClient.invalidateQueries({ queryKey: ['spaces'] })
+      await spacesService.delete(id);
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
-  }
+  };
 
   return (
     <div>
       {storageWarning && (
         <div className="flex items-center justify-between gap-3 mb-4 px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-sans">
           <span>{storageWarning}</span>
-          <button type="button" onClick={() => setStorageWarning(null)} className="shrink-0 text-amber-600 hover:text-amber-900">✕</button>
+          <button
+            type="button"
+            onClick={() => setStorageWarning(null)}
+            className="shrink-0 text-amber-600 hover:text-amber-900"
+          >
+            ✕
+          </button>
         </div>
       )}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-display text-2xl font-light text-brand-black">Spaces</h1>
+          <h1 className="font-display text-2xl font-light text-brand-black">
+            Spaces
+          </h1>
           <p className="font-sans text-sm text-gray-500 mt-1">공간 관리</p>
         </div>
         <button
@@ -273,10 +403,18 @@ export default function AdminSpacesPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase">공간명</th>
-                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden md:table-cell">카테고리</th>
-                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden lg:table-cell">수용 인원</th>
-                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden lg:table-cell">상태</th>
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase">
+                  공간명
+                </th>
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden md:table-cell">
+                  카테고리
+                </th>
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden lg:table-cell">
+                  수용 인원
+                </th>
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden lg:table-cell">
+                  상태
+                </th>
                 <th className="px-6 py-3" />
               </tr>
             </thead>
@@ -285,18 +423,28 @@ export default function AdminSpacesPage() {
                 spaces.map((space) => (
                   <tr key={space.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      <p className="font-sans text-sm font-medium text-brand-black">{space.name}</p>
-                      <p className="font-sans text-xs text-gray-400 mt-0.5">/{space.slug}</p>
+                      <p className="font-sans text-sm font-medium text-brand-black">
+                        {space.name}
+                      </p>
+                      <p className="font-sans text-xs text-gray-400 mt-0.5">
+                        /{space.slug}
+                      </p>
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
-                      <span className="text-xs font-sans text-gray-600">{CATEGORY_LABELS[space.category] ?? space.category}</span>
+                      <span className="text-xs font-sans text-gray-600">
+                        {CATEGORY_LABELS[space.category] ?? space.category}
+                      </span>
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
-                      <span className="text-xs font-sans text-gray-600">{space.capacity ? `${space.capacity}명` : '-'}</span>
+                      <span className="text-xs font-sans text-gray-600">
+                        {space.capacity ? `${space.capacity}명` : "-"}
+                      </span>
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
-                      <span className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${space.is_available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                        {space.is_available ? 'Available' : 'Unavailable'}
+                      <span
+                        className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${space.is_available ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
+                      >
+                        {space.is_available ? "Available" : "Unavailable"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -312,7 +460,11 @@ export default function AdminSpacesPage() {
                           disabled={deletingId === space.id}
                           className="p-1.5 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
                         >
-                          {deletingId === space.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                          {deletingId === space.id ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            <Trash2 size={14} />
+                          )}
                         </button>
                       </div>
                     </td>
@@ -320,7 +472,10 @@ export default function AdminSpacesPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center font-sans text-sm text-gray-400">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center font-sans text-sm text-gray-400"
+                  >
                     등록된 공간이 없습니다. 공간을 추가하세요.
                   </td>
                 </tr>
@@ -333,11 +488,14 @@ export default function AdminSpacesPage() {
       {(formOpen || editingSpace) && (
         <SpaceForm
           initialData={editingSpace ?? undefined}
-          onClose={() => { setFormOpen(false); setEditingSpace(null) }}
+          onClose={() => {
+            setFormOpen(false);
+            setEditingSpace(null);
+          }}
           onSuccess={handleSuccess}
           onWarning={setStorageWarning}
         />
       )}
     </div>
-  )
+  );
 }

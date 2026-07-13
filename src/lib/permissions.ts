@@ -33,6 +33,7 @@ const SUPER_ADMIN_PERMISSIONS: Permission[] = [
   "external_content",
   "reservations",
   "photo_curator",
+  "photo_projects",
 ];
 
 const OPERATOR_PERMISSIONS: Permission[] = [

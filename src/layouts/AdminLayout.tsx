@@ -20,6 +20,7 @@ import {
   CalendarCheck,
   MonitorPlay,
   SlidersHorizontal,
+  FolderKanban,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
@@ -118,6 +119,12 @@ const superAdminNav: NavItem[] = [
     href: "/admin/reservations",
     icon: CalendarCheck,
     permission: "reservations",
+  },
+  {
+    label: "이미지 자산 관리",
+    href: "/admin/photo-projects",
+    icon: FolderKanban,
+    permission: "photo_projects",
   },
   {
     label: "AI 사진 큐레이터",
