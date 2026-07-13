@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Play, ExternalLink } from "lucide-react";
-import { useMedia } from "../hooks/useData";
-import { useExternalContents } from "../hooks/useData";
+import { Play, ExternalLink, ArrowUpRight } from "lucide-react";
+import { useMedia, useExternalContents, useSettings } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { ContentPlatform } from "../types";
+
+const INSTAGRAM_FALLBACK = "https://instagram.com/thelit_official";
 
 const PLATFORMS: Array<{ value: "all" | ContentPlatform; label: string }> = [
   { value: "all", label: "전체" },
@@ -26,6 +27,8 @@ export default function MediaPage() {
   const [activePlatform, setActivePlatform] = useState<"all" | ContentPlatform>(
     "all",
   );
+  const { data: settings } = useSettings();
+  const instagramUrl = settings?.instagram_url || INSTAGRAM_FALLBACK;
 
   // external_contents가 주요 데이터 소스 (수집된 콘텐츠)
   const { data: externalItems = [], isLoading: externalLoading } =
@@ -121,6 +124,25 @@ export default function MediaPage() {
           )}
         </div>
       </div>
+
+      {/* Instagram profile link banner */}
+      {activePlatform === "instagram" && (
+        <div className="border-b border-brand-border bg-brand-cream">
+          <div className="container-wide py-3 flex items-center justify-between">
+            <span className="font-sans text-xs text-brand-muted">
+              Instagram 게시물은 공식 계정에서 확인하세요
+            </span>
+            <a
+              href={instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 font-sans text-xs font-medium tracking-widest uppercase text-brand-black hover:text-brand-accent transition-colors"
+            >
+              @thelit_official <ArrowUpRight size={11} />
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Grid */}
       <section className="section-padding bg-brand-white">

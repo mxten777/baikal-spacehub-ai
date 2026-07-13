@@ -107,7 +107,10 @@ export default function ImageUploadField({
           <div className="absolute top-2 right-2 flex gap-1">
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); if (!uploading) inputRef.current?.click(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!uploading) inputRef.current?.click();
+              }}
               disabled={uploading}
               title="이미지 교체"
               className="w-7 h-7 bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors disabled:opacity-50"
@@ -120,7 +123,11 @@ export default function ImageUploadField({
             </button>
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); onChange(null); setPreviewError(false); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange(null);
+                setPreviewError(false);
+              }}
               title="이미지 삭제"
               className="w-7 h-7 bg-black/60 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
             >

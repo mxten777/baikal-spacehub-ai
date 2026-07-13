@@ -1,4 +1,6 @@
 {
+  "deno.enablePaths": ["supabase/functions"],
+  "deno.unstable": true,
   "files.encoding": "utf8",
   "files.eol": "\n",
   "editor.formatOnSave": true,
