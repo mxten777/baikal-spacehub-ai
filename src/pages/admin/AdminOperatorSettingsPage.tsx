@@ -193,6 +193,7 @@ function SettingRow({
   initialValue,
   saving,
   saved,
+  error,
   onSave,
 }: {
   settingKey: string;
