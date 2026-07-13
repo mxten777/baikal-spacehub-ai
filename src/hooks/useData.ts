@@ -236,12 +236,13 @@ export const useHeroSlides = () =>
   });
 
 /** Public: 활성 + 게시기간 내 슬라이드만 조회 */
-export const useActiveHeroSlides = () =>
+export const useActiveHeroSlides = (options?: { placeholderData?: import('../types').HeroSlide[] }) =>
   useQuery({
     queryKey: ["hero-slides", "active"],
     queryFn: () => heroSlidesService.getActive(),
     staleTime: 2 * 60 * 1000,
     enabled: isSupabaseConfigured,
+    placeholderData: options?.placeholderData,
   });
 
 // ── Public Photos ─────────────────────────────────────────────

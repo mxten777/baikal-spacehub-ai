@@ -39,15 +39,12 @@ function HeroButton({
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function HeroSection() {
-  const { data: heroData, isLoading } = useActiveHeroSlides()
+  // placeholderData로 로딩 중에도 fallback 즉시 표시
+  // 실제 데이터 도착 시 AnimatePresence가 부드럽게 전환
+  const { data: heroData } = useActiveHeroSlides({ placeholderData: HERO_FALLBACK_SLIDES })
 
-  // 로딩 중에는 빈 배열 → 데이터 확정 후 Supabase 결과 or fallback 사용
   const displaySlides: HeroSlide[] =
-    isLoading
-      ? []
-      : heroData && heroData.length > 0
-        ? heroData
-        : HERO_FALLBACK_SLIDES
+    heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES
 
   // Always up-to-date ref — interval callback uses this to avoid stale closure
   const displaySlidesRef = useRef(displaySlides)
@@ -77,10 +74,7 @@ export default function HeroSection() {
   const safeIdx = Math.min(current, displaySlides.length - 1)
   const slide = displaySlides[safeIdx]
 
-  if (!slide) {
-    // 로딩 중: 레이아웃이 튀지 않도록 동일 높이 검정 배경 표시
-    return <section className="relative h-screen min-h-[600px] bg-brand-black" />
-  }
+  if (!slide) return null
 
   return (
     <section className="relative h-screen min-h-[600px] overflow-hidden">
