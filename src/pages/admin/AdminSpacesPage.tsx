@@ -148,18 +148,18 @@ function SpaceForm({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">공간명 *</label>
-              <input {...register('name')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <input {...register('name')} placeholder="예: 더 릿 스튜디오 A" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
             </div>
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">Slug *</label>
-              <input {...register('slug')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <input {...register('slug')} placeholder="예: studio-a" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
               {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>}
             </div>
           </div>
           <div>
             <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">설명</label>
-            <textarea {...register('description')} rows={3} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none" />
+            <textarea {...register('description')} rows={3} placeholder="예: 자연광이 풍부한 멀티 스튜디오 공간입니다. 촬영, 워크숍, 소규모 공연에 최적화되어 있습니다." className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -172,17 +172,17 @@ function SpaceForm({
             </div>
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">수용 인원</label>
-              <input type="number" {...register('capacity')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <input type="number" {...register('capacity')} placeholder="예: 30" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">면적 (㎡)</label>
-              <input type="number" {...register('size_sqm')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <input type="number" {...register('size_sqm')} placeholder="예: 85" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
             </div>
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">시간당 대여 가격 (₩)</label>
-              <input type="number" {...register('rental_price_per_hour')} className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
+              <input type="number" {...register('rental_price_per_hour')} placeholder="예: 50000" className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
