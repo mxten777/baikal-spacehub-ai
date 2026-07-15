@@ -3,11 +3,12 @@ import { useSpaces } from "../../hooks/useData";
 import { spacesService } from "../../services/spaces";
 import type { Space } from "../../types";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, X, Check, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Loader2, Images } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploadField from "../../components/admin/ImageUploadField";
+import PhotoPickerModal from "../../components/admin/PhotoPickerModal";
 import { deleteStorageFilesByUrls } from "../../lib/storage";
 import { listPhotoProjects } from "../../services/photoProjects";
 
@@ -77,6 +78,7 @@ function SpaceForm({
   const [imagesArr, setImagesArr] = useState<(string | null)[]>(
     initialData?.images?.length ? [...initialData.images] : [],
   );
+  const [multiPickerOpen, setMultiPickerOpen] = useState(false);
   const uploadedUrlsRef = useRef<Set<string>>(new Set());
   const handleUploadComplete = (url: string) => {
     uploadedUrlsRef.current.add(url);
@@ -376,13 +378,22 @@ function SpaceForm({
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase">
                 추가 이미지
               </label>
-              <button
-                type="button"
-                onClick={addImageSlot}
-                className="flex items-center gap-1 text-xs font-sans text-gray-500 hover:text-brand-black transition-colors"
-              >
-                <Plus size={12} /> 슬롯 추가
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMultiPickerOpen(true)}
+                  className="flex items-center gap-1 text-xs font-sans text-gray-500 hover:text-brand-black transition-colors"
+                >
+                  <Images size={12} /> 라이브러리에서 선택
+                </button>
+                <button
+                  type="button"
+                  onClick={addImageSlot}
+                  className="flex items-center gap-1 text-xs font-sans text-gray-500 hover:text-brand-black transition-colors"
+                >
+                  <Plus size={12} /> 슬롯 추가
+                </button>
+              </div>
             </div>
             {imagesArr.length > 0 ? (
               <div className="grid grid-cols-3 gap-2">
@@ -432,6 +443,20 @@ function SpaceForm({
             </button>
           </div>
         </form>
+        <PhotoPickerModal
+          open={multiPickerOpen}
+          onClose={() => setMultiPickerOpen(false)}
+          onSelect={() => {}}
+          multiSelect
+          onMultiSelect={(urls) => {
+            setImagesArr((prev) => {
+              const existing = new Set(prev.filter(Boolean));
+              const newUrls = urls.filter((u) => !existing.has(u));
+              return [...prev, ...newUrls];
+            });
+          }}
+          defaultCategory="space"
+        />
       </div>
     </div>
   );
