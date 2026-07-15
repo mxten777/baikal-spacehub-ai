@@ -104,6 +104,7 @@ export default function PhotoPickerModal({
           {CATEGORY_TABS.map((tab) => (
             <button
               key={String(tab.value)}
+              type="button"
               onClick={() => setActiveCategory(tab.value)}
               className={`shrink-0 px-4 py-1.5 font-sans text-[10.5px] font-medium tracking-[0.14em] uppercase transition-all duration-200 ${
                 activeCategory === tab.value
