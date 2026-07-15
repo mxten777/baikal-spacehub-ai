@@ -33,21 +33,37 @@ CREATE TABLE IF NOT EXISTS public.photo_projects (
 
 -- CHECK: categories 배열의 각 요소가 허용 값인지 검증
 -- (PostgreSQL은 배열 요소별 CHECK를 직접 지원하지 않으므로 표현식 CHECK로 처리)
-ALTER TABLE public.photo_projects
-  ADD CONSTRAINT photo_projects_categories_valid
-    CHECK (
-      categories <@ ARRAY[
-        'main','wedding','space','food_beverage','archive',
-        'online_wedding','online_space','contact','about'
-      ]::TEXT[]
-    );
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'photo_projects_categories_valid'
+      AND conrelid = 'public.photo_projects'::regclass
+  ) THEN
+    ALTER TABLE public.photo_projects
+      ADD CONSTRAINT photo_projects_categories_valid
+        CHECK (
+          categories <@ ARRAY[
+            'main','wedding','space','food_beverage','archive',
+            'online_wedding','online_space','contact','about'
+          ]::TEXT[]
+        );
+  END IF;
+END; $$;
 
 -- CHECK: stages 배열의 각 요소가 허용 값인지 검증
-ALTER TABLE public.photo_projects
-  ADD CONSTRAINT photo_projects_stages_valid
-    CHECK (
-      stages <@ ARRAY['source','selected','edited','web','pdf']::TEXT[]
-    );
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'photo_projects_stages_valid'
+      AND conrelid = 'public.photo_projects'::regclass
+  ) THEN
+    ALTER TABLE public.photo_projects
+      ADD CONSTRAINT photo_projects_stages_valid
+        CHECK (
+          stages <@ ARRAY['source','selected','edited','web','pdf']::TEXT[]
+        );
+  END IF;
+END; $$;
 
 -- ── 2. updated_at 자동 갱신 trigger ─────────────────────────────────────────
 -- photos 테이블은 전용 함수(update_photos_updated_at)를 사용한다.
