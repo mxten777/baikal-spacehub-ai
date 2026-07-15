@@ -177,16 +177,20 @@ export default function ArchivePage() {
           {isLoading ? (
             <LoadingSpinner />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-              {tiles.map((tile, i) => (
+            <div className="grid grid-cols-2 lg:grid-cols-3 auto-rows-[220px] gap-3 lg:gap-4">
+              {tiles.map((tile, i) => {
+                // 7타일 반복 패턴: 0번·4번은 tall(2행), 나머지는 normal(1행)
+                const isTall = i % 7 === 0 || i % 7 === 4;
+                return (
                 <AnimatedSection
                   key={`${tile.slug}-${i}`}
                   animation="fade-up"
                   delay={i * 40}
+                  className={isTall ? "row-span-2" : ""}
                 >
                   <Link
                     to={`/archive/${tile.slug}`}
-                    className="group block relative overflow-hidden aspect-[4/3] bg-brand-warm"
+                    className="group block relative overflow-hidden h-full bg-brand-warm"
                   >
                     <img
                       src={tile.url}
@@ -218,7 +222,8 @@ export default function ArchivePage() {
                     )}
                   </Link>
                 </AnimatedSection>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
