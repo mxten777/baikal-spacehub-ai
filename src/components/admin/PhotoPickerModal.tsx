@@ -46,7 +46,7 @@ export default function PhotoPickerModal({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedUrls, setSelectedUrls] = useState<Set<string>>(new Set());
 
-  const { data: photos, isLoading } = usePublicPhotos(activeCategory, {
+  const { data: photos, isLoading, isError } = usePublicPhotos(activeCategory, {
     limit: 60,
   });
 
@@ -121,6 +121,11 @@ export default function PhotoPickerModal({
           {isLoading ? (
             <div className="flex items-center justify-center h-48">
               <Loader2 size={24} className="animate-spin text-gray-300" />
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center justify-center h-48 gap-2 text-gray-400">
+              <p className="font-sans text-sm text-red-400">사진을 불러오지 못했습니다.</p>
+              <p className="font-sans text-xs">네트워크 상태를 확인하거나 페이지를 새로고침 해주세요.</p>
             </div>
           ) : !photos || photos.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-48 gap-2 text-gray-400">

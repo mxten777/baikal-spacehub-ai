@@ -262,6 +262,7 @@ export const usePublicPhotos = (
     queryFn: () => getPublicPhotosByCategory(projectCategory, options),
     staleTime: 10 * 60 * 1000,
     enabled: isSupabaseConfigured,
+    retry: 1,
   });
 
 // ── Search ────────────────────────────────────────────────────
