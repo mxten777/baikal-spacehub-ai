@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updatePhotoMeta } from "../../../services/photoProjects";
 import type {
   PhotoRecord,
+  PhotoSpaceCategory,
   ProjectCategory,
   ProjectStage,
 } from "../../../types";
@@ -45,6 +46,21 @@ const STAGE_LABELS: Record<ProjectStage, string> = {
   web: "Web",
   pdf: "PDF",
 };
+
+const SPACE_CATEGORY_OPTIONS: { value: PhotoSpaceCategory; label: string }[] = [
+  { value: "unclassified", label: "미분류" },
+  { value: "cafe", label: "카페" },
+  { value: "garden", label: "가든" },
+  { value: "studio", label: "스튜디오" },
+  { value: "exterior", label: "외관" },
+  { value: "program", label: "프로그램" },
+  { value: "event", label: "이벤트" },
+  { value: "exhibition", label: "전시" },
+  { value: "performance", label: "공연" },
+  { value: "food", label: "음식" },
+  { value: "people", label: "인물" },
+  { value: "other", label: "기타" },
+];
 
 // ─── Tag Input ────────────────────────────────────────────────────────────────
 
@@ -148,6 +164,9 @@ export default function PhotoDetailPanel({
   const [description, setDescription] = useState(photo.description ?? "");
   const [tags, setTags] = useState<string[]>(photo.tags ?? []);
   const [note, setNote] = useState(photo.note ?? "");
+  const [spaceCategory, setSpaceCategory] = useState<PhotoSpaceCategory>(
+    photo.space_category ?? "unclassified",
+  );
 
   // Reset when photo changes
   useEffect(() => {
@@ -155,6 +174,7 @@ export default function PhotoDetailPanel({
     setDescription(photo.description ?? "");
     setTags(photo.tags ?? []);
     setNote(photo.note ?? "");
+    setSpaceCategory(photo.space_category ?? "unclassified");
   }, [photo.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Dirty check
@@ -162,7 +182,8 @@ export default function PhotoDetailPanel({
     title.trim() !== (photo.title ?? "") ||
     description.trim() !== (photo.description ?? "") ||
     note.trim() !== (photo.note ?? "") ||
-    JSON.stringify(tags) !== JSON.stringify(photo.tags ?? []);
+    JSON.stringify(tags) !== JSON.stringify(photo.tags ?? []) ||
+    spaceCategory !== (photo.space_category ?? "unclassified");
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -171,6 +192,7 @@ export default function PhotoDetailPanel({
         description: description.trim() || null,
         tags,
         note: note.trim() || null,
+        space_category: spaceCategory,
       }),
     onSuccess: (updated) => {
       // 셀 목록 쿼리 갱신
@@ -196,6 +218,7 @@ export default function PhotoDetailPanel({
     setDescription(photo.description ?? "");
     setTags(photo.tags ?? []);
     setNote(photo.note ?? "");
+    setSpaceCategory(photo.space_category ?? "unclassified");
   };
 
   const categoryLabel = photo.project_category
@@ -270,6 +293,26 @@ export default function PhotoDetailPanel({
               rows={3}
               className="w-full px-2.5 py-1.5 border border-gray-200 focus:border-brand-black text-sm font-sans text-gray-800 outline-none resize-none placeholder:text-gray-300"
             />
+          </Field>
+
+          {/* Space Category */}
+          <Field label="공간 분류">
+            <select
+              value={spaceCategory}
+              onChange={(e) =>
+                setSpaceCategory(e.target.value as PhotoSpaceCategory)
+              }
+              className="w-full px-2.5 py-1.5 border border-gray-200 focus:border-brand-black text-sm font-sans text-gray-800 outline-none bg-white"
+            >
+              {SPACE_CATEGORY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-[10px] font-sans text-gray-400">
+              카페·가든·스튜디오 선택 시 공간 목록 페이지에 자동 반영
+            </p>
           </Field>
 
           {/* Tags */}

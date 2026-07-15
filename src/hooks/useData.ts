@@ -236,7 +236,9 @@ export const useHeroSlides = () =>
   });
 
 /** Public: 활성 + 게시기간 내 슬라이드만 조회 */
-export const useActiveHeroSlides = (options?: { placeholderData?: import('../types').HeroSlide[] }) =>
+export const useActiveHeroSlides = (options?: {
+  placeholderData?: import("../types").HeroSlide[];
+}) =>
   useQuery({
     queryKey: ["hero-slides", "active"],
     queryFn: () => heroSlidesService.getActive(),

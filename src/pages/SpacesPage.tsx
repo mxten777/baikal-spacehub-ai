@@ -5,7 +5,7 @@ import { ArrowRight, Users, Maximize2 } from "lucide-react";
 import { useSpaces, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
-import type { SpaceCategory } from "../types";
+import type { SpaceCategory, Space } from "../types";
 
 const CATEGORY_LABELS: Record<SpaceCategory | "all", string> = {
   all: "전체",
@@ -189,6 +189,25 @@ export default function SpacesPage() {
                         </div>
                       )}
                     </div>
+                    {/* 추가 이미지 썸네일 */}
+                    {((space as Space).images?.length ?? 0) > 0 && (
+                      <div className="flex gap-0.5 mt-0.5">
+                        {(space as Space).images!.slice(0, 4).map((imgUrl: string, i: number) => (
+                          <div
+                            key={i}
+                            className="flex-1 overflow-hidden"
+                            style={{ height: "52px" }}
+                          >
+                            <img
+                              src={imgUrl}
+                              alt=""
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <div className="pt-7 pb-2">
                       <div className="flex items-start justify-between mb-3">
                         <div>

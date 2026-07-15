@@ -62,12 +62,26 @@ function SpaceForm({
   onWarning?: (msg: string) => void;
 }) {
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const originalImageUrl = useRef<string | null>(
     initialData?.cover_image_url ?? null,
+  );
+  const originalImagesRef = useRef<string[]>(initialData?.images ?? []);
+  const [imagesArr, setImagesArr] = useState<(string | null)[]>(
+    initialData?.images?.length ? [...initialData.images] : [],
   );
   const uploadedUrlsRef = useRef<Set<string>>(new Set());
   const handleUploadComplete = (url: string) => {
     uploadedUrlsRef.current.add(url);
+  };
+  const addImageSlot = () => setImagesArr((prev) => [...prev, null]);
+  const updateImageSlot = (idx: number, url: string | null) => {
+    if (url === null) {
+      setImagesArr((prev) => prev.filter((_, i) => i !== idx));
+    } else {
+      setImagesArr((prev) => prev.map((v, i) => (i === idx ? url : v)));
+      uploadedUrlsRef.current.add(url);
+    }
   };
   const handleClose = () => {
     const toClean = new Set(uploadedUrlsRef.current);
@@ -116,6 +130,7 @@ function SpaceForm({
 
   const onSubmit = async (data: SpaceFormData) => {
     setSaving(true);
+    setSaveError(null);
     try {
       const payload = {
         name: data.name,
@@ -128,6 +143,7 @@ function SpaceForm({
         is_available: data.is_available ?? true,
         sort_order: data.sort_order ?? 0,
         cover_image_url: data.cover_image_url ?? null,
+        images: imagesArr.filter((u): u is string => Boolean(u)),
       };
       if (initialData) {
         await spacesService.update(initialData.id, payload);
@@ -139,7 +155,9 @@ function SpaceForm({
         });
       }
       const savedUrl = payload.cover_image_url;
+      const savedImages = payload.images;
       if (savedUrl !== null) uploadedUrlsRef.current.delete(savedUrl);
+      savedImages.forEach((u) => uploadedUrlsRef.current.delete(u));
       const toClean = new Set(uploadedUrlsRef.current);
       uploadedUrlsRef.current.clear();
       const prevUrl = originalImageUrl.current;
@@ -147,6 +165,11 @@ function SpaceForm({
       onSuccess();
       const urlsToDelete = new Set(toClean);
       if (prevUrl !== null && prevUrl !== savedUrl) urlsToDelete.add(prevUrl);
+      const removedOriginals = originalImagesRef.current.filter(
+        (u) => !savedImages.includes(u),
+      );
+      removedOriginals.forEach((u) => urlsToDelete.add(u));
+      originalImagesRef.current = savedImages;
       if (urlsToDelete.size > 0) {
         deleteStorageFilesByUrls(urlsToDelete)
           .then((result) => {
@@ -161,6 +184,10 @@ function SpaceForm({
           })
           .catch(console.error);
       }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.';
+      setSaveError(message);
+      console.error('[SpaceForm] save error:', err);
     } finally {
       setSaving(false);
     }
@@ -313,6 +340,47 @@ function SpaceForm({
             folder="spaces"
             photoPickerCategory="space"
           />
+
+          {/* Additional images */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase">
+                추가 이미지
+              </label>
+              <button
+                type="button"
+                onClick={addImageSlot}
+                className="flex items-center gap-1 text-xs font-sans text-gray-500 hover:text-brand-black transition-colors"
+              >
+                <Plus size={12} /> 슬롯 추가
+              </button>
+            </div>
+            {imagesArr.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2">
+                {imagesArr.map((url, idx) => (
+                  <ImageUploadField
+                    key={idx}
+                    label=""
+                    value={url}
+                    onChange={(u) => updateImageSlot(idx, u)}
+                    onUploadComplete={handleUploadComplete}
+                    folder="spaces"
+                    photoPickerCategory="space"
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400 font-sans py-2">
+                슬롯 추가를 눌러 이미지를 업로드하세요.
+              </p>
+            )}
+          </div>
+
+          {saveError && (
+            <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm font-sans">
+              {saveError}
+            </div>
+          )}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             <button
               type="button"

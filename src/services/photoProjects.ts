@@ -262,6 +262,7 @@ export async function updatePhotoMeta(
   if ("description" in input) patch.description = input.description ?? null;
   if ("tags" in input) patch.tags = input.tags ?? [];
   if ("note" in input) patch.note = input.note ?? null;
+  if ("space_category" in input) patch.space_category = input.space_category;
 
   const { data, error } = await supabase
     .from("photos")

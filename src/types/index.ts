@@ -461,6 +461,7 @@ export interface UpdatePhotoMetaInput {
   description?: string | null;
   tags?: string[];
   note?: string | null;
+  space_category?: PhotoSpaceCategory;
 }
 
 // Sprint 5-A: AI analysis types

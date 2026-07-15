@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useActiveHeroSlides } from '../../hooks/useData'
-import { HERO_FALLBACK_SLIDES } from '../../data/heroFallbackData'
-import type { HeroSlide } from '../../types'
+import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useActiveHeroSlides } from "../../hooks/useData";
+import { HERO_FALLBACK_SLIDES } from "../../data/heroFallbackData";
+import type { HeroSlide } from "../../types";
 
 // ─── Button helper ────────────────────────────────────────────────────────────
 
@@ -13,27 +13,32 @@ function HeroButton({
   link,
   variant,
 }: {
-  text: string | null | undefined
-  link: string | null | undefined
-  variant: 'primary' | 'outline'
+  text: string | null | undefined;
+  link: string | null | undefined;
+  variant: "primary" | "outline";
 }) {
-  if (!text || !link) return null
+  if (!text || !link) return null;
 
-  const isExternal = link.startsWith('http://') || link.startsWith('https://')
-  const className = variant === 'primary' ? 'btn-primary' : 'btn-outline-white'
+  const isExternal = link.startsWith("http://") || link.startsWith("https://");
+  const className = variant === "primary" ? "btn-primary" : "btn-outline-white";
 
   if (isExternal) {
     return (
-      <a href={link} target="_blank" rel="noopener noreferrer" className={className}>
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+      >
         {text} <ArrowRight size={15} />
       </a>
-    )
+    );
   }
   return (
     <Link to={link} className={className}>
-      {text} {variant === 'primary' && <ArrowRight size={15} />}
+      {text} {variant === "primary" && <ArrowRight size={15} />}
     </Link>
-  )
+  );
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -41,40 +46,44 @@ function HeroButton({
 export default function HeroSection() {
   // placeholderData로 로딩 중에도 fallback 즉시 표시
   // 실제 데이터 도착 시 AnimatePresence가 부드럽게 전환
-  const { data: heroData } = useActiveHeroSlides({ placeholderData: HERO_FALLBACK_SLIDES })
+  const { data: heroData } = useActiveHeroSlides({
+    placeholderData: HERO_FALLBACK_SLIDES,
+  });
 
   const displaySlides: HeroSlide[] =
-    heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES
+    heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES;
 
   // Always up-to-date ref — interval callback uses this to avoid stale closure
-  const displaySlidesRef = useRef(displaySlides)
+  const displaySlidesRef = useRef(displaySlides);
   // Update ref after every render so interval always reads current slides
   useEffect(() => {
-    displaySlidesRef.current = displaySlides
-  })
+    displaySlidesRef.current = displaySlides;
+  });
 
-  const [current, setCurrent] = useState(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [current, setCurrent] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startAuto = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % displaySlidesRef.current.length)
-    }, 6000)
-  }
+      setCurrent((prev) => (prev + 1) % displaySlidesRef.current.length);
+    }, 6000);
+  };
 
   // Initial autoplay — runs once; interval reads ref which stays current
 
   useEffect(() => {
-    startAuto()
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [])
+    startAuto();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
-  const safeIdx = Math.min(current, displaySlides.length - 1)
-  const slide = displaySlides[safeIdx]
+  const safeIdx = Math.min(current, displaySlides.length - 1);
+  const slide = displaySlides[safeIdx];
 
-  if (!slide) return null
+  if (!slide) return null;
 
   return (
     <section className="relative h-screen min-h-[600px] overflow-hidden">
@@ -85,7 +94,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
           className="absolute inset-0"
         >
           {/* picture element: mobile image if available, desktop otherwise */}
@@ -97,7 +106,7 @@ export default function HeroSection() {
               />
             )}
             <img
-              src={slide.desktop_image_url || ''}
+              src={slide.desktop_image_url || ""}
               alt=""
               className="w-full h-full object-cover"
               aria-hidden="true"
@@ -111,7 +120,7 @@ export default function HeroSection() {
       <div className="relative z-10 flex flex-col justify-end h-full container-wide pb-20 lg:pb-28">
         <AnimatePresence mode="wait">
           <motion.div
-            key={slide.id + '-content'}
+            key={slide.id + "-content"}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -123,7 +132,11 @@ export default function HeroSection() {
             </p>
             <h1
               className="font-display font-light text-white whitespace-pre-line mb-7"
-              style={{ fontSize: 'clamp(2rem, 4.5vw, 4.5rem)', letterSpacing: '-0.03em', lineHeight: '1.08' }}
+              style={{
+                fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
+                letterSpacing: "-0.03em",
+                lineHeight: "1.08",
+              }}
             >
               {slide.title}
             </h1>
@@ -157,13 +170,13 @@ export default function HeroSection() {
             <button
               key={i}
               onClick={() => {
-                setCurrent(i)
-                startAuto()
+                setCurrent(i);
+                startAuto();
               }}
               className={`transition-all duration-300 ${
                 i === safeIdx
-                  ? 'w-8 h-0.5 bg-white'
-                  : 'w-4 h-0.5 bg-white/40 hover:bg-white/70'
+                  ? "w-8 h-0.5 bg-white"
+                  : "w-4 h-0.5 bg-white/40 hover:bg-white/70"
               }`}
               aria-label={`Slide ${i + 1}`}
             />
@@ -179,12 +192,11 @@ export default function HeroSection() {
         <div className="w-px h-12 bg-white/20 relative overflow-hidden">
           <motion.div
             className="absolute top-0 w-full h-1/2 bg-white/60"
-            animate={{ y: ['0%', '200%'] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+            animate={{ y: ["0%", "200%"] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
           />
         </div>
       </div>
     </section>
-  )
+  );
 }
-

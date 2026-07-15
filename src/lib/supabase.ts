@@ -14,6 +14,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
+    // React StrictMode에서 컴포넌트 이중 마운트로 인해 gotrue 락이 해제되지 않는
+    // 문제를 방지하기 위해 락을 우회합니다.
+    // 단일 탭 사용 환경에서는 안전합니다.
+    lock: (_name: string, _acquireTimeout: number, fn: () => Promise<unknown>) => fn(),
   },
 })
 

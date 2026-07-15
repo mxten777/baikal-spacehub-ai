@@ -33,3 +33,8 @@ captures/
 *.sw?
 
 .vercel
+
+# Large binary assets (serve from Supabase Storage or CDN instead)
+src/assets/images/cafe/*.mp4
+src/assets/images/cafe/*.zip
+src/assets/images/cafe/더릿정원250921/
