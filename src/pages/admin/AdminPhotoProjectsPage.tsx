@@ -147,6 +147,7 @@ export default function AdminPhotoProjectsPage() {
   const { data: projects, isLoading, isError, error } = useQuery({
     queryKey: ['admin-photo-projects'],
     queryFn: listPhotoProjects,
+    retry: false,
   })
 
   const [showCreateModal, setShowCreateModal] = useState(false)
