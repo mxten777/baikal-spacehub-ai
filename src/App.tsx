@@ -4,6 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 import type { Session } from "@supabase/supabase-js";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Layouts
 import MainLayout from "./layouts/MainLayout";
@@ -76,7 +77,8 @@ export default function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <Routes>
+          <AuthProvider>
+            <Routes>
             {/* Public routes */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<HomePage />} />
@@ -210,7 +212,8 @@ export default function App() {
 
             {/* 404 fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+            </Routes>
+          </AuthProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </HelmetProvider>
