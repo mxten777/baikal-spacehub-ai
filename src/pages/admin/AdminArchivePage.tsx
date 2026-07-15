@@ -153,11 +153,17 @@ function ArchiveItemForm({
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
                 카테고리 *
               </label>
-              <input
+              <select
                 {...register("category")}
-                placeholder="전시, 공연, 이벤트..."
                 className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
-              />
+              >
+                <option value="">선택...</option>
+                <option value="전시">전시</option>
+                <option value="공연">공연</option>
+                <option value="강연">강연</option>
+                <option value="워크숍">워크숍</option>
+                <option value="이벤트">이벤트</option>
+              </select>
               {errors.category && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.category.message}

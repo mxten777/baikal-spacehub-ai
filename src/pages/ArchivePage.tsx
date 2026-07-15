@@ -7,11 +7,11 @@ import LoadingSpinner from "../components/common/LoadingSpinner";
 
 const CATEGORIES = [
   { value: "all", label: "전체" },
-  { value: "exhibition", label: "전시" },
-  { value: "performance", label: "공연" },
-  { value: "lecture", label: "강연" },
-  { value: "workshop", label: "워크숍" },
-  { value: "event", label: "이벤트" },
+  { value: "전시", label: "전시" },
+  { value: "공연", label: "공연" },
+  { value: "강연", label: "강연" },
+  { value: "워크숍", label: "워크숍" },
+  { value: "이벤트", label: "이벤트" },
 ];
 
 const FALLBACK = [
@@ -19,7 +19,7 @@ const FALLBACK = [
     id: "1",
     slug: "winter-exhibition-2025",
     title: "겨울 빛 — 설치 전시",
-    category: "exhibition",
+    category: "전시",
     date: "2025-12",
     cover_image_url:
       "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80",
@@ -29,7 +29,7 @@ const FALLBACK = [
     id: "2",
     slug: "autumn-concert-2025",
     title: "가을 콘서트 2025",
-    category: "performance",
+    category: "공연",
     date: "2025-10",
     cover_image_url:
       "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80",
@@ -39,7 +39,7 @@ const FALLBACK = [
     id: "3",
     slug: "brand-event-samsung",
     title: "삼성 브랜드 런칭",
-    category: "event",
+    category: "이벤트",
     date: "2025-09",
     cover_image_url:
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
@@ -49,7 +49,7 @@ const FALLBACK = [
     id: "4",
     slug: "photo-workshop-2025",
     title: "필름 사진 워크숍",
-    category: "workshop",
+    category: "워크숍",
     date: "2025-08",
     cover_image_url:
       "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600&q=80",
@@ -59,7 +59,7 @@ const FALLBACK = [
     id: "5",
     slug: "summer-art-fair",
     title: "여름 아트페어",
-    category: "exhibition",
+    category: "전시",
     date: "2025-07",
     cover_image_url:
       "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=80",
@@ -69,7 +69,7 @@ const FALLBACK = [
     id: "6",
     slug: "talk-show-june",
     title: "문화 토크쇼 시즌 1",
-    category: "lecture",
+    category: "강연",
     date: "2025-06",
     cover_image_url:
       "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=80",
