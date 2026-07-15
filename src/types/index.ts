@@ -73,6 +73,7 @@ export interface Space {
   rental_price_per_hour?: number | null;
   is_available: boolean;
   sort_order: number;
+  photo_project_id?: string | null;
   created_at: ISODateString;
   updated_at: ISODateString;
 }

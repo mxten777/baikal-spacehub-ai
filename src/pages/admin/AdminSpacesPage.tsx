@@ -2,13 +2,14 @@ import { useState, useRef } from "react";
 import { useSpaces } from "../../hooks/useData";
 import { spacesService } from "../../services/spaces";
 import type { Space } from "../../types";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, X, Check, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploadField from "../../components/admin/ImageUploadField";
 import { deleteStorageFilesByUrls } from "../../lib/storage";
+import { listPhotoProjects } from "../../services/photoProjects";
 
 const spaceSchema = z.object({
   name: z.string().min(1, "공간명을 입력하세요"),
@@ -24,6 +25,7 @@ const spaceSchema = z.object({
   is_available: z.boolean().default(true),
   sort_order: z.coerce.number().default(0),
   cover_image_url: z.string().nullable().optional(),
+  photo_project_id: z.string().nullable().optional(),
 });
 
 type SpaceFormData = z.infer<typeof spaceSchema>;
@@ -48,6 +50,7 @@ const defaultValues: SpaceFormData = {
   is_available: true,
   sort_order: 0,
   cover_image_url: null,
+  photo_project_id: null,
 };
 
 function SpaceForm({
@@ -66,6 +69,10 @@ function SpaceForm({
   const originalImageUrl = useRef<string | null>(
     initialData?.cover_image_url ?? null,
   );
+  const { data: photoProjects = [] } = useQuery({
+    queryKey: ["photo_projects"],
+    queryFn: listPhotoProjects,
+  });
   const originalImagesRef = useRef<string[]>(initialData?.images ?? []);
   const [imagesArr, setImagesArr] = useState<(string | null)[]>(
     initialData?.images?.length ? [...initialData.images] : [],
@@ -123,6 +130,7 @@ function SpaceForm({
           is_available: initialData.is_available,
           sort_order: initialData.sort_order,
           cover_image_url: initialData.cover_image_url ?? null,
+          photo_project_id: initialData.photo_project_id ?? null,
         }
       : defaultValues,
   });
@@ -144,6 +152,7 @@ function SpaceForm({
         sort_order: data.sort_order ?? 0,
         cover_image_url: data.cover_image_url ?? null,
         images: imagesArr.filter((u): u is string => Boolean(u)),
+        photo_project_id: data.photo_project_id ?? null,
       };
       if (initialData) {
         await spacesService.update(initialData.id, payload);
@@ -331,6 +340,26 @@ function SpaceForm({
                 </span>
               </label>
             </div>
+          </div>
+          <div>
+            <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+              연결된 포토 프로젝트
+            </label>
+            <select
+              {...register("photo_project_id")}
+              className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black bg-white"
+            >
+              <option value="">— 연결 안 함 —</option>
+              {photoProjects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                  {p.status === "archived" ? " (보관)" : ""}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-400 font-sans mt-1">
+              이 공간의 이미지 자산을 관리하는 포토 프로젝트를 선택하세요.
+            </p>
           </div>
           <ImageUploadField
             label="대표 이미지"
