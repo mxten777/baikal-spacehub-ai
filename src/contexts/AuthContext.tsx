@@ -7,7 +7,13 @@
  *   메뉴 클릭 시 blank 화면 현상이 발생하지 않음
  */
 
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
@@ -90,7 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     isSuperAdmin: checkSuperAdmin(role),
     isOperator: checkOperator(role),
-    hasPermission: (permission: Permission) => checkPermission(role, permission),
+    hasPermission: (permission: Permission) =>
+      checkPermission(role, permission),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
