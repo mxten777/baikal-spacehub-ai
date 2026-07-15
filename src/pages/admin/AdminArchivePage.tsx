@@ -3,11 +3,12 @@ import { useArchive } from "../../hooks/useData";
 import { archiveService } from "../../services/archive";
 import type { ArchiveItem } from "../../types";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, X, Check, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Loader2, Images } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploadField from "../../components/admin/ImageUploadField";
+import PhotoPickerModal from "../../components/admin/PhotoPickerModal";
 
 const archiveSchema = z.object({
   title: z.string().min(1, "제목을 입력하세요"),
@@ -19,7 +20,7 @@ const archiveSchema = z.object({
   category: z.string().min(1, "카테고리를 입력하세요"),
   date: z.string().optional(),
   cover_image_url: z.string().nullable().optional(),
-  images: z.string().optional(),
+  images: z.array(z.string()).optional(),
   is_featured: z.boolean().default(false),
 });
 
@@ -37,6 +38,7 @@ function ArchiveItemForm({
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [galleryPickerOpen, setGalleryPickerOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -54,7 +56,7 @@ function ArchiveItemForm({
           category: initialData.category,
           date: initialData.date?.split("T")[0] ?? "",
           cover_image_url: initialData.cover_image_url ?? null,
-          images: initialData.images ? initialData.images.join("\n") : "",
+          images: initialData.images ?? [],
           is_featured: initialData.is_featured,
         }
       : {
@@ -64,25 +66,20 @@ function ArchiveItemForm({
           category: "",
           date: "",
           cover_image_url: null,
-          images: "",
+          images: [],
           is_featured: false,
         },
   });
   const coverImageUrl = watch("cover_image_url");
+  const galleryImages = watch("images") ?? [];
 
   const onSubmit = async (data: ArchiveFormData) => {
     setSaving(true);
     setSubmitError(null);
     try {
-      const images = data.images
-        ? data.images
-            .split("\n")
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : [];
       const payload = {
         ...data,
-        images,
+        images: data.images ?? [],
         cover_image_url: data.cover_image_url ?? null,
       };
       if (initialData) {
@@ -189,15 +186,63 @@ function ArchiveItemForm({
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 tracking-wider uppercase mb-1">
-              이미지 URL (줄바꿈으로 구분)
-            </label>
-            <textarea
-              {...register("images")}
-              rows={4}
-              placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
-              className="w-full border border-gray-200 px-3 py-2 text-sm font-mono focus:outline-none focus:border-brand-black resize-none"
-            />
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs text-gray-600 tracking-wider uppercase">
+                갤러리 이미지 ({galleryImages.length})
+              </label>
+              <button
+                type="button"
+                onClick={() => setGalleryPickerOpen(true)}
+                className="flex items-center gap-1 text-xs font-sans text-gray-500 hover:text-brand-black transition-colors"
+              >
+                <Images size={13} />
+                라이브러리에서 추가
+              </button>
+            </div>
+            {galleryImages.length > 0 ? (
+              <div className="grid grid-cols-4 gap-2">
+                {galleryImages.map((url, idx) => (
+                  <div key={idx} className="relative group aspect-square bg-gray-100 overflow-hidden">
+                    <img
+                      src={url}
+                      alt={`gallery-${idx}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setValue(
+                          "images",
+                          galleryImages.filter((_, i) => i !== idx),
+                        )
+                      }
+                      className="absolute top-1 right-1 w-5 h-5 bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-16 border border-dashed border-gray-200 flex items-center justify-center text-xs text-gray-400">
+                라이브러리에서 이미지를 추가하세요
+              </div>
+            )}
+            {galleryPickerOpen && (
+              <PhotoPickerModal
+                open={galleryPickerOpen}
+                onClose={() => setGalleryPickerOpen(false)}
+                onSelect={() => {}}
+                multiSelect
+                onMultiSelect={(urls) =>
+                  setValue("images", [
+                    ...galleryImages,
+                    ...urls.filter((u) => !galleryImages.includes(u)),
+                  ])
+                }
+                defaultCategory="archive"
+              />
+            )}
           </div>{" "}
           <ImageUploadField
             label="대표 이미지 (cover)"
