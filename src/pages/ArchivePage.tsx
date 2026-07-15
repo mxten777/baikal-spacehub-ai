@@ -77,6 +77,16 @@ const FALLBACK = [
   },
 ];
 
+// 아카이브 항목의 모든 이미지를 개별 타일로 펼친 타입
+type ImageTile = {
+  url: string;
+  slug: string;
+  title: string;
+  category: string;
+  date?: string | null;
+  isCover: boolean;
+};
+
 export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const { data: archives, isLoading } = useArchive();
@@ -87,13 +97,34 @@ export default function ArchivePage() {
       ? items
       : items.filter((a) => a.category === activeCategory);
 
-  // 커버 이미지 해소: DB 콜럼 없으면 자산관리 풍에서 장변
+  // 각 archive item의 images[] + cover를 개별 타일로 펼침
   const pool = archivePhotos ?? [];
-  const getCover = (item: (typeof items)[0], idx: number): string => {
-    if (item.cover_image_url) return item.cover_image_url;
-    if (pool.length > 0) return pool[idx % pool.length]?.public_url ?? "";
-    return "";
-  };
+  const tiles: ImageTile[] = filtered.flatMap((item, idx) => {
+    const allUrls: string[] = [];
+
+    // cover image
+    const cover = item.cover_image_url
+      || (pool.length > 0 ? pool[idx % pool.length]?.public_url : undefined)
+      || "";
+    if (cover) allUrls.push(cover);
+
+    // gallery images (중복 제거)
+    const galleryImages = (item as { images?: string[] }).images;
+    if (galleryImages) {
+      galleryImages.forEach((u: string) => {
+        if (u && !allUrls.includes(u)) allUrls.push(u);
+      });
+    }
+
+    return allUrls.map((url, i) => ({
+      url,
+      slug: item.slug,
+      title: item.title,
+      category: item.category,
+      date: item.date,
+      isCover: i === 0,
+    }));
+  });
 
   return (
     <>
@@ -147,43 +178,44 @@ export default function ArchivePage() {
             <LoadingSpinner />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-              {filtered.map((item, i) => (
+              {tiles.map((tile, i) => (
                 <AnimatedSection
-                  key={item.id}
+                  key={`${tile.slug}-${i}`}
                   animation="fade-up"
-                  delay={i * 60}
+                  delay={i * 40}
                 >
                   <Link
-                    to={`/archive/${item.slug}`}
+                    to={`/archive/${tile.slug}`}
                     className="group block relative overflow-hidden aspect-[4/3] bg-brand-warm"
                   >
                     <img
-                      src={getCover(item, i)}
-                      alt={item.title}
+                      src={tile.url}
+                      alt={tile.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                    <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                      <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
-                        {item.date?.substring(0, 7)} ·{" "}
-                        {
-                          CATEGORIES.find((c) => c.value === item.category)
-                            ?.label
-                        }
-                      </p>
-                      <h3 className="font-display text-lg font-light text-white">
-                        {item.title}
-                      </h3>
-                    </div>
-                    {/* Always shown title overlay (mobile) */}
-                    <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
-                      <div className="bg-black/60 backdrop-blur-sm p-3">
-                        <h3 className="font-display text-base font-light text-white">
-                          {item.title}
+                    {tile.isCover && (
+                      <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                        <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
+                          {tile.date?.substring(0, 7)} ·{" "}
+                          {CATEGORIES.find((c) => c.value === tile.category)?.label}
+                        </p>
+                        <h3 className="font-display text-lg font-light text-white">
+                          {tile.title}
                         </h3>
                       </div>
-                    </div>
+                    )}
+                    {/* Always shown title overlay (mobile, cover only) */}
+                    {tile.isCover && (
+                      <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
+                        <div className="bg-black/60 backdrop-blur-sm p-3">
+                          <h3 className="font-display text-base font-light text-white">
+                            {tile.title}
+                          </h3>
+                        </div>
+                      </div>
+                    )}
                   </Link>
                 </AnimatedSection>
               ))}
