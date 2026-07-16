@@ -171,12 +171,13 @@ export default function SpaceDetailPage() {
       </div>
     );
 
-  // 우선순위: 업로드된 실사진 > DB images 배열(URL) > Unsplash 폴백
-  const images =
-    (uploadedUrls.length > 0 ? uploadedUrls : null) ||
+  // 폴백 이미지 (즉시 표시 가능)
+  const fallbackImages: string[] =
     displaySpace.images ||
     SPACE_IMAGES[displaySpace.category] ||
     Object.values(SPACE_IMAGES)[0];
+  // 업로드된 실사진 (비동기 로드 → crossfade)
+  const heroUploaded = uploadedUrls[0];
 
   return (
     <>
@@ -190,11 +191,22 @@ export default function SpaceDetailPage() {
 
       {/* Hero image */}
       <div className="relative h-[70vh] min-h-[500px]">
+        {/* 폴백: 즉시 표시 */}
         <img
-          src={images[0] || displaySpace.cover_image_url || SPACE_IMAGES[displaySpace.category]?.[0]}
+          src={fallbackImages[0] || displaySpace.cover_image_url}
           alt={displaySpace.name}
-          className="w-full h-full object-cover"
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover"
         />
+        {/* 업로드 사진: 로드 완료 후 fade in */}
+        {heroUploaded && (
+          <img
+            src={heroUploaded}
+            alt={displaySpace.name}
+            className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
+            onLoad={(e) => (e.currentTarget as HTMLImageElement).classList.remove('opacity-0')}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-overlay-center" />
         <div className="absolute bottom-0 left-0 right-0 container-wide pb-12">
           <p className="eyebrow text-white/60 mb-2">{displaySpace.name_en}</p>
@@ -223,17 +235,28 @@ export default function SpaceDetailPage() {
               </AnimatedSection>
 
               {/* Gallery */}
-              {images.length > 1 && (
+              {fallbackImages.length > 1 && (
                 <AnimatedSection animation="fade-up" delay={100}>
                   <div className="grid grid-cols-2 gap-3 mb-8">
-                    {images.slice(1, 5).map((img: string, i: number) => (
-                      <img
-                        key={i}
-                        src={img}
-                        alt={`${displaySpace.name} ${i + 2}`}
-                        className="aspect-[4/3] object-cover w-full"
-                        loading="lazy"
-                      />
+                    {fallbackImages.slice(1, 5).map((fallback: string, i: number) => (
+                      <div key={i} className="relative overflow-hidden aspect-[4/3]">
+                        <img
+                          src={fallback}
+                          alt={`${displaySpace.name} ${i + 2}`}
+                          aria-hidden="true"
+                          className="absolute inset-0 w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        {uploadedUrls[i + 1] && (
+                          <img
+                            src={uploadedUrls[i + 1]}
+                            alt={`${displaySpace.name} ${i + 2}`}
+                            className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
+                            onLoad={(e) => (e.currentTarget as HTMLImageElement).classList.remove('opacity-0')}
+                            loading="lazy"
+                          />
+                        )}
+                      </div>
                     ))}
                   </div>
                 </AnimatedSection>

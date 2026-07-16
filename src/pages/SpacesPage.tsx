@@ -172,19 +172,26 @@ export default function SpacesPage() {
                 >
                   <Link to={`/spaces/${space.slug}`} className="group block">
                     <div className="relative overflow-hidden aspect-[16/9]">
+                      {/* 폴백: 즉시 표시 */}
                       <img
-                        src={
-                          spacePhotoMap[space.category] ||
-                          space.cover_image_url ||
-                          SPACE_IMAGES[space.category] ||
-                          SPACE_IMAGES.studio
-                        }
+                        src={space.cover_image_url || SPACE_IMAGES[space.category] || SPACE_IMAGES.studio}
                         alt={space.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                       />
+                      {/* 업로드 사진: 로드 완료 후 fade in */}
+                      {spacePhotoMap[space.category] && (
+                        <img
+                          src={spacePhotoMap[space.category]}
+                          alt={space.name}
+                          className="absolute inset-0 w-full h-full object-cover opacity-0 transition-[opacity,transform] duration-700 group-hover:scale-105"
+                          onLoad={(e) => (e.currentTarget as HTMLImageElement).classList.remove('opacity-0')}
+                          loading="lazy"
+                        />
+                      )}
                       {!space.is_available && (
-                        <div className="absolute top-4 right-4 bg-black/80 text-white text-xs px-3 py-1 font-sans tracking-wider">
+                        <div className="absolute top-4 right-4 z-10 bg-black/80 text-white text-xs px-3 py-1 font-sans tracking-wider">
                           예약 불가
                         </div>
                       )}
