@@ -17,6 +17,7 @@ import SpacesPage from "./pages/SpacesPage";
 import SpaceDetailPage from "./pages/SpaceDetailPage";
 import ProgramsPage from "./pages/ProgramsPage";
 import ProgramDetailPage from "./pages/ProgramDetailPage";
+import EventsPage from "./pages/EventsPage";
 import ArchivePage from "./pages/ArchivePage";
 import ArchiveDetailPage from "./pages/ArchiveDetailPage";
 import BlogPage from "./pages/BlogPage";
@@ -88,10 +89,7 @@ export default function App() {
                 <Route path="/spaces/:slug" element={<SpaceDetailPage />} />
                 <Route path="/programs" element={<ProgramsPage />} />
                 <Route path="/programs/:slug" element={<ProgramDetailPage />} />
-                <Route
-                  path="/events"
-                  element={<Navigate to="/programs" replace />}
-                />
+                <Route path="/events" element={<EventsPage />} />
                 <Route path="/archive" element={<ArchivePage />} />
                 <Route path="/archive/:slug" element={<ArchiveDetailPage />} />
                 <Route path="/blog" element={<BlogPage />} />

@@ -103,9 +103,10 @@ export default function ArchivePage() {
     const allUrls: string[] = [];
 
     // cover image
-    const cover = item.cover_image_url
-      || (pool.length > 0 ? pool[idx % pool.length]?.public_url : undefined)
-      || "";
+    const cover =
+      item.cover_image_url ||
+      (pool.length > 0 ? pool[idx % pool.length]?.public_url : undefined) ||
+      "";
     if (cover) allUrls.push(cover);
 
     // gallery images (중복 제거)
@@ -182,46 +183,49 @@ export default function ArchivePage() {
                 // 7타일 반복 패턴: 0번·4번은 tall(2행), 나머지는 normal(1행)
                 const isTall = i % 7 === 0 || i % 7 === 4;
                 return (
-                <AnimatedSection
-                  key={`${tile.slug}-${i}`}
-                  animation="fade-up"
-                  delay={i * 40}
-                  className={isTall ? "row-span-2" : ""}
-                >
-                  <Link
-                    to={`/archive/${tile.slug}`}
-                    className="group block relative overflow-hidden h-full bg-brand-warm"
+                  <AnimatedSection
+                    key={`${tile.slug}-${i}`}
+                    animation="fade-up"
+                    delay={i * 40}
+                    className={isTall ? "row-span-2" : ""}
                   >
-                    <img
-                      src={tile.url}
-                      alt={tile.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                    {tile.isCover && (
-                      <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                        <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
-                          {tile.date?.substring(0, 7)} ·{" "}
-                          {CATEGORIES.find((c) => c.value === tile.category)?.label}
-                        </p>
-                        <h3 className="font-display text-lg font-light text-white">
-                          {tile.title}
-                        </h3>
-                      </div>
-                    )}
-                    {/* Always shown title overlay (mobile, cover only) */}
-                    {tile.isCover && (
-                      <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
-                        <div className="bg-black/60 backdrop-blur-sm p-3">
-                          <h3 className="font-display text-base font-light text-white">
+                    <Link
+                      to={`/archive/${tile.slug}`}
+                      className="group block relative overflow-hidden h-full bg-brand-warm"
+                    >
+                      <img
+                        src={tile.url}
+                        alt={tile.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                      {tile.isCover && (
+                        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                          <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
+                            {tile.date?.substring(0, 7)} ·{" "}
+                            {
+                              CATEGORIES.find((c) => c.value === tile.category)
+                                ?.label
+                            }
+                          </p>
+                          <h3 className="font-display text-lg font-light text-white">
                             {tile.title}
                           </h3>
                         </div>
-                      </div>
-                    )}
-                  </Link>
-                </AnimatedSection>
+                      )}
+                      {/* Always shown title overlay (mobile, cover only) */}
+                      {tile.isCover && (
+                        <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
+                          <div className="bg-black/60 backdrop-blur-sm p-3">
+                            <h3 className="font-display text-base font-light text-white">
+                              {tile.title}
+                            </h3>
+                          </div>
+                        </div>
+                      )}
+                    </Link>
+                  </AnimatedSection>
                 );
               })}
             </div>
