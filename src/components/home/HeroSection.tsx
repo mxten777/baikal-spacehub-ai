@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 // AnimatePresence kept for content text transition below
-import { useActiveHeroSlides } from "../../hooks/useData";
+import { useActiveHeroSlides, usePublicPhotos } from "../../hooks/useData";
 import { HERO_FALLBACK_SLIDES } from "../../data/heroFallbackData";
 import type { HeroSlide } from "../../types";
 
@@ -51,8 +51,17 @@ export default function HeroSection() {
     placeholderData: HERO_FALLBACK_SLIDES,
   });
 
-  const displaySlides: HeroSlide[] =
-    heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES;
+  // project_category='main' + stage='web' 업로드 사진 — desktop_image_url 없는 슬라이드 자동 치환
+  const { data: mainPhotos } = usePublicPhotos("main");
+
+  const displaySlides: HeroSlide[] = useMemo(() => {
+    const base = heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES;
+    if (!mainPhotos?.length) return base;
+    return base.map((slide, i) => ({
+      ...slide,
+      desktop_image_url: slide.desktop_image_url || mainPhotos[i]?.public_url || null,
+    }));
+  }, [heroData, mainPhotos]);
 
   // Always up-to-date ref — interval callback uses this to avoid stale closure
   const displaySlidesRef = useRef(displaySlides);

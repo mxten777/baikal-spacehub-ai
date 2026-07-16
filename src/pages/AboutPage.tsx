@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import { aboutService, DEFAULT_ABOUT } from "../services/about";
 import type { AboutContent } from "../types";
@@ -21,6 +22,10 @@ export default function AboutPage() {
         /* fallback to default already set */
       });
   }, []);
+
+  // project_category='about' + stage='web' 업로드 사진 → 히어로에 crossfade
+  const { data: aboutPhotos } = usePublicPhotos("about");
+  const uploadedHeroUrl = aboutPhotos?.[0]?.public_url;
 
   const {
     hero_image_url,
@@ -55,11 +60,22 @@ export default function AboutPage() {
 
       {/* Hero */}
       <section className="relative h-[70vh] min-h-[500px]">
+        {/* 폴백: 즉시 표시 */}
         <img
           src={hero_image_url}
           alt="The Lit"
-          className="w-full h-full object-cover"
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover"
         />
+        {/* 'about' 카테고리 업로드 사진: 로드 완료 후 fade in */}
+        {uploadedHeroUrl && (
+          <img
+            src={uploadedHeroUrl}
+            alt="The Lit"
+            className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
+            onLoad={(e) => (e.currentTarget as HTMLImageElement).classList.remove('opacity-0')}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-overlay-center" />
         <div className="absolute inset-0 flex flex-col justify-end container-wide pb-16">
           <AnimatedSection animation="fade-up">
