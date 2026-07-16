@@ -318,7 +318,7 @@ function SlideForm({
             <p className="text-xs font-sans text-gray-600 tracking-wider uppercase mb-2">
               첫 번째 버튼
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-sans text-gray-500 mb-1">
                   버튼 텍스트
@@ -347,7 +347,7 @@ function SlideForm({
             <p className="text-xs font-sans text-gray-600 tracking-wider uppercase mb-2">
               두 번째 버튼
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-sans text-gray-500 mb-1">
                   버튼 텍스트
@@ -375,7 +375,7 @@ function SlideForm({
           </div>
 
           {/* 순서 + 활성화 */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
                 표시 순서
@@ -399,7 +399,7 @@ function SlideForm({
           </div>
 
           {/* 게시 기간 */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
                 게시 시작일
@@ -526,7 +526,7 @@ export default function AdminHeroPage() {
           </button>
         </div>
       )}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-2xl font-light text-brand-black">
             Hero 슬라이드
@@ -540,7 +540,7 @@ export default function AdminHeroPage() {
             setEditingSlide(null);
             setFormOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors"
+          className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors"
         >
           <Plus size={16} />
           슬라이드 추가
@@ -568,10 +568,10 @@ export default function AdminHeroPage() {
             return (
               <div
                 key={slide.id}
-                className="bg-white border border-gray-200 flex items-start gap-4 p-4"
+                className="bg-white border border-gray-200 flex items-start gap-3 p-4"
               >
                 {/* Thumbnail */}
-                <div className="w-20 h-14 bg-gray-100 shrink-0 overflow-hidden">
+                <div className="w-16 h-12 sm:w-20 sm:h-14 bg-gray-100 shrink-0 overflow-hidden">
                   {slide.desktop_image_url ? (
                     <img
                       src={slide.desktop_image_url}
@@ -587,19 +587,74 @@ export default function AdminHeroPage() {
                   )}
                 </div>
 
-                {/* Info */}
+                {/* Info + Actions */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span
-                      className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${statusColor}`}
-                    >
-                      {statusLabel}
-                    </span>
-                    <span className="text-[10px] font-sans text-gray-400">
-                      #{slide.display_order}
-                    </span>
+                  {/* Status row with action buttons on the right */}
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${statusColor}`}
+                      >
+                        {statusLabel}
+                      </span>
+                      <span className="text-[10px] font-sans text-gray-400">
+                        #{slide.display_order}
+                      </span>
+                    </div>
+                    {/* Actions */}
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        onClick={() => handleMove(i, "up")}
+                        disabled={isFirst || reorderingId === slide.id}
+                        title="위로"
+                        className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {reorderingId === slide.id ? (
+                          <Loader2 size={13} className="animate-spin" />
+                        ) : (
+                          <ChevronUp size={15} />
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleMove(i, "down")}
+                        disabled={isLast || reorderingId === slide.id}
+                        title="아래로"
+                        className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <ChevronDown size={15} />
+                      </button>
+                      <button
+                        onClick={() => handleToggleActive(slide)}
+                        title={slide.is_active ? "비활성화" : "활성화"}
+                        className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black transition-colors"
+                      >
+                        {slide.is_active ? <Eye size={15} /> : <EyeOff size={15} />}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingSlide(slide);
+                          setFormOpen(true);
+                        }}
+                        title="편집"
+                        className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black transition-colors"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(slide.id)}
+                        disabled={deletingId === slide.id}
+                        title="삭제"
+                        className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-500 disabled:opacity-50 transition-colors"
+                      >
+                        {deletingId === slide.id ? (
+                          <Loader2 size={13} className="animate-spin" />
+                        ) : (
+                          <Trash2 size={14} />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                  <p className="font-sans text-sm text-brand-black truncate whitespace-pre-line leading-tight mb-0.5">
+                  <p className="font-sans text-sm text-brand-black whitespace-pre-line leading-tight mb-0.5">
                     {slide.title.replace(/\n/g, " / ")}
                   </p>
                   {slide.subtitle && (
@@ -628,66 +683,6 @@ export default function AdminHeroPage() {
                         : "∞"}
                     </p>
                   )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-1 shrink-0">
-                  {/* Order */}
-                  <button
-                    onClick={() => handleMove(i, "up")}
-                    disabled={isFirst || reorderingId === slide.id}
-                    title="위로"
-                    className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {reorderingId === slide.id ? (
-                      <Loader2 size={13} className="animate-spin" />
-                    ) : (
-                      <ChevronUp size={15} />
-                    )}
-                  </button>
-                  <button
-                    onClick={() => handleMove(i, "down")}
-                    disabled={isLast || reorderingId === slide.id}
-                    title="아래로"
-                    className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronDown size={15} />
-                  </button>
-
-                  {/* Toggle active */}
-                  <button
-                    onClick={() => handleToggleActive(slide)}
-                    title={slide.is_active ? "비활성화" : "활성화"}
-                    className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black transition-colors"
-                  >
-                    {slide.is_active ? <Eye size={15} /> : <EyeOff size={15} />}
-                  </button>
-
-                  {/* Edit */}
-                  <button
-                    onClick={() => {
-                      setEditingSlide(slide);
-                      setFormOpen(true);
-                    }}
-                    title="편집"
-                    className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black transition-colors"
-                  >
-                    <Pencil size={14} />
-                  </button>
-
-                  {/* Delete */}
-                  <button
-                    onClick={() => handleDelete(slide.id)}
-                    disabled={deletingId === slide.id}
-                    title="삭제"
-                    className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-500 disabled:opacity-50 transition-colors"
-                  >
-                    {deletingId === slide.id ? (
-                      <Loader2 size={13} className="animate-spin" />
-                    ) : (
-                      <Trash2 size={14} />
-                    )}
-                  </button>
                 </div>
               </div>
             );
