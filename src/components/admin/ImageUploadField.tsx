@@ -52,19 +52,32 @@ export default function ImageUploadField({
     setError(null);
     setUploading(true);
     onUploadingChange?.(true);
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
     try {
-      const { data: authData } = await supabase.auth.getUser();
+      // getSession() uses cached token — avoids a server round-trip that can hang
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user?.id ?? "unknown";
       const extMap: Record<string, string> = {
         "image/jpeg": "jpg",
         "image/png": "png",
         "image/webp": "webp",
       };
       const ext = extMap[file.type] ?? "jpg";
-      const path = `cms/${folder}/${authData.user?.id ?? "unknown"}/${crypto.randomUUID()}.${ext}`;
+      const path = `cms/${folder}/${userId}/${crypto.randomUUID()}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, file, { contentType: file.type, upsert: false });
+      // Race upload against 30-second timeout to prevent infinite spinner
+      const { error: uploadError } = await Promise.race([
+        supabase.storage
+          .from(BUCKET)
+          .upload(path, file, { contentType: file.type, upsert: false }),
+        new Promise<never>((_, reject) => {
+          timeoutId = setTimeout(
+            () => reject(new Error("업로드 시간 초과 (30초). 네트워크 연결을 확인해 주세요.")),
+            30_000,
+          );
+        }),
+      ]);
+      if (timeoutId) clearTimeout(timeoutId);
 
       if (uploadError) throw uploadError;
 
@@ -75,8 +88,9 @@ export default function ImageUploadField({
       onUploadComplete?.(urlData.publicUrl);
       setPreviewError(false);
     } catch (e) {
+      if (timeoutId) clearTimeout(timeoutId);
       console.error("[ImageUploadField] upload error:", e);
-      setError("업로드 중 오류가 발생했습니다.");
+      setError(e instanceof Error ? e.message : "업로드 중 오류가 발생했습니다.");
     } finally {
       setUploading(false);
       onUploadingChange?.(false);
