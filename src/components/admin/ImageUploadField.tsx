@@ -54,16 +54,14 @@ export default function ImageUploadField({
     onUploadingChange?.(true);
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     try {
-      // getSession() uses cached token — avoids a server round-trip that can hang
-      const { data: sessionData } = await supabase.auth.getSession();
-      const userId = sessionData.session?.user?.id ?? "unknown";
+      // No async auth call — path uses UUID, access control handled by RLS
       const extMap: Record<string, string> = {
         "image/jpeg": "jpg",
         "image/png": "png",
         "image/webp": "webp",
       };
       const ext = extMap[file.type] ?? "jpg";
-      const path = `cms/${folder}/${userId}/${crypto.randomUUID()}.${ext}`;
+      const path = `cms/${folder}/${crypto.randomUUID()}.${ext}`;
 
       // Race upload against 30-second timeout to prevent infinite spinner
       const { error: uploadError } = await Promise.race([
@@ -72,7 +70,12 @@ export default function ImageUploadField({
           .upload(path, file, { contentType: file.type, upsert: false }),
         new Promise<never>((_, reject) => {
           timeoutId = setTimeout(
-            () => reject(new Error("업로드 시간 초과 (30초). 네트워크 연결을 확인해 주세요.")),
+            () =>
+              reject(
+                new Error(
+                  "업로드 시간 초과 (30초). 네트워크 연결을 확인해 주세요.",
+                ),
+              ),
             30_000,
           );
         }),
@@ -90,7 +93,9 @@ export default function ImageUploadField({
     } catch (e) {
       if (timeoutId) clearTimeout(timeoutId);
       console.error("[ImageUploadField] upload error:", e);
-      setError(e instanceof Error ? e.message : "업로드 중 오류가 발생했습니다.");
+      setError(
+        e instanceof Error ? e.message : "업로드 중 오류가 발생했습니다.",
+      );
     } finally {
       setUploading(false);
       onUploadingChange?.(false);
