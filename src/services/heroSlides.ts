@@ -25,8 +25,8 @@ export const heroSlidesService = {
       .from('hero_slides')
       .select('*')
       .eq('is_active', true)
-      .or(`publish_start_at.is.null,publish_start_at.lte.${now}`)
-      .or(`publish_end_at.is.null,publish_end_at.gte.${now}`)
+      .or(`publish_start_at.is.null,publish_start_at.lte."${now}"`)
+      .or(`publish_end_at.is.null,publish_end_at.gte."${now}"`)
       .order('display_order', { ascending: true })
     if (error) throw error
     return data ?? []

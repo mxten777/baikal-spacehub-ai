@@ -48,12 +48,18 @@ export default function PhotoPickerModal({
   const [selectedUrls, setSelectedUrls] = useState<Set<string>>(new Set());
 
   const queryClient = useQueryClient();
-  const { data: photos, isLoading, isError } = usePublicPhotos(activeCategory, {
+  const {
+    data: photos,
+    isLoading,
+    isError,
+  } = usePublicPhotos(activeCategory, {
     limit: 60,
   });
 
   const handleRetry = () => {
-    queryClient.invalidateQueries({ queryKey: ["public-photos", activeCategory] });
+    queryClient.invalidateQueries({
+      queryKey: ["public-photos", activeCategory],
+    });
   };
 
   if (!open) return null;
@@ -138,7 +144,9 @@ export default function PhotoPickerModal({
             </div>
           ) : isError ? (
             <div className="flex flex-col items-center justify-center h-48 gap-2 text-gray-400">
-              <p className="font-sans text-sm text-red-400">사진을 불러오지 못했습니다.</p>
+              <p className="font-sans text-sm text-red-400">
+                사진을 불러오지 못했습니다.
+              </p>
               <button
                 type="button"
                 onClick={handleRetry}
@@ -179,17 +187,24 @@ export default function PhotoPickerModal({
                     />
                   )}
                   {/* Selected (multi-select) */}
-                  {multiSelect && photo.public_url && selectedUrls.has(photo.public_url) && (
-                    <div className="absolute inset-0 bg-brand-black/50 flex items-center justify-center">
-                      <CheckCircle2 size={28} className="text-white" />
-                    </div>
-                  )}
+                  {multiSelect &&
+                    photo.public_url &&
+                    selectedUrls.has(photo.public_url) && (
+                      <div className="absolute inset-0 bg-brand-black/50 flex items-center justify-center">
+                        <CheckCircle2 size={28} className="text-white" />
+                      </div>
+                    )}
                   {/* Hover overlay (single or unselected multi) */}
-                  {hoveredId === photo.id && !(multiSelect && photo.public_url && selectedUrls.has(photo.public_url)) && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <CheckCircle2 size={28} className="text-white" />
-                    </div>
-                  )}
+                  {hoveredId === photo.id &&
+                    !(
+                      multiSelect &&
+                      photo.public_url &&
+                      selectedUrls.has(photo.public_url)
+                    ) && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <CheckCircle2 size={28} className="text-white" />
+                      </div>
+                    )}
                   {/* Featured badge */}
                   {photo.is_featured && (
                     <div className="absolute top-1 left-1 bg-brand-black/80 text-white text-[8px] px-1.5 py-0.5 font-sans tracking-wider">
@@ -207,13 +222,18 @@ export default function PhotoPickerModal({
           <span className="font-sans text-xs text-gray-400">
             {photos ? `${photos.length}장` : "—"}
             {multiSelect && selectedUrls.size > 0 && (
-              <span className="ml-2 text-brand-black font-medium">{selectedUrls.size}장 선택됨</span>
+              <span className="ml-2 text-brand-black font-medium">
+                {selectedUrls.size}장 선택됨
+              </span>
             )}
           </span>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => { setSelectedUrls(new Set()); onClose(); }}
+              onClick={() => {
+                setSelectedUrls(new Set());
+                onClose();
+              }}
               className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black"
             >
               취소

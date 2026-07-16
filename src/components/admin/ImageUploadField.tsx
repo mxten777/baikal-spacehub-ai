@@ -83,8 +83,7 @@ export default function ImageUploadField({
       setPreviewError(false);
     } catch (e) {
       console.error("[ImageUploadField] upload error:", e);
-      const isAbort =
-        e instanceof DOMException && e.name === "AbortError";
+      const isAbort = e instanceof DOMException && e.name === "AbortError";
       setError(
         isAbort
           ? "업로드 시간 초과 (30초). 네트워크 연결을 확인해 주세요."

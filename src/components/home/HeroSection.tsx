@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+// AnimatePresence kept for content text transition below
 import { useActiveHeroSlides } from "../../hooks/useData";
 import { HERO_FALLBACK_SLIDES } from "../../data/heroFallbackData";
 import type { HeroSlide } from "../../types";
@@ -87,34 +88,37 @@ export default function HeroSection() {
 
   return (
     <section className="relative h-screen min-h-[600px] overflow-hidden">
-      {/* Background slides */}
-      <AnimatePresence mode="wait">
+      {/* Background slides — all rendered for instant preload, crossfade via opacity */}
+      {displaySlides.map((s, i) => (
         <motion.div
-          key={slide.id}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
+          key={s.id}
           className="absolute inset-0"
+          initial={false}
+          animate={{
+            opacity: i === safeIdx ? 1 : 0,
+            scale: i === safeIdx ? 1 : 1.04,
+          }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+          style={{ zIndex: i === safeIdx ? 1 : 0 }}
         >
-          {/* picture element: mobile image if available, desktop otherwise */}
           <picture>
-            {slide.mobile_image_url && (
+            {s.mobile_image_url && (
               <source
                 media="(max-width: 767px)"
-                srcSet={slide.mobile_image_url}
+                srcSet={s.mobile_image_url}
               />
             )}
             <img
-              src={slide.desktop_image_url || ""}
+              src={s.desktop_image_url || ""}
               alt=""
               className="w-full h-full object-cover"
               aria-hidden="true"
+              fetchPriority={i === 0 ? "high" : "low"}
             />
           </picture>
           <div className="absolute inset-0 bg-gradient-overlay-center" />
         </motion.div>
-      </AnimatePresence>
+      ))}
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-end h-full container-wide pb-20 lg:pb-28">
