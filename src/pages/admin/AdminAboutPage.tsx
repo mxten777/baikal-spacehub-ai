@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { aboutService, DEFAULT_ABOUT } from "../../services/about";
+import ImageUploadField from "../../components/admin/ImageUploadField";
 import type {
   AboutContent,
   AboutTimelineItem,
@@ -271,11 +272,12 @@ function HeroSection({
         })
       }
     >
-      <Field
+      <ImageUploadField
         label="배경 이미지 URL"
         value={heroImageUrl}
-        onChange={setHeroImageUrl}
-        placeholder="https://..."
+        onChange={(url) => setHeroImageUrl(url ?? "")}
+        folder="about"
+        photoPickerCategory={null}
       />
       <Field
         label="Eyebrow 텍스트"
@@ -695,7 +697,13 @@ function BrandIntroAdminSection({
         multiline
         rows={2}
       />
-      <Field label="이미지 URL" value={imageUrl} onChange={setImageUrl} />
+      <ImageUploadField
+        label="이미지 URL"
+        value={imageUrl}
+        onChange={(url) => setImageUrl(url ?? "")}
+        folder="about"
+        photoPickerCategory={null}
+      />
       <div>
         <label className="block font-sans text-xs text-gray-500 mb-2">
           활동 유형 태그
