@@ -174,23 +174,31 @@ export async function getPublicPhotosByCategory(
 ): Promise<PhotoRecord[]> {
   const { spaceCategory, limit = 60 } = options;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query = (supabase.from(TABLE).select("*") as any)
-    .eq("project_stage", "web")
-    .eq("upload_status", "completed");
+  const abort = new AbortController();
+  const timeoutId = setTimeout(() => abort.abort(), 15_000);
 
-  if (projectCategory) {
-    query = query.eq("project_category", projectCategory);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query = (supabase.from(TABLE).select("*") as any)
+      .eq("project_stage", "web")
+      .eq("upload_status", "completed")
+      .abortSignal(abort.signal);
+
+    if (projectCategory) {
+      query = query.eq("project_category", projectCategory);
+    }
+    if (spaceCategory) {
+      query = query.eq("space_category", spaceCategory);
+    }
+
+    const { data, error } = await query
+      .order("is_featured", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) throw new Error(error.message);
+    return (data ?? []) as PhotoRecord[];
+  } finally {
+    clearTimeout(timeoutId);
   }
-  if (spaceCategory) {
-    query = query.eq("space_category", spaceCategory);
-  }
-
-  const { data, error } = await query
-    .order("is_featured", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(limit);
-
-  if (error) throw new Error(error.message);
-  return (data ?? []) as PhotoRecord[];
 }

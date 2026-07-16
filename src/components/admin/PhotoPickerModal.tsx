@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { X, Loader2, CheckCircle2, Check } from "lucide-react";
+import { X, Loader2, CheckCircle2, Check, RefreshCw } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { usePublicPhotos } from "../../hooks/useData";
 import type { ProjectCategory } from "../../types";
 
@@ -46,9 +47,14 @@ export default function PhotoPickerModal({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedUrls, setSelectedUrls] = useState<Set<string>>(new Set());
 
+  const queryClient = useQueryClient();
   const { data: photos, isLoading, isError } = usePublicPhotos(activeCategory, {
     limit: 60,
   });
+
+  const handleRetry = () => {
+    queryClient.invalidateQueries({ queryKey: ["public-photos", activeCategory] });
+  };
 
   if (!open) return null;
 
@@ -120,13 +126,26 @@ export default function PhotoPickerModal({
         {/* Photo grid */}
         <div className="flex-1 overflow-y-auto p-4">
           {isLoading ? (
-            <div className="flex items-center justify-center h-48">
+            <div className="flex flex-col items-center justify-center h-48 gap-3">
               <Loader2 size={24} className="animate-spin text-gray-300" />
+              <button
+                type="button"
+                onClick={handleRetry}
+                className="flex items-center gap-1.5 text-xs font-sans text-gray-400 hover:text-brand-black transition-colors"
+              >
+                <RefreshCw size={11} /> 다시 시도
+              </button>
             </div>
           ) : isError ? (
             <div className="flex flex-col items-center justify-center h-48 gap-2 text-gray-400">
               <p className="font-sans text-sm text-red-400">사진을 불러오지 못했습니다.</p>
-              <p className="font-sans text-xs">네트워크 상태를 확인하거나 페이지를 새로고침 해주세요.</p>
+              <button
+                type="button"
+                onClick={handleRetry}
+                className="flex items-center gap-1.5 text-xs font-sans text-gray-500 hover:text-brand-black transition-colors"
+              >
+                <RefreshCw size={11} /> 다시 시도
+              </button>
             </div>
           ) : !photos || photos.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-48 gap-2 text-gray-400">
