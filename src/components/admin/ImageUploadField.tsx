@@ -52,7 +52,8 @@ export default function ImageUploadField({
     setError(null);
     setUploading(true);
     onUploadingChange?.(true);
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const abort = new AbortController();
+    const timeoutId = setTimeout(() => abort.abort(), 30_000);
     try {
       // No async auth call — path uses UUID, access control handled by RLS
       const extMap: Record<string, string> = {
@@ -63,24 +64,14 @@ export default function ImageUploadField({
       const ext = extMap[file.type] ?? "jpg";
       const path = `cms/${folder}/${crypto.randomUUID()}.${ext}`;
 
-      // Race upload against 30-second timeout to prevent infinite spinner
-      const { error: uploadError } = await Promise.race([
-        supabase.storage
-          .from(BUCKET)
-          .upload(path, file, { contentType: file.type, upsert: false }),
-        new Promise<never>((_, reject) => {
-          timeoutId = setTimeout(
-            () =>
-              reject(
-                new Error(
-                  "업로드 시간 초과 (30초). 네트워크 연결을 확인해 주세요.",
-                ),
-              ),
-            30_000,
-          );
-        }),
-      ]);
-      if (timeoutId) clearTimeout(timeoutId);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, {
+          contentType: file.type,
+          upsert: false,
+          signal: abort.signal,
+        } as any);
 
       if (uploadError) throw uploadError;
 
@@ -91,12 +82,18 @@ export default function ImageUploadField({
       onUploadComplete?.(urlData.publicUrl);
       setPreviewError(false);
     } catch (e) {
-      if (timeoutId) clearTimeout(timeoutId);
       console.error("[ImageUploadField] upload error:", e);
+      const isAbort =
+        e instanceof DOMException && e.name === "AbortError";
       setError(
-        e instanceof Error ? e.message : "업로드 중 오류가 발생했습니다.",
+        isAbort
+          ? "업로드 시간 초과 (30초). 네트워크 연결을 확인해 주세요."
+          : e instanceof Error
+            ? e.message
+            : "업로드 중 오류가 발생했습니다.",
       );
     } finally {
+      clearTimeout(timeoutId);
       setUploading(false);
       onUploadingChange?.(false);
     }
@@ -208,7 +205,19 @@ export default function ImageUploadField({
         </button>
       )}
 
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      {error && (
+        <p className="flex items-start gap-1 text-red-500 text-xs mt-1">
+          <span className="flex-1">{error}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="shrink-0 mt-0.5 hover:text-red-700 transition-colors"
+            aria-label="오류 닫기"
+          >
+            <X size={11} />
+          </button>
+        </p>
+      )}
 
       {pickerOpen && (
         <PhotoPickerModal
