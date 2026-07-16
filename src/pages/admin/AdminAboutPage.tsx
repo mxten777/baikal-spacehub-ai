@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { aboutService } from "../../services/about";
+import { aboutService, DEFAULT_ABOUT } from "../../services/about";
 import type {
   AboutContent,
   AboutTimelineItem,
@@ -18,17 +18,26 @@ type SectionKey =
   | "brand_intro";
 
 export default function AdminAboutPage() {
-  const [content, setContent] = useState<AboutContent | null>(null);
+  const [content, setContent] = useState<AboutContent>({
+    id: "",
+    updated_at: new Date().toISOString(),
+    ...DEFAULT_ABOUT,
+  });
   const [loading, setLoading] = useState(true);
   const [savingSection, setSavingSection] = useState<SectionKey | null>(null);
   const [savedSection, setSavedSection] = useState<SectionKey | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 8000);
     aboutService
       .get()
       .then(setContent)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        clearTimeout(timer);
+        setLoading(false);
+      });
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSave = useCallback(
@@ -53,22 +62,17 @@ export default function AdminAboutPage() {
     [content],
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-40">
-        <Loader2 size={24} className="animate-spin text-brand-muted" />
-      </div>
-    );
-  }
-
-  if (!content) return null;
-
   return (
     <div>
       <div className="mb-8">
         <h1 className="font-display text-2xl font-light text-brand-black">
           About 페이지 관리
         </h1>
+        {loading && (
+          <p className="font-sans text-xs text-brand-muted mt-1 flex items-center gap-1.5">
+            <Loader2 size={12} className="animate-spin" /> 데이터 불러오는 중...
+          </p>
+        )}
         <p className="font-sans text-sm text-gray-500 mt-1">
           About 페이지의 모든 콘텐츠를 편집합니다.
         </p>
