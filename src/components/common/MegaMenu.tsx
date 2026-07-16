@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { useSpaces } from "../../hooks/useData";
+import { useSpaces, usePublicPhotos } from "../../hooks/useData";
+import { useMemo } from "react";
 
 interface MegaMenuProps {
   activeItem: string | null;
@@ -153,6 +154,18 @@ export default function MegaMenu({
   onMegaLeave,
 }: MegaMenuProps) {
   const { data: spacesData } = useSpaces()
+  const { data: spacePhotos } = usePublicPhotos("space")
+
+  // 업로드된 실사진을 코바 이미지로 우선 사용
+  const spacePhotoMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    for (const p of spacePhotos ?? []) {
+      if (p.space_category && p.public_url && !map[p.space_category]) {
+        map[p.space_category] = p.public_url
+      }
+    }
+    return map
+  }, [spacePhotos])
 
   // DB 데이터를 메뉴 카드 형식으로 변환, 없으면 정적 SPACES 사용
   const menuSpaces = (spacesData && spacesData.length > 0)
@@ -162,7 +175,7 @@ export default function MegaMenu({
         desc: s.description?.slice(0, 30) ?? '',
         cap: s.capacity ? `${s.capacity}명` : '',
         href: `/spaces/${s.slug}`,
-        img: s.cover_image_url || SPACE_IMAGES_FALLBACK[s.category] || SPACE_IMAGES_FALLBACK.other,
+        img: spacePhotoMap[s.category] || s.cover_image_url || SPACE_IMAGES_FALLBACK[s.category] || SPACE_IMAGES_FALLBACK.other,
       }))
     : SPACES
   return (

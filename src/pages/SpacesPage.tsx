@@ -174,8 +174,8 @@ export default function SpacesPage() {
                     <div className="relative overflow-hidden aspect-[16/9]">
                       <img
                         src={
-                          space.cover_image_url ||
                           spacePhotoMap[space.category] ||
+                          space.cover_image_url ||
                           SPACE_IMAGES[space.category] ||
                           SPACE_IMAGES.studio
                         }

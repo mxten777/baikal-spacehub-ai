@@ -1,7 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
-import { useSpace } from "../hooks/useData";
+import { useSpace, usePublicPhotos } from "../hooks/useData";
+import { useMemo } from "react";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 
@@ -145,6 +146,16 @@ export default function SpaceDetailPage() {
   const { data: space, isLoading } = useSpace(slug ?? "");
   const displaySpace = space ?? FALLBACK_MAP[slug ?? ""];
 
+  // 업로드된 공간 사진 (web 단계 통과된 것)을 카테고리별로 가져옴
+  const { data: spacePhotos } = usePublicPhotos("space", {
+    spaceCategory: displaySpace?.category,
+    limit: 10,
+  });
+  const uploadedUrls = useMemo(
+    () => spacePhotos?.map((p) => p.public_url).filter(Boolean) as string[] ?? [],
+    [spacePhotos],
+  );
+
   if (isLoading) return <LoadingSpinner />;
   if (!displaySpace)
     return (
@@ -160,7 +171,9 @@ export default function SpaceDetailPage() {
       </div>
     );
 
+  // 우선순위: 업로드된 실사진 > DB images 배열(URL) > Unsplash 폴백
   const images =
+    (uploadedUrls.length > 0 ? uploadedUrls : null) ||
     displaySpace.images ||
     SPACE_IMAGES[displaySpace.category] ||
     Object.values(SPACE_IMAGES)[0];
@@ -178,7 +191,7 @@ export default function SpaceDetailPage() {
       {/* Hero image */}
       <div className="relative h-[70vh] min-h-[500px]">
         <img
-          src={images[0] || displaySpace.cover_image_url}
+          src={images[0] || displaySpace.cover_image_url || SPACE_IMAGES[displaySpace.category]?.[0]}
           alt={displaySpace.name}
           className="w-full h-full object-cover"
         />
