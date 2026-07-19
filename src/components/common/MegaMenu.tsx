@@ -140,45 +140,57 @@ function CtaLink({ href, label }: { href: string; label: string }) {
 
 // Category image fallbacks (same as SpacesPreviewSection)
 const SPACE_IMAGES_FALLBACK: Record<string, string> = {
-  cafe: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=480&q=75',
-  garden: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=480&q=75',
-  studio: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=480&q=75',
-  storage: 'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=480&q=75',
-  hall: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=480&q=75',
-  other: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=480&q=75',
-}
+  cafe: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=480&q=75",
+  garden:
+    "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=480&q=75",
+  studio:
+    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=480&q=75",
+  storage:
+    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=480&q=75",
+  hall: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=480&q=75",
+  other:
+    "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=480&q=75",
+};
 
 export default function MegaMenu({
   activeItem,
   onMegaEnter,
   onMegaLeave,
 }: MegaMenuProps) {
-  const { data: spacesData } = useSpaces()
-  const { data: spacePhotos } = usePublicPhotos("space")
+  const { data: spacesData } = useSpaces();
+  const { data: spacePhotos } = usePublicPhotos("space");
 
   // 업로드된 실사진을 코바 이미지로 우선 사용
   const spacePhotoMap = useMemo(() => {
-    const map: Record<string, string> = {}
+    const map: Record<string, string> = {};
     for (const p of spacePhotos ?? []) {
       if (p.space_category && p.public_url && !map[p.space_category]) {
-        map[p.space_category] = p.public_url
+        map[p.space_category] = p.public_url;
       }
     }
-    return map
-  }, [spacePhotos])
+    return map;
+  }, [spacePhotos]);
 
   // DB 데이터를 메뉴 카드 형식으로 변환, 없으면 정적 SPACES 사용
-  const menuSpaces = (spacesData && spacesData.length > 0)
-    ? spacesData.slice(0, 4).map((s) => ({
-        label: s.name_en || s.name,
-        ko: s.name,
-        desc: s.description?.slice(0, 30) ?? '',
-        cap: s.capacity ? `${s.capacity}명` : '',
-        href: `/spaces/${s.slug}`,
-        fallbackImg: s.cover_image_url || SPACE_IMAGES_FALLBACK[s.category] || SPACE_IMAGES_FALLBACK.other,
-        uploadedImg: spacePhotoMap[s.category] as string | undefined,
-      }))
-    : SPACES.map(s => ({ ...s, fallbackImg: s.img, uploadedImg: undefined as string | undefined }))
+  const menuSpaces =
+    spacesData && spacesData.length > 0
+      ? spacesData.slice(0, 4).map((s) => ({
+          label: s.name_en || s.name,
+          ko: s.name,
+          desc: s.description?.slice(0, 30) ?? "",
+          cap: s.capacity ? `${s.capacity}명` : "",
+          href: `/spaces/${s.slug}`,
+          fallbackImg:
+            s.cover_image_url ||
+            SPACE_IMAGES_FALLBACK[s.category] ||
+            SPACE_IMAGES_FALLBACK.other,
+          uploadedImg: spacePhotoMap[s.category] as string | undefined,
+        }))
+      : SPACES.map((s) => ({
+          ...s,
+          fallbackImg: s.img,
+          uploadedImg: undefined as string | undefined,
+        }));
   return (
     <AnimatePresence>
       {activeItem && (
@@ -231,7 +243,11 @@ export default function MegaMenu({
                               src={s.uploadedImg}
                               alt={s.ko}
                               className="absolute inset-0 w-full h-full object-cover opacity-0 transition-[opacity,transform] duration-700 group-hover:scale-105"
-                              onLoad={(e) => (e.currentTarget as HTMLImageElement).classList.remove('opacity-0')}
+                              onLoad={(e) =>
+                                (
+                                  e.currentTarget as HTMLImageElement
+                                ).classList.remove("opacity-0")
+                              }
                               loading="lazy"
                             />
                           )}

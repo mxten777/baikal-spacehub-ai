@@ -73,7 +73,11 @@ export default function AboutPage() {
             src={uploadedHeroUrl}
             alt="The Lit"
             className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
-            onLoad={(e) => (e.currentTarget as HTMLImageElement).classList.remove('opacity-0')}
+            onLoad={(e) =>
+              (e.currentTarget as HTMLImageElement).classList.remove(
+                "opacity-0",
+              )
+            }
           />
         )}
         <div className="absolute inset-0 bg-gradient-overlay-center" />

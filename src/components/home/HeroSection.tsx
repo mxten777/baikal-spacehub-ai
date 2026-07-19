@@ -45,21 +45,20 @@ function HeroButton({
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function HeroSection() {
-  // placeholderData로 로딩 중에도 fallback 즉시 표시
-  // 실제 데이터 도착 시 AnimatePresence가 부드럽게 전환
-  const { data: heroData } = useActiveHeroSlides({
-    placeholderData: HERO_FALLBACK_SLIDES,
-  });
+  // placeholderData 제거 — 로딩 중에는 어두운 배경만 표시, 실제 데이터 도착 후 이미지 표시
+  const { data: heroData, isLoading: heroLoading } = useActiveHeroSlides();
 
   // project_category='main' + stage='web' 업로드 사진 — desktop_image_url 없는 슬라이드 자동 치환
   const { data: mainPhotos } = usePublicPhotos("main");
 
   const displaySlides: HeroSlide[] = useMemo(() => {
-    const base = heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES;
+    const base =
+      heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES;
     if (!mainPhotos?.length) return base;
     return base.map((slide, i) => ({
       ...slide,
-      desktop_image_url: slide.desktop_image_url || mainPhotos[i]?.public_url || null,
+      desktop_image_url:
+        slide.desktop_image_url || mainPhotos[i]?.public_url || null,
     }));
   }, [heroData, mainPhotos]);
 
@@ -89,6 +88,13 @@ export default function HeroSection() {
     };
   }, []);
 
+  // 로딩 중이면 어두운 배경 스켈레톤 표시 (Unsplash placeholder 방지)
+  if (heroLoading) {
+    return (
+      <section className="relative h-screen min-h-[600px] overflow-hidden bg-brand-black" />
+    );
+  }
+
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
   const safeIdx = Math.min(current, displaySlides.length - 1);
   const slide = displaySlides[safeIdx];
@@ -112,10 +118,7 @@ export default function HeroSection() {
         >
           <picture>
             {s.mobile_image_url && (
-              <source
-                media="(max-width: 767px)"
-                srcSet={s.mobile_image_url}
-              />
+              <source media="(max-width: 767px)" srcSet={s.mobile_image_url} />
             )}
             <img
               src={s.desktop_image_url || ""}

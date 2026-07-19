@@ -152,7 +152,8 @@ export default function SpaceDetailPage() {
     limit: 10,
   });
   const uploadedUrls = useMemo(
-    () => spacePhotos?.map((p) => p.public_url).filter(Boolean) as string[] ?? [],
+    () =>
+      (spacePhotos?.map((p) => p.public_url).filter(Boolean) as string[]) ?? [],
     [spacePhotos],
   );
 
@@ -204,7 +205,11 @@ export default function SpaceDetailPage() {
             src={heroUploaded}
             alt={displaySpace.name}
             className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
-            onLoad={(e) => (e.currentTarget as HTMLImageElement).classList.remove('opacity-0')}
+            onLoad={(e) =>
+              (e.currentTarget as HTMLImageElement).classList.remove(
+                "opacity-0",
+              )
+            }
           />
         )}
         <div className="absolute inset-0 bg-gradient-overlay-center" />
@@ -238,26 +243,35 @@ export default function SpaceDetailPage() {
               {fallbackImages.length > 1 && (
                 <AnimatedSection animation="fade-up" delay={100}>
                   <div className="grid grid-cols-2 gap-3 mb-8">
-                    {fallbackImages.slice(1, 5).map((fallback: string, i: number) => (
-                      <div key={i} className="relative overflow-hidden aspect-[4/3]">
-                        <img
-                          src={fallback}
-                          alt={`${displaySpace.name} ${i + 2}`}
-                          aria-hidden="true"
-                          className="absolute inset-0 w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                        {uploadedUrls[i + 1] && (
+                    {fallbackImages
+                      .slice(1, 5)
+                      .map((fallback: string, i: number) => (
+                        <div
+                          key={i}
+                          className="relative overflow-hidden aspect-[4/3]"
+                        >
                           <img
-                            src={uploadedUrls[i + 1]}
+                            src={fallback}
                             alt={`${displaySpace.name} ${i + 2}`}
-                            className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
-                            onLoad={(e) => (e.currentTarget as HTMLImageElement).classList.remove('opacity-0')}
+                            aria-hidden="true"
+                            className="absolute inset-0 w-full h-full object-cover"
                             loading="lazy"
                           />
-                        )}
-                      </div>
-                    ))}
+                          {uploadedUrls[i + 1] && (
+                            <img
+                              src={uploadedUrls[i + 1]}
+                              alt={`${displaySpace.name} ${i + 2}`}
+                              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
+                              onLoad={(e) =>
+                                (
+                                  e.currentTarget as HTMLImageElement
+                                ).classList.remove("opacity-0")
+                              }
+                              loading="lazy"
+                            />
+                          )}
+                        </div>
+                      ))}
                   </div>
                 </AnimatedSection>
               )}
