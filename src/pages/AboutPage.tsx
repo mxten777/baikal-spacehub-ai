@@ -87,7 +87,7 @@ export default function AboutPage() {
             <h1 className="font-display text-display font-light text-white leading-tight">
               {hero_title_line1}
               <br />
-              <em>{hero_title_line2}</em>
+              <span>{hero_title_line2}</span>
             </h1>
           </AnimatedSection>
         </div>
