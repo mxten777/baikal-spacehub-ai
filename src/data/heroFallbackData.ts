@@ -17,8 +17,7 @@ export const HERO_FALLBACK_SLIDES: HeroSlide[] = [
     title: "문화가 흐르는\n공간",
     subtitle: "A Space Where Culture Flows",
     description: null,
-    desktop_image_url:
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
+    desktop_image_url: "/images/hero/hero-1.jpg",
     mobile_image_url: null,
     primary_button_text: "Programs",
     primary_button_link: "/programs",
@@ -36,8 +35,7 @@ export const HERO_FALLBACK_SLIDES: HeroSlide[] = [
     title: "예술과 삶이\n만나는 곳",
     subtitle: "Where Art Meets Life",
     description: null,
-    desktop_image_url:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=80",
+    desktop_image_url: "/images/hero/hero-2.jpg",
     mobile_image_url: null,
     primary_button_text: "Programs",
     primary_button_link: "/programs",
@@ -55,8 +53,7 @@ export const HERO_FALLBACK_SLIDES: HeroSlide[] = [
     title: "비범한 경험을\n위한 공간",
     subtitle: "Space for Extraordinary Experiences",
     description: null,
-    desktop_image_url:
-      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1920&q=80",
+    desktop_image_url: "/images/hero/hero-3.jpg",
     mobile_image_url: null,
     primary_button_text: "Programs",
     primary_button_link: "/programs",
