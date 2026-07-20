@@ -150,6 +150,7 @@ export default function AdminPhotoProjectsPage() {
     queryFn: ({ signal }) => listPhotoProjects(signal),
     retry: 1,
     retryDelay: 0,
+    staleTime: 1000 * 60 * 3, // 3분간 캐시 유지 → 페이지 재방문 시 재요청 없음
     enabled: isSupabaseConfigured,
   })
 
