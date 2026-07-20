@@ -79,24 +79,12 @@ async function resolveUniqueSlug(base: string): Promise<string> {
 
 /** photo_projects 전체 목록 조회 (created_at 내림차순) */
 export async function listPhotoProjects(_signal?: AbortSignal): Promise<PhotoProject[]> {
-  // 30초 타임아웃: Supabase 무료 플랜 콜드 스타트(~25초) 대응
-  const timeout = new Promise<never>((_, reject) =>
-    setTimeout(
-      () => reject(new Error("요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.")),
-      30_000,
-    ),
-  );
-
-  const query = supabase
+  const { data, error } = await supabase
     .from("photo_projects")
     .select("*")
-    .order("created_at", { ascending: false })
-    .then(({ data, error }) => {
-      if (error) throw new Error(`photo_projects 조회 실패: ${error.message}`);
-      return data ?? [];
-    });
-
-  return Promise.race([query, timeout]);
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`photo_projects 조회 실패: ${error.message}`);
+  return data ?? [];
 }
 
 /** id 기준 단건 조회. 없으면 null, 실제 오류는 예외 발생 */
