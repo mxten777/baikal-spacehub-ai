@@ -227,8 +227,9 @@ export default function AdminPhotoProjectsPage() {
       )}
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-40">
+        <div className="flex flex-col items-center justify-center h-40 gap-3">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
+          <p className="font-sans text-xs text-gray-400">연결 중… 최초 접속 시 잠시 걸릴 수 있습니다</p>
         </div>
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
