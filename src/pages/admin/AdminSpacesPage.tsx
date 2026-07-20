@@ -72,7 +72,7 @@ function SpaceForm({
   );
   const { data: photoProjects = [] } = useQuery({
     queryKey: ["photo_projects"],
-    queryFn: listPhotoProjects,
+    queryFn: ({ signal }) => listPhotoProjects(signal),
   });
   const originalImagesRef = useRef<string[]>(initialData?.images ?? []);
   const [imagesArr, setImagesArr] = useState<(string | null)[]>(
