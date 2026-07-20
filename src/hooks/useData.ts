@@ -232,8 +232,6 @@ export const useHeroSlides = () =>
     queryKey: ["hero-slides"],
     queryFn: () => heroSlidesService.getAll(),
     staleTime: 2 * 60 * 1000,
-    retry: 1,
-    retryDelay: 0,
     enabled: isSupabaseConfigured,
   });
 

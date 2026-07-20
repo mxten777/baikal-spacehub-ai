@@ -78,7 +78,7 @@ async function resolveUniqueSlug(base: string): Promise<string> {
 // ── CRUD 서비스 ─────────────────────────────────────────────
 
 /** photo_projects 전체 목록 조회 (created_at 내림차순) */
-export async function listPhotoProjects(_signal?: AbortSignal): Promise<PhotoProject[]> {
+export async function listPhotoProjects(): Promise<PhotoProject[]> {
   const { data, error } = await supabase
     .from("photo_projects")
     .select("*")

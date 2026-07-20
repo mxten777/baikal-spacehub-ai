@@ -12,6 +12,7 @@ import {
 import { format } from "date-fns";
 import { reservationsService } from "../../services/reservations";
 import type { Reservation, ReservationStatus } from "../../types";
+import AdminQueryError from "../../components/admin/AdminQueryError";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -292,7 +293,7 @@ export default function AdminReservationsPage() {
     "all",
   );
 
-  const { data: reservations = [], isLoading } = useQuery({
+  const { data: reservations = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["admin-reservations"],
     queryFn: () => reservationsService.getAll(),
   });
@@ -380,6 +381,8 @@ export default function AdminReservationsPage() {
         <div className="py-16 text-center font-sans text-sm text-brand-muted">
           불러오는 중...
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : filtered.length === 0 ? (
         <div className="py-16 text-center border border-brand-line">
           <p className="font-display text-lg font-light text-brand-muted">

@@ -147,9 +147,7 @@ export default function AdminPhotoProjectsPage() {
   const queryClient = useQueryClient()
   const { data: projects, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-photo-projects'],
-    queryFn: ({ signal }) => listPhotoProjects(signal),
-    retry: 1,
-    retryDelay: 0,
+    queryFn: () => listPhotoProjects(),
     staleTime: 1000 * 60 * 3, // 3분간 캐시 유지 → 페이지 재방문 시 재요청 없음
     enabled: isSupabaseConfigured,
   })

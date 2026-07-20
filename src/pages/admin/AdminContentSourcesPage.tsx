@@ -19,6 +19,7 @@ import { contentSourcesService } from "../../services/contentSources";
 import { runFetchForSource } from "../../services/fetchers/aggregator";
 import type { ContentSource, ContentPlatform } from "../../types";
 import { format } from "date-fns";
+import AdminQueryError from "../../components/admin/AdminQueryError";
 
 const sourceSchema = z.object({
   name: z.string().min(1, "소스 이름을 입력하세요"),
@@ -289,7 +290,7 @@ export default function AdminContentSourcesPage() {
   const [fetchingId, setFetchingId] = useState<string | null>(null);
   const [fetchResult, setFetchResult] = useState<string | null>(null);
 
-  const { data: sources = [], isLoading } = useQuery({
+  const { data: sources = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["content-sources"],
     queryFn: () => contentSourcesService.getAll(),
   });
@@ -364,6 +365,8 @@ export default function AdminContentSourcesPage() {
         <div className="text-center py-16 text-gray-400">
           <Loader2 size={32} className="animate-spin mx-auto" />
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : sources.length === 0 ? (
         <div className="text-center py-16 text-gray-400 border border-dashed border-gray-200">
           <Rss size={32} className="mx-auto mb-3 opacity-40" />

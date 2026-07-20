@@ -7,6 +7,7 @@ import { Plus, Pencil, Trash2, X, Check, Loader2, Youtube, Instagram, Twitter } 
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import AdminQueryError from '../../components/admin/AdminQueryError'
 
 const mediaSchema = z.object({
   platform: z.enum(['youtube', 'instagram', 'x']),
@@ -137,7 +138,7 @@ function MediaItemForm({ initialData, onClose, onSuccess }: { initialData?: Medi
 }
 
 export default function AdminMediaPage() {
-  const { data: mediaItems, isLoading } = useMedia()
+  const { data: mediaItems, isLoading, isError, refetch } = useMedia()
   const queryClient = useQueryClient()
   const [formOpen, setFormOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<MediaItem | null>(null)
@@ -180,6 +181,8 @@ export default function AdminMediaPage() {
         <div className="flex items-center justify-center h-40">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
           <table className="w-full">

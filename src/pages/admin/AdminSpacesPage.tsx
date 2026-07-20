@@ -11,6 +11,7 @@ import ImageUploadField from "../../components/admin/ImageUploadField";
 import PhotoPickerModal from "../../components/admin/PhotoPickerModal";
 import { deleteStorageFilesByUrls } from "../../lib/storage";
 import { listPhotoProjects } from "../../services/photoProjects";
+import AdminQueryError from "../../components/admin/AdminQueryError";
 
 const spaceSchema = z.object({
   name: z.string().min(1, "공간명을 입력하세요"),
@@ -72,7 +73,7 @@ function SpaceForm({
   );
   const { data: photoProjects = [] } = useQuery({
     queryKey: ["photo_projects"],
-    queryFn: ({ signal }) => listPhotoProjects(signal),
+    queryFn: () => listPhotoProjects(),
   });
   const originalImagesRef = useRef<string[]>(initialData?.images ?? []);
   const [imagesArr, setImagesArr] = useState<(string | null)[]>(
@@ -463,7 +464,7 @@ function SpaceForm({
 }
 
 export default function AdminSpacesPage() {
-  const { data: spaces, isLoading } = useSpaces();
+  const { data: spaces, isLoading, isError, refetch } = useSpaces();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingSpace, setEditingSpace] = useState<Space | null>(null);
@@ -521,6 +522,8 @@ export default function AdminSpacesPage() {
         <div className="flex items-center justify-center h-40">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
           <table className="w-full">

@@ -9,6 +9,7 @@ import { externalContentsService } from '../../services/externalContents'
 import { runFetchAll } from '../../services/fetchers/aggregator'
 import type { ContentPlatform, VisibilityStatus, ExternalContent } from '../../types'
 import { format } from 'date-fns'
+import AdminQueryError from '../../components/admin/AdminQueryError'
 
 const PLATFORM_ICONS: Record<ContentPlatform, React.ElementType> = {
   rss: Rss,
@@ -189,7 +190,7 @@ export default function AdminExternalContentPage() {
 
   const LIMIT = 20
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['external-contents', { platform, status, search, page }],
     queryFn: () =>
       externalContentsService.getAllAdmin({
@@ -342,6 +343,8 @@ export default function AdminExternalContentPage() {
         <div className="text-center py-16">
           <Loader2 size={32} className="animate-spin mx-auto text-gray-400" />
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : items.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-gray-200 text-gray-400">
           <Filter size={32} className="mx-auto mb-3 opacity-40" />

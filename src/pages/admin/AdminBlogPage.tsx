@@ -9,6 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploadField from "../../components/admin/ImageUploadField";
 import { deleteStorageFilesByUrls } from "../../lib/storage";
+import AdminQueryError from "../../components/admin/AdminQueryError";
 
 const postSchema = z.object({
   title: z.string().min(1, "제목을 입력하세요"),
@@ -292,7 +293,7 @@ function BlogPostForm({
 }
 
 export default function AdminBlogPage() {
-  const { data: blogResult, isLoading } = useBlogPosts({ limit: 50 });
+  const { data: blogResult, isLoading, isError, refetch } = useBlogPosts({ limit: 50 });
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -353,6 +354,8 @@ export default function AdminBlogPage() {
         <div className="flex items-center justify-center h-40">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
           <table className="w-full">

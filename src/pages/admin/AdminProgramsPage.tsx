@@ -9,6 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploadField from "../../components/admin/ImageUploadField";
 import { deleteStorageFilesByUrls } from "../../lib/storage";
+import AdminQueryError from "../../components/admin/AdminQueryError";
 
 const programSchema = z.object({
   title: z.string().min(1, "프로그램명을 입력하세요"),
@@ -403,7 +404,7 @@ function ProgramForm({
 }
 
 export default function AdminProgramsPage() {
-  const { data: programs, isLoading } = usePrograms();
+  const { data: programs, isLoading, isError, refetch } = usePrograms();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
@@ -461,6 +462,8 @@ export default function AdminProgramsPage() {
         <div className="flex items-center justify-center h-40">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
           <table className="w-full">

@@ -5,6 +5,7 @@ import type { Inquiry } from '../../types'
 import type { InquiryStatus } from '../../types'
 import { useQueryClient } from '@tanstack/react-query'
 import { X, ChevronDown, Loader2, Mail, Phone, Clock } from 'lucide-react'
+import AdminQueryError from '../../components/admin/AdminQueryError'
 
 const STATUS_LABELS: Record<string, string> = {
   pending: '대기 중',
@@ -113,7 +114,7 @@ function InquiryModal({ inquiry, onClose, onStatusChange }: { inquiry: Inquiry; 
 
 export default function AdminInquiriesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  const { data: inquiries, isLoading } = useInquiries(statusFilter === 'all' ? {} : { status: statusFilter })
+  const { data: inquiries, isLoading, isError, refetch } = useInquiries(statusFilter === 'all' ? {} : { status: statusFilter })
   const queryClient = useQueryClient()
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null)
 
@@ -155,6 +156,8 @@ export default function AdminInquiriesPage() {
         <div className="flex items-center justify-center h-40">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
           <table className="w-full">

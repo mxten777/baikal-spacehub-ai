@@ -9,6 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploadField from "../../components/admin/ImageUploadField";
 import PhotoPickerModal from "../../components/admin/PhotoPickerModal";
+import AdminQueryError from "../../components/admin/AdminQueryError";
 
 const archiveSchema = z.object({
   title: z.string().min(1, "제목을 입력하세요"),
@@ -301,7 +302,7 @@ function ArchiveItemForm({
 }
 
 export default function AdminArchivePage() {
-  const { data: archives, isLoading } = useArchive();
+  const { data: archives, isLoading, isError, refetch } = useArchive();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ArchiveItem | null>(null);
@@ -346,6 +347,8 @@ export default function AdminArchivePage() {
         <div className="flex items-center justify-center h-40">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
         </div>
+      ) : isError ? (
+        <AdminQueryError onRetry={refetch} />
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
           <table className="w-full">
