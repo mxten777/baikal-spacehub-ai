@@ -69,7 +69,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // INITIAL_SESSION은 getSession()이 이미 처리 — 중복 profiles 조회 방지
+      if (event === 'INITIAL_SESSION') return;
       if (!mounted) return;
       const currentUser = session?.user ?? null;
       setUser(currentUser);
