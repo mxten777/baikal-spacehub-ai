@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus, X, Pencil, Archive, FolderOpen } from 'lucide-react'
+import { Loader2, Plus, X, Pencil, Archive, FolderOpen, RefreshCw } from 'lucide-react'
 import { format } from 'date-fns'
 import { listPhotoProjects, archivePhotoProject } from '../../services/photoProjects'
+import { isSupabaseConfigured } from '../../lib/supabase'
 import type { PhotoProject, PhotoProjectStatus } from '../../types'
 import CreatePhotoProjectModal from '../../components/admin/photo-projects/CreatePhotoProjectModal'
 import EditPhotoProjectModal from '../../components/admin/photo-projects/EditPhotoProjectModal'
@@ -144,10 +145,11 @@ function ProjectRow({
 
 export default function AdminPhotoProjectsPage() {
   const queryClient = useQueryClient()
-  const { data: projects, isLoading, isError, error } = useQuery({
+  const { data: projects, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-photo-projects'],
-    queryFn: listPhotoProjects,
+    queryFn: ({ signal }) => listPhotoProjects(signal),
     retry: false,
+    enabled: isSupabaseConfigured,
   })
 
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -202,9 +204,23 @@ export default function AdminPhotoProjectsPage() {
         </button>
       </div>
 
+      {!isSupabaseConfigured && (
+        <div className="mb-4 px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-sans">
+          Supabase 환경변수가 설정되지 않았습니다. .env.local 파일을 확인해 주세요.
+        </div>
+      )}
+
       {isError && (
-        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm font-sans">
-          {error instanceof Error ? error.message : '프로젝트 목록을 불러오지 못했습니다.'}
+        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm font-sans flex items-center justify-between gap-4">
+          <span>{error instanceof Error ? error.message : '프로젝트 목록을 불러오지 못했습니다.'}</span>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 border border-red-300 text-red-700 hover:bg-red-100 transition-colors text-xs font-sans"
+          >
+            <RefreshCw size={12} />
+            재시도
+          </button>
         </div>
       )}
 

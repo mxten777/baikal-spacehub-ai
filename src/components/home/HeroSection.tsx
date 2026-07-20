@@ -46,7 +46,9 @@ function HeroButton({
 
 export default function HeroSection() {
   // placeholderData로 즉시 fallback 이미지 표시 — Supabase 응답 전에도 Hero가 보임
-  const { data: heroData } = useActiveHeroSlides({ placeholderData: HERO_FALLBACK_SLIDES });
+  const { data: heroData } = useActiveHeroSlides({
+    placeholderData: HERO_FALLBACK_SLIDES,
+  });
 
   // project_category='main' + stage='web' 업로드 사진 — desktop_image_url 없는 슬라이드 자동 치환
   const { data: mainPhotos } = usePublicPhotos("main");

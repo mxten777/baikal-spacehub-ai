@@ -37,15 +37,31 @@ const AdminProgramsPage = lazy(() => import("./pages/admin/AdminProgramsPage"));
 const AdminArchivePage = lazy(() => import("./pages/admin/AdminArchivePage"));
 const AdminBlogPage = lazy(() => import("./pages/admin/AdminBlogPage"));
 const AdminMediaPage = lazy(() => import("./pages/admin/AdminMediaPage"));
-const AdminInquiriesPage = lazy(() => import("./pages/admin/AdminInquiriesPage"));
+const AdminInquiriesPage = lazy(
+  () => import("./pages/admin/AdminInquiriesPage"),
+);
 const AdminSettingsPage = lazy(() => import("./pages/admin/AdminSettingsPage"));
-const AdminOperatorSettingsPage = lazy(() => import("./pages/admin/AdminOperatorSettingsPage"));
-const AdminContentSourcesPage = lazy(() => import("./pages/admin/AdminContentSourcesPage"));
-const AdminExternalContentPage = lazy(() => import("./pages/admin/AdminExternalContentPage"));
-const AdminReservationsPage = lazy(() => import("./pages/admin/AdminReservationsPage"));
-const AdminPhotoCuratorPage = lazy(() => import("./pages/admin/AdminPhotoCuratorPage"));
-const AdminPhotoProjectsPage = lazy(() => import("./pages/admin/AdminPhotoProjectsPage"));
-const AdminPhotoAssetExplorerPage = lazy(() => import("./pages/admin/AdminPhotoAssetExplorerPage"));
+const AdminOperatorSettingsPage = lazy(
+  () => import("./pages/admin/AdminOperatorSettingsPage"),
+);
+const AdminContentSourcesPage = lazy(
+  () => import("./pages/admin/AdminContentSourcesPage"),
+);
+const AdminExternalContentPage = lazy(
+  () => import("./pages/admin/AdminExternalContentPage"),
+);
+const AdminReservationsPage = lazy(
+  () => import("./pages/admin/AdminReservationsPage"),
+);
+const AdminPhotoCuratorPage = lazy(
+  () => import("./pages/admin/AdminPhotoCuratorPage"),
+);
+const AdminPhotoProjectsPage = lazy(
+  () => import("./pages/admin/AdminPhotoProjectsPage"),
+);
+const AdminPhotoAssetExplorerPage = lazy(
+  () => import("./pages/admin/AdminPhotoAssetExplorerPage"),
+);
 const AdminHeroPage = lazy(() => import("./pages/admin/AdminHeroPage"));
 const AdminAboutPage = lazy(() => import("./pages/admin/AdminAboutPage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
@@ -75,139 +91,145 @@ export default function App() {
         <BrowserRouter>
           <AuthProvider>
             <Suspense fallback={null}>
-            <Routes>
-              {/* Public routes */}
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/spaces" element={<SpacesPage />} />
-                <Route path="/spaces/:slug" element={<SpaceDetailPage />} />
-                <Route path="/programs" element={<ProgramsPage />} />
-                <Route path="/programs/:slug" element={<ProgramDetailPage />} />
-                <Route path="/events" element={<EventsPage />} />
-                <Route path="/archive" element={<ArchivePage />} />
-                <Route path="/archive/:slug" element={<ArchiveDetailPage />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/blog/:slug" element={<BlogPostPage />} />
-                <Route path="/media" element={<MediaPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/reservation" element={<ReservationPage />} />
-              </Route>
+              <Routes>
+                {/* Public routes */}
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/spaces" element={<SpacesPage />} />
+                  <Route path="/spaces/:slug" element={<SpaceDetailPage />} />
+                  <Route path="/programs" element={<ProgramsPage />} />
+                  <Route
+                    path="/programs/:slug"
+                    element={<ProgramDetailPage />}
+                  />
+                  <Route path="/events" element={<EventsPage />} />
+                  <Route path="/archive" element={<ArchivePage />} />
+                  <Route
+                    path="/archive/:slug"
+                    element={<ArchiveDetailPage />}
+                  />
+                  <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/:slug" element={<BlogPostPage />} />
+                  <Route path="/media" element={<MediaPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/reservation" element={<ReservationPage />} />
+                </Route>
 
-              {/* Admin auth */}
-              <Route path="/admin/login" element={<AdminLoginPage />} />
+                {/* Admin auth */}
+                <Route path="/admin/login" element={<AdminLoginPage />} />
 
-              {/* Admin CMS routes */}
-              <Route
-                path="/admin"
-                element={
-                  <RequireAuth>
-                    <AdminLayout />
-                  </RequireAuth>
-                }
-              >
-                <Route index element={<AdminDashboard />} />
-                <Route path="spaces" element={<AdminSpacesPage />} />
-                <Route path="programs" element={<AdminProgramsPage />} />
-                <Route path="archive" element={<AdminArchivePage />} />
-                <Route path="blog" element={<AdminBlogPage />} />
-                <Route path="media" element={<AdminMediaPage />} />
-                <Route path="inquiries" element={<AdminInquiriesPage />} />
-                {/* 운영 정보 — operator 이상 접근 가능 */}
+                {/* Admin CMS routes */}
                 <Route
-                  path="operator-settings"
+                  path="/admin"
                   element={
-                    <RoleGuard permission="operator_settings">
-                      <AdminOperatorSettingsPage />
-                    </RoleGuard>
+                    <RequireAuth>
+                      <AdminLayout />
+                    </RequireAuth>
                   }
-                />
-                {/* 이하 super_admin 전용 */}
-                <Route
-                  path="settings"
-                  element={
-                    <RoleGuard permission="system_settings">
-                      <AdminSettingsPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="hero"
-                  element={
-                    <RoleGuard permission="hero">
-                      <AdminHeroPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="about"
-                  element={
-                    <RoleGuard permission="about">
-                      <AdminAboutPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="users"
-                  element={
-                    <RoleGuard permission="users">
-                      <AdminUsersPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="content-sources"
-                  element={
-                    <RoleGuard permission="content_sources">
-                      <AdminContentSourcesPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="external-content"
-                  element={
-                    <RoleGuard permission="external_content">
-                      <AdminExternalContentPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="reservations"
-                  element={
-                    <RoleGuard permission="reservations">
-                      <AdminReservationsPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="photo-projects"
-                  element={
-                    <RoleGuard permission="photo_projects">
-                      <AdminPhotoProjectsPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="photo-projects/:projectId"
-                  element={
-                    <RoleGuard permission="photo_projects">
-                      <AdminPhotoAssetExplorerPage />
-                    </RoleGuard>
-                  }
-                />
-                <Route
-                  path="photo-curator"
-                  element={
-                    <RoleGuard permission="photo_curator">
-                      <AdminPhotoCuratorPage />
-                    </RoleGuard>
-                  }
-                />
-              </Route>
+                >
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="spaces" element={<AdminSpacesPage />} />
+                  <Route path="programs" element={<AdminProgramsPage />} />
+                  <Route path="archive" element={<AdminArchivePage />} />
+                  <Route path="blog" element={<AdminBlogPage />} />
+                  <Route path="media" element={<AdminMediaPage />} />
+                  <Route path="inquiries" element={<AdminInquiriesPage />} />
+                  {/* 운영 정보 — operator 이상 접근 가능 */}
+                  <Route
+                    path="operator-settings"
+                    element={
+                      <RoleGuard permission="operator_settings">
+                        <AdminOperatorSettingsPage />
+                      </RoleGuard>
+                    }
+                  />
+                  {/* 이하 super_admin 전용 */}
+                  <Route
+                    path="settings"
+                    element={
+                      <RoleGuard permission="system_settings">
+                        <AdminSettingsPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="hero"
+                    element={
+                      <RoleGuard permission="hero">
+                        <AdminHeroPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="about"
+                    element={
+                      <RoleGuard permission="about">
+                        <AdminAboutPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="users"
+                    element={
+                      <RoleGuard permission="users">
+                        <AdminUsersPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="content-sources"
+                    element={
+                      <RoleGuard permission="content_sources">
+                        <AdminContentSourcesPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="external-content"
+                    element={
+                      <RoleGuard permission="external_content">
+                        <AdminExternalContentPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="reservations"
+                    element={
+                      <RoleGuard permission="reservations">
+                        <AdminReservationsPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="photo-projects"
+                    element={
+                      <RoleGuard permission="photo_projects">
+                        <AdminPhotoProjectsPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="photo-projects/:projectId"
+                    element={
+                      <RoleGuard permission="photo_projects">
+                        <AdminPhotoAssetExplorerPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="photo-curator"
+                    element={
+                      <RoleGuard permission="photo_curator">
+                        <AdminPhotoCuratorPage />
+                      </RoleGuard>
+                    }
+                  />
+                </Route>
 
-              {/* 404 fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+                {/* 404 fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
             </Suspense>
           </AuthProvider>
         </BrowserRouter>
