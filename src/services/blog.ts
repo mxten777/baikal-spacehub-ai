@@ -2,6 +2,17 @@ import { supabase } from '../lib/supabase'
 import type { BlogPost, BlogCategory, FilterOptions } from '../types'
 
 export const blogService = {
+  /** Admin용 전체 목록 (is_published 상관없이, JOIN 없이 경량 조회) */
+  async getAllAdmin(limit = 50): Promise<BlogPost[]> {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit)
+    if (error) throw error
+    return data ?? []
+  },
+
   async getPosts(filters?: FilterOptions & { limit?: number; page?: number }): Promise<{ data: BlogPost[]; count: number }> {
     const page = filters?.page ?? 1
     const limit = filters?.limit ?? 12

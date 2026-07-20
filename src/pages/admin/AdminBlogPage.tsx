@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import { useBlogPosts, useBlogCategories } from "../../hooks/useData";
+import { useBlogCategories } from "../../hooks/useData";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { blogService } from "../../services/blog";
+import { isSupabaseConfigured } from "../../lib/supabase";
 import type { BlogPost } from "../../types";
-import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, X, Check, Loader2, Eye } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -293,17 +294,26 @@ function BlogPostForm({
 }
 
 export default function AdminBlogPage() {
-  const { data: blogResult, isLoading, isError, refetch } = useBlogPosts({ limit: 50 });
+  const {
+    data: posts = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["admin-blog-posts"],
+    queryFn: () => blogService.getAllAdmin(),
+    staleTime: 2 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  });
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
 
-  const posts = blogResult?.data ?? [];
-
   const handleSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ["blog"] });
+    queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
+    queryClient.invalidateQueries({ queryKey: ["blog-posts"] });
     setFormOpen(false);
     setEditingPost(null);
   };
@@ -313,7 +323,8 @@ export default function AdminBlogPage() {
     setDeletingId(id);
     try {
       await blogService.delete(id);
-      queryClient.invalidateQueries({ queryKey: ["blog"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["blog-posts"] });
     } finally {
       setDeletingId(null);
     }
@@ -351,8 +362,9 @@ export default function AdminBlogPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-40">
+        <div className="flex flex-col items-center justify-center h-40 gap-2">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
+          <p className="font-sans text-xs text-gray-400">連結 웽… 초기 접속 시 잠시 걸릴 수 있습니다</p>
         </div>
       ) : isError ? (
         <AdminQueryError onRetry={refetch} />
