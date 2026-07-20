@@ -93,20 +93,25 @@ export default function HeroSection() {
   const safeIdx = Math.min(current, displaySlides.length - 1);
   const slide = displaySlides[safeIdx];
 
+  // 로딩 중: 정적 배경이미지 표시 (즉시 로드) — 검은화면 방지
+  if (!slide) {
+    return (
+      <section className="relative h-screen min-h-[600px] overflow-hidden">
+        <img
+          src="/images/hero/hero-1.jpg"
+          alt=""
+          aria-hidden="true"
+          className="w-full h-full object-cover"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 bg-gradient-overlay-center" />
+      </section>
+    );
+  }
+
   return (
     <section className="relative h-screen min-h-[600px] overflow-hidden">
-      {/* Base layer — always rendered so the preloaded image is never "unused" */}
-      <img
-        src="/images/hero/hero-1.jpg"
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover"
-        fetchPriority="high"
-      />
-      {/* Gradient over base layer when slides haven't loaded yet */}
-      {!slide && <div className="absolute inset-0 bg-gradient-overlay-center" />}
-
-      {/* Background slides — rendered on top once data is available */}
+      {/* Background slides — all rendered for instant preload, crossfade via opacity */}
       {displaySlides.map((s, i) => (
         <motion.div
           key={s.id}
@@ -135,8 +140,8 @@ export default function HeroSection() {
         </motion.div>
       ))}
 
-      {/* Content — only rendered once slide data is available */}
-      {slide && <div className="relative z-10 flex flex-col justify-end h-full container-wide pb-20 lg:pb-28">
+      {/* Content */}
+      <div className="relative z-10 flex flex-col justify-end h-full container-wide pb-20 lg:pb-28">
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id + "-content"}
@@ -201,10 +206,10 @@ export default function HeroSection() {
             />
           ))}
         </div>
-      </div>}
+      </div>
 
-      {/* Scroll indicator — only rendered once slide data is available */}
-      {slide && <div className="absolute bottom-8 right-8 lg:right-16 z-10 flex flex-col items-center gap-2">
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 right-8 lg:right-16 z-10 flex flex-col items-center gap-2">
         <span className="writing-vertical font-sans text-[9px] tracking-[0.25em] uppercase text-white/40">
           Scroll
         </span>
@@ -215,7 +220,7 @@ export default function HeroSection() {
             transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
           />
         </div>
-      </div>}
+      </div>
     </section>
   );
 }
