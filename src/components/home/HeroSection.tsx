@@ -45,14 +45,15 @@ function HeroButton({
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function HeroSection() {
-  // isLoading 중에는 fallback을 표시하지 않음 — 잘못된 콘텐츠 노출 방지
-  const { data: heroData, isPending: heroLoading } = useActiveHeroSlides();
+  const { data: heroData } = useActiveHeroSlides();
 
   // project_category='main' + stage='web' 업로드 사진 — desktop_image_url 없는 슬라이드 자동 치환
   const { data: mainPhotos } = usePublicPhotos("main");
 
   const displaySlides: HeroSlide[] = useMemo(() => {
-    if (heroLoading) return []; // 로딩 중에는 빈 배열 — 잘못된 콘텐츠 노출 방지
+    // Supabase 응답 전에도 fallback 슬라이드를 즉시 표시
+    // → 콜드 스타트 등으로 응답이 늦어도 Hero 애니메이션이 즉시 동작
+    // 실제 데이터가 도착하면 자동으로 교체됨
     const base =
       heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES;
     if (!mainPhotos?.length) return base;
@@ -61,7 +62,7 @@ export default function HeroSection() {
       desktop_image_url:
         slide.desktop_image_url || mainPhotos[i]?.public_url || null,
     }));
-  }, [heroData, heroLoading, mainPhotos]);
+  }, [heroData, mainPhotos]);
 
   // Always up-to-date ref — interval callback uses this to avoid stale closure
   const displaySlidesRef = useRef(displaySlides);
