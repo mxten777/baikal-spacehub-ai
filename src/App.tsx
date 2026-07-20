@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
@@ -6,47 +7,47 @@ import { supabase } from "./lib/supabase";
 import type { Session } from "@supabase/supabase-js";
 import { AuthProvider } from "./contexts/AuthContext";
 
-// Layouts
+// Layouts (eager — always needed, small)
 import MainLayout from "./layouts/MainLayout";
 import AdminLayout from "./layouts/AdminLayout";
-
-// Public pages
-import HomePage from "./pages/HomePage";
-import AboutPage from "./pages/AboutPage";
-import SpacesPage from "./pages/SpacesPage";
-import SpaceDetailPage from "./pages/SpaceDetailPage";
-import ProgramsPage from "./pages/ProgramsPage";
-import ProgramDetailPage from "./pages/ProgramDetailPage";
-import EventsPage from "./pages/EventsPage";
-import ArchivePage from "./pages/ArchivePage";
-import ArchiveDetailPage from "./pages/ArchiveDetailPage";
-import BlogPage from "./pages/BlogPage";
-import BlogPostPage from "./pages/BlogPostPage";
-import MediaPage from "./pages/MediaPage";
-import ContactPage from "./pages/ContactPage";
-import ReservationPage from "./pages/ReservationPage";
-
-// Admin pages
-import AdminLoginPage from "./pages/admin/AdminLoginPage";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminSpacesPage from "./pages/admin/AdminSpacesPage";
-import AdminProgramsPage from "./pages/admin/AdminProgramsPage";
-import AdminArchivePage from "./pages/admin/AdminArchivePage";
-import AdminBlogPage from "./pages/admin/AdminBlogPage";
-import AdminMediaPage from "./pages/admin/AdminMediaPage";
-import AdminInquiriesPage from "./pages/admin/AdminInquiriesPage";
-import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
-import AdminOperatorSettingsPage from "./pages/admin/AdminOperatorSettingsPage";
-import AdminContentSourcesPage from "./pages/admin/AdminContentSourcesPage";
-import AdminExternalContentPage from "./pages/admin/AdminExternalContentPage";
-import AdminReservationsPage from "./pages/admin/AdminReservationsPage";
-import AdminPhotoCuratorPage from "./pages/admin/AdminPhotoCuratorPage";
-import AdminPhotoProjectsPage from "./pages/admin/AdminPhotoProjectsPage";
-import AdminPhotoAssetExplorerPage from "./pages/admin/AdminPhotoAssetExplorerPage";
-import AdminHeroPage from "./pages/admin/AdminHeroPage";
-import AdminAboutPage from "./pages/admin/AdminAboutPage";
-import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import RoleGuard from "./components/admin/RoleGuard";
+
+// Public pages — lazy loaded (각 페이지를 별도 청크로 분리)
+const HomePage = lazy(() => import("./pages/HomePage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const SpacesPage = lazy(() => import("./pages/SpacesPage"));
+const SpaceDetailPage = lazy(() => import("./pages/SpaceDetailPage"));
+const ProgramsPage = lazy(() => import("./pages/ProgramsPage"));
+const ProgramDetailPage = lazy(() => import("./pages/ProgramDetailPage"));
+const EventsPage = lazy(() => import("./pages/EventsPage"));
+const ArchivePage = lazy(() => import("./pages/ArchivePage"));
+const ArchiveDetailPage = lazy(() => import("./pages/ArchiveDetailPage"));
+const BlogPage = lazy(() => import("./pages/BlogPage"));
+const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
+const MediaPage = lazy(() => import("./pages/MediaPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const ReservationPage = lazy(() => import("./pages/ReservationPage"));
+
+// Admin pages — lazy loaded (일반 방문자는 로드하지 않음)
+const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminSpacesPage = lazy(() => import("./pages/admin/AdminSpacesPage"));
+const AdminProgramsPage = lazy(() => import("./pages/admin/AdminProgramsPage"));
+const AdminArchivePage = lazy(() => import("./pages/admin/AdminArchivePage"));
+const AdminBlogPage = lazy(() => import("./pages/admin/AdminBlogPage"));
+const AdminMediaPage = lazy(() => import("./pages/admin/AdminMediaPage"));
+const AdminInquiriesPage = lazy(() => import("./pages/admin/AdminInquiriesPage"));
+const AdminSettingsPage = lazy(() => import("./pages/admin/AdminSettingsPage"));
+const AdminOperatorSettingsPage = lazy(() => import("./pages/admin/AdminOperatorSettingsPage"));
+const AdminContentSourcesPage = lazy(() => import("./pages/admin/AdminContentSourcesPage"));
+const AdminExternalContentPage = lazy(() => import("./pages/admin/AdminExternalContentPage"));
+const AdminReservationsPage = lazy(() => import("./pages/admin/AdminReservationsPage"));
+const AdminPhotoCuratorPage = lazy(() => import("./pages/admin/AdminPhotoCuratorPage"));
+const AdminPhotoProjectsPage = lazy(() => import("./pages/admin/AdminPhotoProjectsPage"));
+const AdminPhotoAssetExplorerPage = lazy(() => import("./pages/admin/AdminPhotoAssetExplorerPage"));
+const AdminHeroPage = lazy(() => import("./pages/admin/AdminHeroPage"));
+const AdminAboutPage = lazy(() => import("./pages/admin/AdminAboutPage"));
+const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -80,6 +81,7 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AuthProvider>
+            <Suspense fallback={null}>
             <Routes>
               {/* Public routes */}
               <Route element={<MainLayout />}>
@@ -213,6 +215,7 @@ export default function App() {
               {/* 404 fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            </Suspense>
           </AuthProvider>
         </BrowserRouter>
       </QueryClientProvider>

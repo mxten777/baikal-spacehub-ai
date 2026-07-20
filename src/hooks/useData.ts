@@ -242,7 +242,8 @@ export const useActiveHeroSlides = (options?: {
   useQuery({
     queryKey: ["hero-slides", "active"],
     queryFn: () => heroSlidesService.getActive(),
-    staleTime: 2 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10분 캐시 — 재방문 시 즉시 표시
+    gcTime: 30 * 60 * 1000,    // 30분간 캐시 유지
     enabled: isSupabaseConfigured,
     placeholderData: options?.placeholderData,
   });
