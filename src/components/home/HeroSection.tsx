@@ -45,15 +45,14 @@ function HeroButton({
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function HeroSection() {
-  // placeholderData로 즉시 fallback 이미지 표시 — Supabase 응답 전에도 Hero가 보임
-  const { data: heroData } = useActiveHeroSlides({
-    placeholderData: HERO_FALLBACK_SLIDES,
-  });
+  // isLoading 중에는 fallback을 표시하지 않음 — 잘못된 콘텐츠 노출 방지
+  const { data: heroData, isPending: heroLoading } = useActiveHeroSlides();
 
   // project_category='main' + stage='web' 업로드 사진 — desktop_image_url 없는 슬라이드 자동 치환
   const { data: mainPhotos } = usePublicPhotos("main");
 
   const displaySlides: HeroSlide[] = useMemo(() => {
+    if (heroLoading) return []; // 로딩 중에는 빈 배열 — 잘못된 콘텐츠 노출 방지
     const base =
       heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES;
     if (!mainPhotos?.length) return base;
@@ -62,7 +61,7 @@ export default function HeroSection() {
       desktop_image_url:
         slide.desktop_image_url || mainPhotos[i]?.public_url || null,
     }));
-  }, [heroData, mainPhotos]);
+  }, [heroData, heroLoading, mainPhotos]);
 
   // Always up-to-date ref — interval callback uses this to avoid stale closure
   const displaySlidesRef = useRef(displaySlides);
@@ -94,7 +93,15 @@ export default function HeroSection() {
   const safeIdx = Math.min(current, displaySlides.length - 1);
   const slide = displaySlides[safeIdx];
 
-  if (!slide) return null;
+  // 로딩 중: 검은 배경만 표시 (히어로 배경색과 동일 — 레이아웃 점프 없음)
+  if (!slide) {
+    return (
+      <section
+        className="relative h-screen min-h-[600px] bg-brand-black"
+        aria-hidden="true"
+      />
+    );
+  }
 
   return (
     <section className="relative h-screen min-h-[600px] overflow-hidden">
