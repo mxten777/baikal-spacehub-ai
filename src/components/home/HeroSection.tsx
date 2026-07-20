@@ -93,13 +93,20 @@ export default function HeroSection() {
   const safeIdx = Math.min(current, displaySlides.length - 1);
   const slide = displaySlides[safeIdx];
 
-  // 로딩 중: 검은 배경만 표시 (히어로 배경색과 동일 — 레이아웃 점프 없음)
+  // 로딩 중: 정적 배경이미지 표시 (즉시 로드) — 텍스트·버튼은 데이터 도착 후만 표시
+  // 고객 입장에서 검은 화면이 아닌 의도된 배경처럼 보임
   if (!slide) {
     return (
-      <section
-        className="relative h-screen min-h-[600px] bg-brand-black"
-        aria-hidden="true"
-      />
+      <section className="relative h-screen min-h-[600px] overflow-hidden">
+        <img
+          src="/images/hero/hero-1.jpg"
+          alt=""
+          aria-hidden="true"
+          className="w-full h-full object-cover"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 bg-gradient-overlay-center" />
+      </section>
     );
   }
 
