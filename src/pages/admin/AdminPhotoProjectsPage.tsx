@@ -148,7 +148,8 @@ export default function AdminPhotoProjectsPage() {
   const { data: projects, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-photo-projects'],
     queryFn: ({ signal }) => listPhotoProjects(signal),
-    retry: false,
+    retry: 1,
+    retryDelay: 0,
     enabled: isSupabaseConfigured,
   })
 

@@ -79,11 +79,11 @@ async function resolveUniqueSlug(base: string): Promise<string> {
 
 /** photo_projects 전체 목록 조회 (created_at 내림차순) */
 export async function listPhotoProjects(_signal?: AbortSignal): Promise<PhotoProject[]> {
-  // 10초 타임아웃: 응답이 없을 경우 무한 로딩 방지 (Supabase 콜드 스타트 등)
+  // 30초 타임아웃: Supabase 무료 플랜 콜드 스타트(~25초) 대응
   const timeout = new Promise<never>((_, reject) =>
     setTimeout(
       () => reject(new Error("요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.")),
-      10_000,
+      30_000,
     ),
   );
 
