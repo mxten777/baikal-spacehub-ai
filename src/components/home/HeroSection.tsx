@@ -45,8 +45,8 @@ function HeroButton({
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function HeroSection() {
-  // placeholderData 제거 — 로딩 중에는 어두운 배경만 표시, 실제 데이터 도착 후 이미지 표시
-  const { data: heroData, isLoading: heroLoading } = useActiveHeroSlides();
+  // placeholderData로 즉시 fallback 이미지 표시 — Supabase 응답 전에도 Hero가 보임
+  const { data: heroData } = useActiveHeroSlides({ placeholderData: HERO_FALLBACK_SLIDES });
 
   // project_category='main' + stage='web' 업로드 사진 — desktop_image_url 없는 슬라이드 자동 치환
   const { data: mainPhotos } = usePublicPhotos("main");
@@ -87,13 +87,6 @@ export default function HeroSection() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
-
-  // 로딩 중이면 어두운 배경 스켈레톤 표시 (Unsplash placeholder 방지)
-  if (heroLoading) {
-    return (
-      <section className="relative h-screen min-h-[600px] overflow-hidden bg-brand-black" />
-    );
-  }
 
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
   const safeIdx = Math.min(current, displaySlides.length - 1);

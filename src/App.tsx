@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
 import { HelmetProvider } from "react-helmet-async";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
@@ -48,14 +49,6 @@ const AdminPhotoAssetExplorerPage = lazy(() => import("./pages/admin/AdminPhotoA
 const AdminHeroPage = lazy(() => import("./pages/admin/AdminHeroPage"));
 const AdminAboutPage = lazy(() => import("./pages/admin/AdminAboutPage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,
-      retry: false,
-    },
-  },
-});
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
