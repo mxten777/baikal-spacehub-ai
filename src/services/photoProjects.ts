@@ -78,31 +78,25 @@ async function resolveUniqueSlug(base: string): Promise<string> {
 // ── CRUD 서비스 ─────────────────────────────────────────────
 
 /** photo_projects 전체 목록 조회 (created_at 내림차순) */
-export async function listPhotoProjects(signal?: AbortSignal): Promise<PhotoProject[]> {
-  // 15초 타임아웃: 요청이 끊기거나 응답이 없을 경우 무한 로딩 방지
-  const controller = new AbortController();
-  if (signal) {
-    signal.addEventListener("abort", () => controller.abort());
-  }
-  const timeoutId = setTimeout(() => controller.abort(), 15_000);
+export async function listPhotoProjects(_signal?: AbortSignal): Promise<PhotoProject[]> {
+  // 10초 타임아웃: 응답이 없을 경우 무한 로딩 방지 (Supabase 콜드 스타트 등)
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(
+      () => reject(new Error("요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.")),
+      10_000,
+    ),
+  );
 
-  try {
-    const { data, error } = await supabase
-      .from("photo_projects")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .abortSignal(controller.signal);
+  const query = supabase
+    .from("photo_projects")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .then(({ data, error }) => {
+      if (error) throw new Error(`photo_projects 조회 실패: ${error.message}`);
+      return data ?? [];
+    });
 
-    if (error) {
-      if (controller.signal.aborted) {
-        throw new Error("요청 시간이 초과되었습니다. 네트워크 연결을 확인해 주세요.");
-      }
-      throw new Error(`photo_projects 조회 실패: ${error.message}`);
-    }
-    return data ?? [];
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  return Promise.race([query, timeout]);
 }
 
 /** id 기준 단건 조회. 없으면 null, 실제 오류는 예외 발생 */
