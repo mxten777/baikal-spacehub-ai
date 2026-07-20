@@ -25,8 +25,8 @@ export default {
       },
       fontFamily: {
         sans:    ['Pretendard Variable', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['Cormorant Garamond', 'Georgia', 'serif'],
-        serif:   ['Cormorant Garamond', 'Georgia', 'serif'],
+        display: ['Cormorant Garamond', 'Pretendard Variable', 'Georgia', 'serif'],
+        serif:   ['Cormorant Garamond', 'Pretendard Variable', 'Georgia', 'serif'],
         mono:    ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
