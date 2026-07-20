@@ -7,12 +7,21 @@ export type HeroSlideUpdateInput = Partial<HeroSlideCreateInput>
 export const heroSlidesService = {
   /** Admin: 전체 슬라이드 조회 (비활성 포함) */
   async getAll(): Promise<HeroSlide[]> {
-    const { data, error } = await supabase
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error('요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.')),
+        30_000,
+      ),
+    )
+    const query = supabase
       .from('hero_slides')
       .select('*')
       .order('display_order', { ascending: true })
-    if (error) throw error
-    return data ?? []
+      .then(({ data, error }) => {
+        if (error) throw error
+        return data ?? []
+      })
+    return Promise.race([query, timeout])
   },
 
   /**

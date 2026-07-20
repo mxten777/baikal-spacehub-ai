@@ -456,7 +456,7 @@ function SlideForm({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminHeroPage() {
-  const { data: slides, isLoading } = useHeroSlides();
+  const { data: slides, isLoading, isError, refetch } = useHeroSlides();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null);
@@ -548,8 +548,20 @@ export default function AdminHeroPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-48">
+        <div className="flex flex-col items-center justify-center h-48 gap-2">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
+          <p className="font-sans text-xs text-gray-400">데이터를 불러오는 중입니다…</p>
+        </div>
+      ) : isError ? (
+        <div className="text-center py-16 border border-dashed border-red-200">
+          <p className="font-sans text-sm text-red-400 mb-3">데이터를 불러오지 못했습니다.</p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="font-sans text-xs text-gray-500 underline hover:text-gray-700"
+          >
+            다시 시도
+          </button>
         </div>
       ) : !slides || slides.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-gray-200">
