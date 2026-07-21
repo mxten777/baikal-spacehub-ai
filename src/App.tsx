@@ -3,10 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { HelmetProvider } from "react-helmet-async";
-import { useEffect, useState } from "react";
-import { supabase } from "./lib/supabase";
-import type { Session } from "@supabase/supabase-js";
 import { AuthProvider } from "./contexts/AuthContext";
+import { useAuth } from "./hooks/useAuth";
 
 // Layouts (eager — always needed, small)
 import MainLayout from "./layouts/MainLayout";
@@ -67,20 +65,10 @@ const AdminAboutPage = lazy(() => import("./pages/admin/AdminAboutPage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (session === undefined) return null;
-  if (!session) return <Navigate to="/admin/login" replace />;
+  if (loading) return null;
+  if (!user) return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
 }
 
