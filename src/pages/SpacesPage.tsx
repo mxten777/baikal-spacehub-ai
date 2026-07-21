@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { ArrowRight, Users, Maximize2 } from "lucide-react";
 import { useSpaces, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { SpaceCategory, Space } from "../types";
+import SeoHead from "../components/common/SeoHead";
+import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
 const CATEGORY_LABELS: Record<SpaceCategory | "all", string> = {
   all: "전체",
@@ -112,13 +113,16 @@ export default function SpacesPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Spaces — The Lit</title>
-        <meta
-          name="description"
-          content="더릿의 다양한 공간을 살펴보세요. 카페, 가든, 스튜디오, 스토리지 — 모든 문화 활동을 위한 프리미엄 공간 대관."
-        />
-      </Helmet>
+      <SeoHead
+        title="Spaces — The Lit"
+        description="더릿의 카페, 가든, 스튜디오, 스토리지를 대여하세요. 전시, 공연, 쳙영, 브랜드 행사에 최적화된 프리미엄 복합문화공간."
+        canonical={`${SITE_URL}/spaces`}
+        keywords="공간 대여, 카페 대여, 스튜디오 대여, 가든 대여, 더릿 공간, 행사 공간 서울"
+        jsonLd={breadcrumbJsonLd([
+          { name: 'Home', url: SITE_URL },
+          { name: 'Spaces', url: `${SITE_URL}/spaces` },
+        ])}
+      />
 
       {/* Page Hero */}
       <section className="pt-32 pb-16 bg-brand-black">

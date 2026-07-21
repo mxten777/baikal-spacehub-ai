@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet-async";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -6,6 +5,8 @@ import { usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import { aboutService, DEFAULT_ABOUT } from "../services/about";
 import type { AboutContent } from "../types";
+import SeoHead from "../components/common/SeoHead";
+import { SITE_URL, localBusinessJsonLd, breadcrumbJsonLd } from "../lib/seo";
 
 export default function AboutPage() {
   const [content, setContent] = useState<AboutContent>({
@@ -50,13 +51,19 @@ export default function AboutPage() {
 
   return (
     <>
-      <Helmet>
-        <title>About — The Lit</title>
-        <meta
-          name="description"
-          content="더릿(The Lit)의 이야기, 철학, 그리고 비전을 소개합니다. 2018년 시작된 서울의 프리미엄 복합문화공간 플랫폼."
-        />
-      </Helmet>
+      <SeoHead
+        title="About — The Lit"
+        description="더릿(The Lit)의 이야기, 철학, 그리고 비전을 소개합니다. 서울의 프리미엄 복합문화공간 플랫폼."
+        canonical={`${SITE_URL}/about`}
+        keywords="더릿 소개, 복합문화공간 철학, The Lit 비전, 더릿 스토리"
+        jsonLd={[
+          localBusinessJsonLd(),
+          breadcrumbJsonLd([
+            { name: 'Home', url: SITE_URL },
+            { name: 'About', url: `${SITE_URL}/about` },
+          ]),
+        ]}
+      />
 
       {/* Hero */}
       <section className="relative h-[70vh] min-h-[500px]">

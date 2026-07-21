@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
-import { HelmetProvider } from "react-helmet-async";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import { AuthProvider } from "./contexts/AuthContext";
 import { useAuth } from "./hooks/useAuth";
 
@@ -75,6 +75,27 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <HelmetProvider>
+      {/* ── Search Console verification (set via .env) ──────────────────── */}
+      <Helmet>
+        {import.meta.env.VITE_GOOGLE_SITE_VERIFICATION && (
+          <meta
+            name="google-site-verification"
+            content={import.meta.env.VITE_GOOGLE_SITE_VERIFICATION}
+          />
+        )}
+        {import.meta.env.VITE_NAVER_SITE_VERIFICATION && (
+          <meta
+            name="naver-site-verification"
+            content={import.meta.env.VITE_NAVER_SITE_VERIFICATION}
+          />
+        )}
+        {import.meta.env.VITE_BING_SITE_VERIFICATION && (
+          <meta
+            name="msvalidate.01"
+            content={import.meta.env.VITE_BING_SITE_VERIFICATION}
+          />
+        )}
+      </Helmet>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AuthProvider>

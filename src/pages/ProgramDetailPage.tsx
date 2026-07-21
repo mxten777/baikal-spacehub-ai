@@ -1,11 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
 import { ArrowLeft, ArrowRight, Calendar, MapPin, Users, ExternalLink } from 'lucide-react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useProgram } from '../hooks/useData'
 import AnimatedSection from '../components/common/AnimatedSection'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import SeoHead from '../components/common/SeoHead'
+import { SITE_URL, DEFAULT_OG_IMAGE, eventJsonLd, breadcrumbJsonLd } from '../lib/seo'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FALLBACK: Record<string, any> = {
@@ -45,11 +46,31 @@ export default function ProgramDetailPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{displayProgram.title} — The Lit</title>
-        <meta name="description" content={displayProgram.description?.substring(0, 160)} />
-        <meta property="og:image" content={displayProgram.cover_image_url} />
-      </Helmet>
+      <SeoHead
+        title={`${displayProgram.title} — The Lit`}
+        description={(displayProgram.description?.substring(0, 160) || displayProgram.short_description) ?? ''}
+        canonical={`${SITE_URL}/programs/${displayProgram.slug}`}
+        image={displayProgram.cover_image_url || DEFAULT_OG_IMAGE}
+        type="article"
+        jsonLd={[
+          eventJsonLd({
+            name: displayProgram.title,
+            description: displayProgram.description || displayProgram.short_description || '',
+            url: `${SITE_URL}/programs/${displayProgram.slug}`,
+            image: displayProgram.cover_image_url,
+            startDate: displayProgram.start_date,
+            endDate: displayProgram.end_date,
+            location: displayProgram.venue,
+            price: displayProgram.price,
+            isFree: displayProgram.is_free,
+          }),
+          breadcrumbJsonLd([
+            { name: 'Home', url: SITE_URL },
+            { name: 'Programs', url: `${SITE_URL}/programs` },
+            { name: displayProgram.title, url: `${SITE_URL}/programs/${displayProgram.slug}` },
+          ]),
+        ]}
+      />
 
       {/* Hero */}
       <div className="pt-20 bg-brand-cream">

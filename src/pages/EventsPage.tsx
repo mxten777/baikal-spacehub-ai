@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { Calendar, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -8,6 +7,8 @@ import { usePrograms, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { ProgramStatus } from "../types";
+import SeoHead from "../components/common/SeoHead";
+import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
 const STATUS_LABELS: Record<ProgramStatus, string> = {
   upcoming: "예정",
@@ -64,13 +65,16 @@ export default function EventsPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Events — The Lit</title>
-        <meta
-          name="description"
-          content="더릿에서 열리는 다양한 이벤트와 팝업 행사를 확인하세요."
-        />
-      </Helmet>
+      <SeoHead
+        title="Events — The Lit"
+        description="더릿에서 열리는 브랜드 행사, 팅업, 특별 이벤트 일정을 확인하세요."
+        canonical={`${SITE_URL}/events`}
+        keywords="이벤트, 브랜드 행사, 팡업, 더릿 이벤트, 특별 이벤트 서울"
+        jsonLd={breadcrumbJsonLd([
+          { name: 'Home', url: SITE_URL },
+          { name: 'Events', url: `${SITE_URL}/events` },
+        ])}
+      />
 
       {/* Page hero */}
       <section className="pt-32 pb-16 bg-brand-white">

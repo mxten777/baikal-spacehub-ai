@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Search } from "lucide-react";
 import { useBlogPosts, useBlogCategories } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import SeoHead from "../components/common/SeoHead";
+import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
 const FALLBACK_POSTS = [
   {
@@ -93,13 +94,16 @@ export default function BlogPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Blog — The Lit</title>
-        <meta
-          name="description"
-          content="문화 리뷰, 행사 후기, 인터뷰, 공간 스토리 — 더릿의 다양한 콘텐츠를 만나보세요."
-        />
-      </Helmet>
+      <SeoHead
+        title="Blog — The Lit"
+        description="문화 리븷, 행사 후기, 인터뷰, 공간 스토리 — 더릿의 다양한 콘텐츠를 만나보세요."
+        canonical={`${SITE_URL}/blog`}
+        keywords="더릿 블로그, 문화 리븷, 전시 리븷, 공간 스토리, 작가 인터뷰"
+        jsonLd={breadcrumbJsonLd([
+          { name: 'Home', url: SITE_URL },
+          { name: 'Blog', url: `${SITE_URL}/blog` },
+        ])}
+      />
 
       {/* Hero */}
       <section className="pt-32 pb-16 bg-brand-cream">

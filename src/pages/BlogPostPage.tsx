@@ -1,5 +1,4 @@
 import { useParams, Link } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
 import { ArrowLeft } from 'lucide-react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
@@ -8,6 +7,8 @@ import AnimatedSection from '../components/common/AnimatedSection'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import SeoHead from '../components/common/SeoHead'
+import { SITE_URL, DEFAULT_OG_IMAGE, blogPostingJsonLd, breadcrumbJsonLd } from '../lib/seo'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FALLBACK: Record<string, any> = {
@@ -61,12 +62,30 @@ export default function BlogPostPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{displayPost.title} — The Lit Blog</title>
-        <meta name="description" content={displayPost.excerpt} />
-        {displayPost.og_image && <meta property="og:image" content={displayPost.og_image} />}
-        {displayPost.published_at && <meta property="article:published_time" content={displayPost.published_at} />}
-      </Helmet>
+      <SeoHead
+        title={`${displayPost.title} — The Lit Blog`}
+        description={displayPost.excerpt || displayPost.title}
+        canonical={`${SITE_URL}/blog/${displayPost.slug}`}
+        image={displayPost.og_image || displayPost.cover_image_url || DEFAULT_OG_IMAGE}
+        type="article"
+        publishedTime={displayPost.published_at}
+        author={displayPost.author?.full_name}
+        jsonLd={[
+          blogPostingJsonLd({
+            title: displayPost.title,
+            description: displayPost.excerpt || '',
+            url: `${SITE_URL}/blog/${displayPost.slug}`,
+            image: displayPost.og_image || displayPost.cover_image_url,
+            publishedAt: displayPost.published_at,
+            author: displayPost.author?.full_name,
+          }),
+          breadcrumbJsonLd([
+            { name: 'Home', url: SITE_URL },
+            { name: 'Blog', url: `${SITE_URL}/blog` },
+            { name: displayPost.title, url: `${SITE_URL}/blog/${displayPost.slug}` },
+          ]),
+        ]}
+      />
 
       {/* Cover image */}
       {displayPost.cover_image_url && (

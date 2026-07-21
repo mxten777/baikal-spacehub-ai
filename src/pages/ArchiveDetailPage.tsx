@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { archiveService } from "../services/archive";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import SeoHead from "../components/common/SeoHead";
+import { SITE_URL, DEFAULT_OG_IMAGE, breadcrumbJsonLd } from "../lib/seo";
 
 const CATEGORY_LABELS: Record<string, string> = {
   exhibition: "전시",
@@ -61,10 +62,17 @@ export default function ArchiveDetailPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{item.title} — The Lit Archive</title>
-        <meta name="description" content={item.description ?? ""} />
-      </Helmet>
+      <SeoHead
+        title={`${item.title} — The Lit Archive`}
+        description={item.description ?? '더릿 아카이브'}
+        canonical={`${SITE_URL}/archive/${item.slug}`}
+        image={item.cover_image_url || DEFAULT_OG_IMAGE}
+        jsonLd={breadcrumbJsonLd([
+          { name: 'Home', url: SITE_URL },
+          { name: 'Archive', url: `${SITE_URL}/archive` },
+          { name: item.title, url: `${SITE_URL}/archive/${item.slug}` },
+        ])}
+      />
 
       {/* Hero */}
       {item.cover_image_url && (

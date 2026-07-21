@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { useArchive, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import SeoHead from "../components/common/SeoHead";
+import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
 const CATEGORIES = [
   { value: "all", label: "전체" },
@@ -129,13 +130,16 @@ export default function ArchivePage() {
 
   return (
     <>
-      <Helmet>
-        <title>Archive — The Lit</title>
-        <meta
-          name="description"
-          content="더릿에서 열렸던 전시, 공연, 강연, 워크숍 등 모든 문화 행사의 기록 아카이브"
-        />
-      </Helmet>
+      <SeoHead
+        title="Archive — The Lit"
+        description="더릿에서 열렸던 전시, 공연, 강연, 워크숏 등 모든 문화 행사의 기록 아카이브"
+        canonical={`${SITE_URL}/archive`}
+        keywords="더릿 아카이브, 전시 기록, 공연 기록, The Lit 기록"
+        jsonLd={breadcrumbJsonLd([
+          { name: 'Home', url: SITE_URL },
+          { name: 'Archive', url: `${SITE_URL}/archive` },
+        ])}
+      />
 
       {/* Hero */}
       <section className="pt-32 pb-16 bg-brand-black">

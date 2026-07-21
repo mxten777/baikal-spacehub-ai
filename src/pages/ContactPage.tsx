@@ -1,5 +1,4 @@
 import { Link, useSearchParams, Navigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import {
   Phone,
@@ -11,6 +10,8 @@ import {
 } from "lucide-react";
 import AnimatedSection from "../components/common/AnimatedSection";
 import { useSettings } from "../hooks/useData";
+import SeoHead from "../components/common/SeoHead";
+import { SITE_URL, localBusinessJsonLd, breadcrumbJsonLd } from "../lib/seo";
 
 // ─── Fallback constants ──────────────────────────────────────────────────
 const DEFAULTS = {
@@ -45,13 +46,19 @@ export default function ContactPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Contact — The Lit</title>
-        <meta
-          name="description"
-          content="더릿 복합문화공간 — 카카오채널, 전화, 이메일로 빠르게 연락하세요."
-        />
-      </Helmet>
+      <SeoHead
+        title="Contact — The Lit"
+        description="더릿 복합문화공간 — 카카오체널, 전화, 이메일로 빠르게 연락하세요. 공간 대여 문의도 환영합니다."
+        canonical={`${SITE_URL}/contact`}
+        keywords="더릿 연락저, 더릿 문의, 공간 대여 문의, The Lit 연락"
+        jsonLd={[
+          localBusinessJsonLd(),
+          breadcrumbJsonLd([
+            { name: 'Home', url: SITE_URL },
+            { name: 'Contact', url: `${SITE_URL}/contact` },
+          ]),
+        ]}
+      />
 
       {/* Page header */}
       <section className="pt-32 pb-16 bg-brand-white border-b border-brand-line">

@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { Calendar, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -8,6 +7,8 @@ import { usePrograms, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { ProgramStatus } from "../types";
+import SeoHead from "../components/common/SeoHead";
+import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
 const CATEGORIES: { value: string; label: string }[] = [
   { value: "all", label: "전체" },
@@ -161,13 +162,16 @@ export default function ProgramsPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Programs — The Lit</title>
-        <meta
-          name="description"
-          content="전시, 공연, 강연, 워크숍 — 더릿에서 펼쳐지는 다양한 문화 프로그램을 확인하세요."
-        />
-      </Helmet>
+      <SeoHead
+        title="Programs — The Lit"
+        description="전시, 공연, 강연, 워크숏 — 더릿에서 폼쳓지는 다양한 문화 프로그램을 확인하세요."
+        canonical={`${SITE_URL}/programs`}
+        keywords="전시, 공연, 강연, 워크숏, 더릿 프로그램, 문화 프로그램 서울"
+        jsonLd={breadcrumbJsonLd([
+          { name: 'Home', url: SITE_URL },
+          { name: 'Programs', url: `${SITE_URL}/programs` },
+        ])}
+      />
 
       {/* Page hero */}
       <section className="pt-32 pb-16 bg-brand-white">

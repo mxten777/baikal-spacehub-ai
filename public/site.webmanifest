@@ -1,0 +1,18 @@
+{
+  "name": "The Lit — 복합문화공간",
+  "short_name": "The Lit",
+  "description": "The Lit(더릿) 복합문화공간 — 전시, 공연, 워크샵, 공간 대여",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
