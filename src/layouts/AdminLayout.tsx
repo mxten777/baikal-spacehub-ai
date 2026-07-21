@@ -153,8 +153,14 @@ export default function AdminLayout() {
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/admin/login");
+    try {
+      // scope: 'local' — 네트워크 오류와 무관하게 로컬 세션을 즉시 삭제
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // 에러 무시 — 로컬 세션은 이미 삭제됨
+    } finally {
+      navigate("/admin/login");
+    }
   };
 
   const emailDisplay = user?.email ?? "";

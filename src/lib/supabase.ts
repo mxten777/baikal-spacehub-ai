@@ -37,11 +37,17 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    // React StrictMode에서 컴포넌트 이중 마운트로 인해 gotrue 락이 해제되지 않는
-    // 문제를 방지하기 위해 락을 우회합니다.
-    // 단일 탭 사용 환경에서는 안전합니다.
-    lock: <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) =>
-      fn(),
+    // React StrictMode 개발 환경에서만 lock 우회 (이중 마운트 시 gotrue 락 미해제 방지)
+    // 프로덕션에서는 기본 lock을 사용해 autoRefreshToken 경쟁 조건을 방지합니다.
+    ...(import.meta.env.DEV
+      ? {
+          lock: <R>(
+            _name: string,
+            _acquireTimeout: number,
+            fn: () => Promise<R>,
+          ) => fn(),
+        }
+      : {}),
   },
   global: { fetch: fetchWithTimeout },
 });
