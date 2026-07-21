@@ -159,7 +159,8 @@ export default function AdminLayout() {
     } catch {
       // 에러 무시 — 로컬 세션은 이미 삭제됨
     } finally {
-      navigate("/admin/login");
+      // SPA navigate 대신 full reload: React 세션 상태까지 완전 초기화
+      window.location.href = '/admin/login';
     }
   };
 
