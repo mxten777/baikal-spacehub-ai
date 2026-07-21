@@ -1,4 +1,4 @@
-import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Image,
@@ -137,7 +137,6 @@ const superAdminNav: NavItem[] = [
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const navigate = useNavigate();
   const { role, isSuperAdmin, hasPermission } = useAuth();
 
   // md+(768px) 이상에서는 사이드바 기본 열림
