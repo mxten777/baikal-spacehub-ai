@@ -45,6 +45,7 @@ const OPERATOR_PERMISSIONS: Permission[] = [
   "media",
   "inquiries",
   "reservations",
+  "photo_curator",
   "operator_settings",
 ];
 

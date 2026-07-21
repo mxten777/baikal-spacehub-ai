@@ -1058,7 +1058,10 @@ export default function ReservationPage() {
         />
       </Helmet>
 
-      <ProgressBar step={step > TOTAL_STEPS ? TOTAL_STEPS : step} total={TOTAL_STEPS} />
+      <ProgressBar
+        step={step > TOTAL_STEPS ? TOTAL_STEPS : step}
+        total={TOTAL_STEPS}
+      />
 
       {/* Header area */}
       <div className="pt-20 pb-6 px-6 lg:px-0 border-b border-brand-line">
