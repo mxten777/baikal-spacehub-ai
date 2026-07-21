@@ -54,8 +54,8 @@ export default function ContactPage() {
         jsonLd={[
           localBusinessJsonLd(),
           breadcrumbJsonLd([
-            { name: 'Home', url: SITE_URL },
-            { name: 'Contact', url: `${SITE_URL}/contact` },
+            { name: "Home", url: SITE_URL },
+            { name: "Contact", url: `${SITE_URL}/contact` },
           ]),
         ]}
       />
@@ -247,8 +247,6 @@ export default function ContactPage() {
                     </div>
                   </div>
                 </div>
-
-
               </div>
             </AnimatedSection>
           </div>

@@ -1,19 +1,38 @@
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Calendar, MapPin, Users, ExternalLink } from 'lucide-react'
-import { format } from 'date-fns'
-import { ko } from 'date-fns/locale'
-import { useProgram } from '../hooks/useData'
-import AnimatedSection from '../components/common/AnimatedSection'
-import LoadingSpinner from '../components/common/LoadingSpinner'
-import SeoHead from '../components/common/SeoHead'
-import { SITE_URL, DEFAULT_OG_IMAGE, eventJsonLd, breadcrumbJsonLd } from '../lib/seo'
+import { useParams, Link } from "react-router-dom";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  MapPin,
+  Users,
+  ExternalLink,
+} from "lucide-react";
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
+import { useProgram } from "../hooks/useData";
+import AnimatedSection from "../components/common/AnimatedSection";
+import LoadingSpinner from "../components/common/LoadingSpinner";
+import SeoHead from "../components/common/SeoHead";
+import {
+  SITE_URL,
+  DEFAULT_OG_IMAGE,
+  eventJsonLd,
+  breadcrumbJsonLd,
+} from "../lib/seo";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FALLBACK: Record<string, any> = {
-  'exhibition-spring-2026': {
-    id: '1', slug: 'exhibition-spring-2026', title: '봄 기억 — 사진전', title_en: 'Spring Memory — Photography',
-    category: 'exhibition', status: 'upcoming', start_date: '2026-03-15', end_date: '2026-04-15',
-    venue: '스토리지', organizer: 'The Lit Curation Team',
+  "exhibition-spring-2026": {
+    id: "1",
+    slug: "exhibition-spring-2026",
+    title: "봄 기억 — 사진전",
+    title_en: "Spring Memory — Photography",
+    category: "exhibition",
+    status: "upcoming",
+    start_date: "2026-03-15",
+    end_date: "2026-04-15",
+    venue: "스토리지",
+    organizer: "The Lit Curation Team",
     description: `봄의 기억은 언제나 특별합니다. 
 
 이번 전시 『봄 기억』은 일상 속 봄의 순간—벚꽃 아래 스쳐 지나가는 사람들, 창문으로 들어오는 따스한 빛, 공원에서 웃음 짓는 아이들—을 섬세하게 포착한 사진 작품들로 구성됩니다.
@@ -21,41 +40,57 @@ const FALLBACK: Record<string, any> = {
 참여 작가 7인이 각자의 시선으로 바라본 봄의 이야기가 더릿 스토리지 공간을 가득 채울 예정입니다. 사진 한 장 한 장에 담긴 봄의 온기를 느껴보세요.
 
 관람은 무료이며, 오프닝 리셉션은 3월 15일 오후 6시에 진행됩니다.`,
-    cover_image_url: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=1200&q=80',
-    is_free: false, price: 8000, capacity: null, registration_url: 'https://thelit.kr/reservation',
-    tags: ['사진', '봄', '전시', '그룹전'],
+    cover_image_url:
+      "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=1200&q=80",
+    is_free: false,
+    price: 8000,
+    capacity: null,
+    registration_url: "https://thelit.kr/reservation",
+    tags: ["사진", "봄", "전시", "그룹전"],
   },
-}
+};
 
 export default function ProgramDetailPage() {
-  const { slug } = useParams<{ slug: string }>()
-  const { data: program, isLoading } = useProgram(slug ?? '')
-  const displayProgram = program ?? FALLBACK[slug ?? '']
+  const { slug } = useParams<{ slug: string }>();
+  const { data: program, isLoading } = useProgram(slug ?? "");
+  const displayProgram = program ?? FALLBACK[slug ?? ""];
 
-  if (isLoading) return <LoadingSpinner />
-  if (!displayProgram) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <p className="font-display text-2xl text-brand-muted mb-4">프로그램을 찾을 수 없습니다</p>
-        <Link to="/programs" className="btn-secondary">← Programs</Link>
+  if (isLoading) return <LoadingSpinner />;
+  if (!displayProgram)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="font-display text-2xl text-brand-muted mb-4">
+            프로그램을 찾을 수 없습니다
+          </p>
+          <Link to="/programs" className="btn-secondary">
+            ← Programs
+          </Link>
+        </div>
       </div>
-    </div>
-  )
+    );
 
-  const isActive = ['upcoming', 'ongoing'].includes(displayProgram.status)
+  const isActive = ["upcoming", "ongoing"].includes(displayProgram.status);
 
   return (
     <>
       <SeoHead
         title={`${displayProgram.title} — The Lit`}
-        description={(displayProgram.description?.substring(0, 160) || displayProgram.short_description) ?? ''}
+        description={
+          (displayProgram.description?.substring(0, 160) ||
+            displayProgram.short_description) ??
+          ""
+        }
         canonical={`${SITE_URL}/programs/${displayProgram.slug}`}
         image={displayProgram.cover_image_url || DEFAULT_OG_IMAGE}
         type="article"
         jsonLd={[
           eventJsonLd({
             name: displayProgram.title,
-            description: displayProgram.description || displayProgram.short_description || '',
+            description:
+              displayProgram.description ||
+              displayProgram.short_description ||
+              "",
             url: `${SITE_URL}/programs/${displayProgram.slug}`,
             image: displayProgram.cover_image_url,
             startDate: displayProgram.start_date,
@@ -65,9 +100,12 @@ export default function ProgramDetailPage() {
             isFree: displayProgram.is_free,
           }),
           breadcrumbJsonLd([
-            { name: 'Home', url: SITE_URL },
-            { name: 'Programs', url: `${SITE_URL}/programs` },
-            { name: displayProgram.title, url: `${SITE_URL}/programs/${displayProgram.slug}` },
+            { name: "Home", url: SITE_URL },
+            { name: "Programs", url: `${SITE_URL}/programs` },
+            {
+              name: displayProgram.title,
+              url: `${SITE_URL}/programs/${displayProgram.slug}`,
+            },
           ]),
         ]}
       />
@@ -75,7 +113,10 @@ export default function ProgramDetailPage() {
       {/* Hero */}
       <div className="pt-20 bg-brand-cream">
         <div className="container-wide py-12 lg:py-16">
-          <Link to="/programs" className="inline-flex items-center gap-2 text-sm text-brand-muted hover:text-brand-black transition-colors mb-8">
+          <Link
+            to="/programs"
+            className="inline-flex items-center gap-2 text-sm text-brand-muted hover:text-brand-black transition-colors mb-8"
+          >
             <ArrowLeft size={15} /> Programs
           </Link>
 
@@ -99,22 +140,42 @@ export default function ProgramDetailPage() {
 
                 <div className="space-y-3 mb-8 pb-8 border-b border-brand-border">
                   <div className="flex items-center gap-3 text-sm">
-                    <Calendar size={15} className="text-brand-accent shrink-0" />
+                    <Calendar
+                      size={15}
+                      className="text-brand-accent shrink-0"
+                    />
                     <span className="text-brand-muted">
-                      {format(new Date(displayProgram.start_date), 'yyyy.M.d (EEE)', { locale: ko })}
-                      {displayProgram.start_date !== displayProgram.end_date && (
-                        <> — {format(new Date(displayProgram.end_date), 'M.d (EEE)', { locale: ko })}</>
+                      {format(
+                        new Date(displayProgram.start_date),
+                        "yyyy.M.d (EEE)",
+                        { locale: ko },
+                      )}
+                      {displayProgram.start_date !==
+                        displayProgram.end_date && (
+                        <>
+                          {" "}
+                          —{" "}
+                          {format(
+                            new Date(displayProgram.end_date),
+                            "M.d (EEE)",
+                            { locale: ko },
+                          )}
+                        </>
                       )}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <MapPin size={15} className="text-brand-accent shrink-0" />
-                    <span className="text-brand-muted">더릿 {displayProgram.venue}</span>
+                    <span className="text-brand-muted">
+                      더릿 {displayProgram.venue}
+                    </span>
                   </div>
                   {displayProgram.capacity && (
                     <div className="flex items-center gap-3 text-sm">
                       <Users size={15} className="text-brand-accent shrink-0" />
-                      <span className="text-brand-muted">최대 {displayProgram.capacity}명</span>
+                      <span className="text-brand-muted">
+                        최대 {displayProgram.capacity}명
+                      </span>
                     </div>
                   )}
                 </div>
@@ -123,7 +184,9 @@ export default function ProgramDetailPage() {
                 <div className="mb-8">
                   <p className="eyebrow mb-2">참가비</p>
                   <p className="font-display text-3xl font-light text-brand-black">
-                    {displayProgram.is_free ? '무료' : `${displayProgram.price?.toLocaleString()}원`}
+                    {displayProgram.is_free
+                      ? "무료"
+                      : `${displayProgram.price?.toLocaleString()}원`}
                   </p>
                 </div>
 
@@ -140,7 +203,10 @@ export default function ProgramDetailPage() {
                         예약하기 <ExternalLink size={15} />
                       </a>
                     ) : (
-                      <Link to="/contact" className="btn-primary justify-center">
+                      <Link
+                        to="/contact"
+                        className="btn-primary justify-center"
+                      >
                         참가 문의 <ArrowRight size={15} />
                       </Link>
                     )}
@@ -151,7 +217,9 @@ export default function ProgramDetailPage() {
                 {displayProgram.tags?.length > 0 && (
                   <div className="mt-6 flex flex-wrap gap-2">
                     {displayProgram.tags.map((tag: string) => (
-                      <span key={tag} className="tag">#{tag}</span>
+                      <span key={tag} className="tag">
+                        #{tag}
+                      </span>
                     ))}
                   </div>
                 )}
@@ -172,5 +240,5 @@ export default function ProgramDetailPage() {
         </div>
       </section>
     </>
-  )
+  );
 }

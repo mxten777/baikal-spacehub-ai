@@ -136,8 +136,8 @@ export default function ArchivePage() {
         canonical={`${SITE_URL}/archive`}
         keywords="더릿 아카이브, 전시 기록, 공연 기록, The Lit 기록"
         jsonLd={breadcrumbJsonLd([
-          { name: 'Home', url: SITE_URL },
-          { name: 'Archive', url: `${SITE_URL}/archive` },
+          { name: "Home", url: SITE_URL },
+          { name: "Archive", url: `${SITE_URL}/archive` },
         ])}
       />
 

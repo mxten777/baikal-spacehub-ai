@@ -59,8 +59,8 @@ export default function AboutPage() {
         jsonLd={[
           localBusinessJsonLd(),
           breadcrumbJsonLd([
-            { name: 'Home', url: SITE_URL },
-            { name: 'About', url: `${SITE_URL}/about` },
+            { name: "Home", url: SITE_URL },
+            { name: "About", url: `${SITE_URL}/about` },
           ]),
         ]}
       />

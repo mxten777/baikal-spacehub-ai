@@ -71,8 +71,8 @@ export default function EventsPage() {
         canonical={`${SITE_URL}/events`}
         keywords="이벤트, 브랜드 행사, 팡업, 더릿 이벤트, 특별 이벤트 서울"
         jsonLd={breadcrumbJsonLd([
-          { name: 'Home', url: SITE_URL },
-          { name: 'Events', url: `${SITE_URL}/events` },
+          { name: "Home", url: SITE_URL },
+          { name: "Events", url: `${SITE_URL}/events` },
         ])}
       />
 

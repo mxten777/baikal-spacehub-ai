@@ -16,7 +16,8 @@ const FALLBACK_POSTS = [
     title: "현대미술 감상 가이드 — 처음 만나는 현대미술",
     excerpt:
       "현대미술이 어렵게 느껴진다면, 이 글부터 시작해보세요. 감상의 문을 여는 10가지 핵심 키워드를 소개합니다.",
-    cover_image_url:      "https://images.unsplash.com/photo-1541675154750-0444c7d51e8e?w=600&q=80",
+    cover_image_url:
+      "https://images.unsplash.com/photo-1541675154750-0444c7d51e8e?w=600&q=80",
     published_at: "2026-02-15",
     category: { name: "문화 리뷰", color: "#6366F1" },
     tags: ["미술", "교육", "가이드"],
@@ -28,7 +29,8 @@ const FALLBACK_POSTS = [
     title: "Jazz Night 2월 공연 후기",
     excerpt:
       "2월의 추운 밤, 더릿 카페를 가득 채운 재즈 선율. 그 감동적인 밤을 기록했습니다.",
-    cover_image_url:      "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=600&q=80",
+    cover_image_url:
+      "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=600&q=80",
     published_at: "2026-02-10",
     category: { name: "행사 후기", color: "#10B981" },
     tags: ["재즈", "공연", "후기"],
@@ -39,7 +41,8 @@ const FALLBACK_POSTS = [
     title: "더릿 스튜디오의 탄생 이야기",
     excerpt:
       "낡은 창고가 어떻게 서울 최고의 스튜디오 공간으로 변신했을까요? 더릿 스튜디오의 비하인드 스토리.",
-    cover_image_url:      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&q=80",
+    cover_image_url:
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&q=80",
     published_at: "2026-01-28",
     category: { name: "공간 스토리", color: "#F59E0B" },
     tags: ["스튜디오", "스토리"],
@@ -50,7 +53,8 @@ const FALLBACK_POSTS = [
     title: "인터뷰 — 사진작가 김민준의 봄 기억",
     excerpt:
       "봄 기억 사진전을 앞두고 김민준 작가를 만났습니다. 그의 카메라 속 봄 이야기를 들어보세요.",
-    cover_image_url:      "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=600&q=80",
+    cover_image_url:
+      "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=600&q=80",
     published_at: "2026-01-20",
     category: { name: "인터뷰", color: "#EC4899" },
     tags: ["사진", "인터뷰", "작가"],
@@ -61,7 +65,8 @@ const FALLBACK_POSTS = [
     title: "도예 워크숍 — 흙으로 만든 시간",
     excerpt:
       "처음 흙을 만졌을 때의 감촉, 물레 위에서 형태를 잡아가는 설렘. 도예 워크숍 참가자들의 이야기.",
-    cover_image_url:      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    cover_image_url:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
     published_at: "2026-01-12",
     category: { name: "행사 후기", color: "#10B981" },
     tags: ["도예", "워크숍"],
@@ -72,7 +77,8 @@ const FALLBACK_POSTS = [
     title: "2026 문화공간 트렌드 분석",
     excerpt:
       "코로나 이후 달라진 문화공간의 역할과 2026년 주목해야 할 복합문화공간 트렌드를 분석합니다.",
-    cover_image_url:      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&q=80",
+    cover_image_url:
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&q=80",
     published_at: "2026-01-05",
     category: { name: "문화 리뷰", color: "#6366F1" },
     tags: ["트렌드", "문화공간", "분석"],
@@ -100,8 +106,8 @@ export default function BlogPage() {
         canonical={`${SITE_URL}/blog`}
         keywords="더릿 블로그, 문화 리븷, 전시 리븷, 공간 스토리, 작가 인터뷰"
         jsonLd={breadcrumbJsonLd([
-          { name: 'Home', url: SITE_URL },
-          { name: 'Blog', url: `${SITE_URL}/blog` },
+          { name: "Home", url: SITE_URL },
+          { name: "Blog", url: `${SITE_URL}/blog` },
         ])}
       />
 

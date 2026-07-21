@@ -5,7 +5,12 @@ import { useMemo } from "react";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import SeoHead from "../components/common/SeoHead";
-import { SITE_URL, DEFAULT_OG_IMAGE, breadcrumbJsonLd, localBusinessJsonLd } from "../lib/seo";
+import {
+  SITE_URL,
+  DEFAULT_OG_IMAGE,
+  breadcrumbJsonLd,
+  localBusinessJsonLd,
+} from "../lib/seo";
 
 const SPACE_IMAGES: Record<string, string[]> = {
   cafe: [
@@ -185,15 +190,22 @@ export default function SpaceDetailPage() {
     <>
       <SeoHead
         title={`${displaySpace.name} — The Lit 공간 대여`}
-        description={displaySpace.description?.substring(0, 160) || displaySpace.short_description || ''}
+        description={
+          displaySpace.description?.substring(0, 160) ||
+          displaySpace.short_description ||
+          ""
+        }
         canonical={`${SITE_URL}/spaces/${displaySpace.slug}`}
         image={displaySpace.cover_image_url || DEFAULT_OG_IMAGE}
-        keywords={`${displaySpace.name} 대여, 더릿 ${displaySpace.name}, 공간 대여 서울, The Lit ${displaySpace.name_en || ''}`}
+        keywords={`${displaySpace.name} 대여, 더릿 ${displaySpace.name}, 공간 대여 서울, The Lit ${displaySpace.name_en || ""}`}
         jsonLd={[
           breadcrumbJsonLd([
-            { name: 'Home', url: SITE_URL },
-            { name: 'Spaces', url: `${SITE_URL}/spaces` },
-            { name: displaySpace.name, url: `${SITE_URL}/spaces/${displaySpace.slug}` },
+            { name: "Home", url: SITE_URL },
+            { name: "Spaces", url: `${SITE_URL}/spaces` },
+            {
+              name: displaySpace.name,
+              url: `${SITE_URL}/spaces/${displaySpace.slug}`,
+            },
           ]),
           localBusinessJsonLd(),
         ]}

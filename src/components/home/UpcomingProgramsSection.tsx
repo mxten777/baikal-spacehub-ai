@@ -99,12 +99,20 @@ export default function UpcomingProgramsSection() {
                 >
                   {/* Image */}
                   <div className="relative overflow-hidden aspect-[4/3]">
-                    <img
-                      src={program.cover_image_url ?? ""}
-                      alt={program.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      loading="lazy"
-                    />
+                    {program.cover_image_url ? (
+                      <img
+                        src={program.cover_image_url}
+                        alt={program.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-brand-smoke flex items-center justify-center">
+                        <span className="font-display text-3xl text-white/20 tracking-widest">
+                          THE LIT
+                        </span>
+                      </div>
+                    )}
                     {/* Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/60 via-transparent to-transparent" />
                     {/* Category badge */}

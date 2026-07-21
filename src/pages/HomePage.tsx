@@ -10,11 +10,7 @@ import LocationSection from "../components/home/LocationSection";
 import { aboutService } from "../services/about";
 import type { AboutContent } from "../types";
 import SeoHead from "../components/common/SeoHead";
-import {
-  SITE_URL,
-  organizationJsonLd,
-  websiteJsonLd,
-} from "../lib/seo";
+import { SITE_URL, organizationJsonLd, websiteJsonLd } from "../lib/seo";
 
 export default function HomePage() {
   const [aboutContent, setAboutContent] = useState<AboutContent | null>(null);

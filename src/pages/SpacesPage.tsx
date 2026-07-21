@@ -119,8 +119,8 @@ export default function SpacesPage() {
         canonical={`${SITE_URL}/spaces`}
         keywords="공간 대여, 카페 대여, 스튜디오 대여, 가든 대여, 더릿 공간, 행사 공간 서울"
         jsonLd={breadcrumbJsonLd([
-          { name: 'Home', url: SITE_URL },
-          { name: 'Spaces', url: `${SITE_URL}/spaces` },
+          { name: "Home", url: SITE_URL },
+          { name: "Spaces", url: `${SITE_URL}/spaces` },
         ])}
       />
 

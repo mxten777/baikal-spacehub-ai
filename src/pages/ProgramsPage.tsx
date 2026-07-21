@@ -168,8 +168,8 @@ export default function ProgramsPage() {
         canonical={`${SITE_URL}/programs`}
         keywords="전시, 공연, 강연, 워크숏, 더릿 프로그램, 문화 프로그램 서울"
         jsonLd={breadcrumbJsonLd([
-          { name: 'Home', url: SITE_URL },
-          { name: 'Programs', url: `${SITE_URL}/programs` },
+          { name: "Home", url: SITE_URL },
+          { name: "Programs", url: `${SITE_URL}/programs` },
         ])}
       />
 
@@ -212,7 +212,7 @@ export default function ProgramsPage() {
       {/* Programs list */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          {isLoading ? (
+          {filtered.length === 0 && isLoading ? (
             <LoadingSpinner />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -37,7 +37,9 @@ export default function ArchiveDetailPage() {
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
   const prevImage = () =>
-    setLightboxIndex((i) => (i === null ? null : (i - 1 + allImages.length) % allImages.length));
+    setLightboxIndex((i) =>
+      i === null ? null : (i - 1 + allImages.length) % allImages.length,
+    );
   const nextImage = () =>
     setLightboxIndex((i) => (i === null ? null : (i + 1) % allImages.length));
 
@@ -64,12 +66,12 @@ export default function ArchiveDetailPage() {
     <>
       <SeoHead
         title={`${item.title} — The Lit Archive`}
-        description={item.description ?? '더릿 아카이브'}
+        description={item.description ?? "더릿 아카이브"}
         canonical={`${SITE_URL}/archive/${item.slug}`}
         image={item.cover_image_url || DEFAULT_OG_IMAGE}
         jsonLd={breadcrumbJsonLd([
-          { name: 'Home', url: SITE_URL },
-          { name: 'Archive', url: `${SITE_URL}/archive` },
+          { name: "Home", url: SITE_URL },
+          { name: "Archive", url: `${SITE_URL}/archive` },
           { name: item.title, url: `${SITE_URL}/archive/${item.slug}` },
         ])}
       />
@@ -85,7 +87,8 @@ export default function ArchiveDetailPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 container-wide pb-12 pt-32">
             <p className="font-sans text-[10px] tracking-widest uppercase text-white/50 mb-2">
-              {item.date?.substring(0, 7)} · {CATEGORY_LABELS[item.category] ?? item.category}
+              {item.date?.substring(0, 7)} ·{" "}
+              {CATEGORY_LABELS[item.category] ?? item.category}
             </p>
             <h1 className="font-display text-4xl lg:text-5xl font-light text-white">
               {item.title}
@@ -99,7 +102,8 @@ export default function ArchiveDetailPage() {
         <section className="pt-32 pb-12 bg-brand-black">
           <div className="container-wide">
             <p className="font-sans text-[10px] tracking-widest uppercase text-white/50 mb-2">
-              {item.date?.substring(0, 7)} · {CATEGORY_LABELS[item.category] ?? item.category}
+              {item.date?.substring(0, 7)} ·{" "}
+              {CATEGORY_LABELS[item.category] ?? item.category}
             </p>
             <h1 className="font-display text-4xl lg:text-5xl font-light text-white">
               {item.title}
@@ -138,11 +142,7 @@ export default function ArchiveDetailPage() {
             </AnimatedSection>
             <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 space-y-3">
               {allImages.map((url, idx) => (
-                <AnimatedSection
-                  key={idx}
-                  animation="fade-up"
-                  delay={idx * 40}
-                >
+                <AnimatedSection key={idx} animation="fade-up" delay={idx * 40}>
                   <button
                     onClick={() => openLightbox(idx)}
                     className="block w-full overflow-hidden group"
@@ -183,7 +183,10 @@ export default function ArchiveDetailPage() {
           {/* Prev */}
           {allImages.length > 1 && (
             <button
-              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                prevImage();
+              }}
               className="absolute left-4 text-white/60 hover:text-white transition-colors"
             >
               <ChevronLeft size={36} />
@@ -201,7 +204,10 @@ export default function ArchiveDetailPage() {
           {/* Next */}
           {allImages.length > 1 && (
             <button
-              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                nextImage();
+              }}
               className="absolute right-4 text-white/60 hover:text-white transition-colors"
             >
               <ChevronRight size={36} />

@@ -1,18 +1,23 @@
-import { Helmet } from 'react-helmet-async'
-import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE, DEFAULT_KEYWORDS } from '../../lib/seo'
+import { Helmet } from "react-helmet-async";
+import {
+  SITE_NAME,
+  SITE_URL,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_KEYWORDS,
+} from "../../lib/seo";
 
 interface SeoHeadProps {
-  title: string
-  description: string
-  canonical: string
-  keywords?: string
-  image?: string | null
-  type?: 'website' | 'article'
-  author?: string
-  publishedTime?: string | null
-  robots?: string
+  title: string;
+  description: string;
+  canonical: string;
+  keywords?: string;
+  image?: string | null;
+  type?: "website" | "article";
+  author?: string;
+  publishedTime?: string | null;
+  robots?: string;
   // Pass one schema object or an array of schema objects
-  jsonLd?: object | object[]
+  jsonLd?: object | object[];
 }
 
 export default function SeoHead({
@@ -21,16 +26,24 @@ export default function SeoHead({
   canonical,
   keywords = DEFAULT_KEYWORDS,
   image,
-  type = 'website',
+  type = "website",
   author = SITE_NAME,
   publishedTime,
-  robots = 'index, follow',
+  robots = "index, follow",
   jsonLd,
 }: SeoHeadProps) {
-  const fullTitle = title.includes(SITE_NAME) ? title : `${title} — ${SITE_NAME}`
-  const canonicalUrl = canonical.startsWith('http') ? canonical : `${SITE_URL}${canonical}`
-  const ogImage = image || DEFAULT_OG_IMAGE
-  const schemas: object[] = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []
+  const fullTitle = title.includes(SITE_NAME)
+    ? title
+    : `${title} — ${SITE_NAME}`;
+  const canonicalUrl = canonical.startsWith("http")
+    ? canonical
+    : `${SITE_URL}${canonical}`;
+  const ogImage = image || DEFAULT_OG_IMAGE;
+  const schemas: object[] = Array.isArray(jsonLd)
+    ? jsonLd
+    : jsonLd
+      ? [jsonLd]
+      : [];
 
   return (
     <Helmet>
@@ -67,5 +80,5 @@ export default function SeoHead({
         </script>
       ))}
     </Helmet>
-  )
+  );
 }
