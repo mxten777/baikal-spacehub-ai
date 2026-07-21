@@ -463,6 +463,7 @@ export default function AdminHeroPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [reorderingId, setReorderingId] = useState<string | null>(null);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["hero-slides"] });
@@ -477,9 +478,13 @@ export default function AdminHeroPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("이 슬라이드를 삭제하시겠습니까?")) return;
     setDeletingId(id);
+    setDeleteError(null);
     try {
       await heroSlidesService.delete(id);
       invalidate();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setDeleteError(`삭제 실패: ${msg}`);
     } finally {
       setDeletingId(null);
     }
@@ -521,6 +526,18 @@ export default function AdminHeroPage() {
             type="button"
             onClick={() => setStorageWarning(null)}
             className="shrink-0 text-amber-600 hover:text-amber-900"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      {deleteError && (
+        <div className="flex items-center justify-between gap-3 mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-800 text-sm font-sans">
+          <span>{deleteError}</span>
+          <button
+            type="button"
+            onClick={() => setDeleteError(null)}
+            className="shrink-0 text-red-600 hover:text-red-900"
           >
             ✕
           </button>

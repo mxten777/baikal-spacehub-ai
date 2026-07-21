@@ -60,7 +60,7 @@ export default function HeroSection() {
     return base.map((slide, i) => ({
       ...slide,
       desktop_image_url:
-        slide.desktop_image_url || mainPhotos[i]?.public_url || null,
+        slide.desktop_image_url ?? mainPhotos[i]?.public_url ?? null,
     }));
   }, [heroData, mainPhotos]);
 
