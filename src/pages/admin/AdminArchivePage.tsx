@@ -209,7 +209,10 @@ function ArchiveItemForm({
             {galleryImages.length > 0 ? (
               <div className="grid grid-cols-4 gap-2">
                 {galleryImages.map((url, idx) => (
-                  <div key={idx} className="relative group aspect-square bg-gray-100 overflow-hidden">
+                  <div
+                    key={idx}
+                    className="relative group aspect-square bg-gray-100 overflow-hidden"
+                  >
                     <img
                       src={url}
                       alt={`gallery-${idx}`}
@@ -273,7 +276,9 @@ function ArchiveItemForm({
           </div>
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             {submitError && (
-              <p className="flex-1 text-xs text-red-500 font-sans">{submitError}</p>
+              <p className="flex-1 text-xs text-red-500 font-sans">
+                {submitError}
+              </p>
             )}
             <button
               type="button"

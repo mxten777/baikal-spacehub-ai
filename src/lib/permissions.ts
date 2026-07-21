@@ -44,6 +44,7 @@ const OPERATOR_PERMISSIONS: Permission[] = [
   "blog",
   "media",
   "inquiries",
+  "reservations",
   "operator_settings",
 ];
 

@@ -197,9 +197,10 @@ function SpaceForm({
           .catch(console.error);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.';
+      const message =
+        err instanceof Error ? err.message : "저장 중 오류가 발생했습니다.";
       setSaveError(message);
-      console.error('[SpaceForm] save error:', err);
+      console.error("[SpaceForm] save error:", err);
     } finally {
       setSaving(false);
     }

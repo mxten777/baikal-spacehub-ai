@@ -69,7 +69,7 @@ const EVENT_TYPES: {
     id: "consultation",
     label: "공간 상담",
     desc: "방문 상담 · 맞춤 플랜",
-    img: "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=600&q=75",
+    img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=75",
   },
 ];
 
@@ -313,7 +313,7 @@ function Step1({
         행사 유형에 맞는 최적의 공간과 플랜을 제안해 드립니다.
       </p>
 
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-3 grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {EVENT_TYPES.map((type) => (
           <motion.button
             key={type.id}
@@ -1008,6 +1008,15 @@ export default function ReservationPage() {
     }
   };
 
+  const handleStep4Back = () => {
+    if (isConsultation) {
+      setDirection(-1);
+      setStep(1); // Consultation skipped steps 2 & 3, go back to step 1
+    } else {
+      goBack();
+    }
+  };
+
   const handleSubmit = async (contact: ContactFormValues) => {
     setLoading(true);
     setError(null);
@@ -1049,7 +1058,7 @@ export default function ReservationPage() {
         />
       </Helmet>
 
-      <ProgressBar step={step} total={step === 5 ? TOTAL_STEPS : TOTAL_STEPS} />
+      <ProgressBar step={step > TOTAL_STEPS ? TOTAL_STEPS : step} total={TOTAL_STEPS} />
 
       {/* Header area */}
       <div className="pt-20 pb-6 px-6 lg:px-0 border-b border-brand-line">
@@ -1103,7 +1112,7 @@ export default function ReservationPage() {
             )}
             {step === 4 && (
               <Step4
-                onBack={goBack}
+                onBack={handleStep4Back}
                 onSubmit={handleSubmit}
                 loading={loading}
               />

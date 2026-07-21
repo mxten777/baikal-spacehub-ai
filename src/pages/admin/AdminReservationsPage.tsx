@@ -293,7 +293,12 @@ export default function AdminReservationsPage() {
     "all",
   );
 
-  const { data: reservations = [], isLoading, isError, refetch } = useQuery({
+  const {
+    data: reservations = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["admin-reservations"],
     queryFn: () => reservationsService.getAll(),
   });

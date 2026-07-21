@@ -550,11 +550,15 @@ export default function AdminHeroPage() {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center h-48 gap-2">
           <Loader2 size={24} className="animate-spin text-brand-muted" />
-          <p className="font-sans text-xs text-gray-400">데이터를 불러오는 중입니다…</p>
+          <p className="font-sans text-xs text-gray-400">
+            데이터를 불러오는 중입니다…
+          </p>
         </div>
       ) : isError ? (
         <div className="text-center py-16 border border-dashed border-red-200">
-          <p className="font-sans text-sm text-red-400 mb-3">데이터를 불러오지 못했습니다.</p>
+          <p className="font-sans text-sm text-red-400 mb-3">
+            데이터를 불러오지 못했습니다.
+          </p>
           <button
             type="button"
             onClick={() => refetch()}
@@ -640,7 +644,11 @@ export default function AdminHeroPage() {
                         title={slide.is_active ? "비활성화" : "활성화"}
                         className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-brand-black transition-colors"
                       >
-                        {slide.is_active ? <Eye size={15} /> : <EyeOff size={15} />}
+                        {slide.is_active ? (
+                          <Eye size={15} />
+                        ) : (
+                          <EyeOff size={15} />
+                        )}
                       </button>
                       <button
                         onClick={() => {

@@ -290,7 +290,12 @@ export default function AdminContentSourcesPage() {
   const [fetchingId, setFetchingId] = useState<string | null>(null);
   const [fetchResult, setFetchResult] = useState<string | null>(null);
 
-  const { data: sources = [], isLoading, isError, refetch } = useQuery({
+  const {
+    data: sources = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["content-sources"],
     queryFn: () => contentSourcesService.getAll(),
   });

@@ -1,90 +1,104 @@
-import { supabase } from '../lib/supabase'
-import type { BlogPost, BlogCategory, FilterOptions } from '../types'
+import { supabase } from "../lib/supabase";
+import type { BlogPost, BlogCategory, FilterOptions } from "../types";
 
 export const blogService = {
   /** Admin용 전체 목록 (is_published 상관없이, JOIN 없이 경량 조회) */
   async getAllAdmin(limit = 50): Promise<BlogPost[]> {
     const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(limit)
-    if (error) throw error
-    return data ?? []
+      .from("blog_posts")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return data ?? [];
   },
 
-  async getPosts(filters?: FilterOptions & { limit?: number; page?: number }): Promise<{ data: BlogPost[]; count: number }> {
-    const page = filters?.page ?? 1
-    const limit = filters?.limit ?? 12
-    const from = (page - 1) * limit
-    const to = from + limit - 1
+  async getPosts(
+    filters?: FilterOptions & { limit?: number; page?: number },
+  ): Promise<{ data: BlogPost[]; count: number }> {
+    const page = filters?.page ?? 1;
+    const limit = filters?.limit ?? 12;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
     let query = supabase
-      .from('blog_posts')
-      .select('*, author:profiles(id, full_name, avatar_url), category:blog_categories(*)', { count: 'exact' })
-      .eq('is_published', true)
-      .order('published_at', { ascending: false })
-      .range(from, to)
+      .from("blog_posts")
+      .select(
+        "*, author:profiles(id, full_name, avatar_url), category:blog_categories(*)",
+        { count: "exact" },
+      )
+      .eq("is_published", true)
+      .order("published_at", { ascending: false })
+      .range(from, to);
 
-    if (filters?.category) query = query.eq('category_id', filters.category)
-    if (filters?.featured) query = query.eq('is_featured', true)
+    if (filters?.category) query = query.eq("category_id", filters.category);
+    if (filters?.featured) query = query.eq("is_featured", true);
     if (filters?.search) {
-      query = query.or(`title.ilike.%${filters.search}%,excerpt.ilike.%${filters.search}%`)
+      query = query.or(
+        `title.ilike.%${filters.search}%,excerpt.ilike.%${filters.search}%`,
+      );
     }
 
-    const { data, error, count } = await query
-    if (error) throw error
-    return { data: data ?? [], count: count ?? 0 }
+    const { data, error, count } = await query;
+    if (error) throw error;
+    return { data: data ?? [], count: count ?? 0 };
   },
 
   async getBySlug(slug: string): Promise<BlogPost | null> {
     const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*, author:profiles(id, full_name, avatar_url), category:blog_categories(*)')
-      .eq('slug', slug)
-      .eq('is_published', true)
-      .single()
-    if (error) return null
+      .from("blog_posts")
+      .select(
+        "*, author:profiles(id, full_name, avatar_url), category:blog_categories(*)",
+      )
+      .eq("slug", slug)
+      .eq("is_published", true)
+      .single();
+    if (error) return null;
 
     // Increment view count (fire-and-forget)
-    supabase.rpc('increment_view_count', { post_id: data.id }).then(() => {})
+    supabase.rpc("increment_view_count", { post_id: data.id }).then(() => {});
 
-    return data
+    return data;
   },
 
   async getCategories(): Promise<BlogCategory[]> {
     const { data, error } = await supabase
-      .from('blog_categories')
-      .select('*')
-      .order('name')
-    if (error) throw error
-    return data ?? []
+      .from("blog_categories")
+      .select("*")
+      .order("name");
+    if (error) throw error;
+    return data ?? [];
   },
 
-  async create(post: Omit<BlogPost, 'id' | 'created_at' | 'updated_at' | 'view_count' | 'author' | 'category'>): Promise<BlogPost> {
+  async create(
+    post: Omit<
+      BlogPost,
+      "id" | "created_at" | "updated_at" | "view_count" | "author" | "category"
+    >,
+  ): Promise<BlogPost> {
     const { data, error } = await supabase
-      .from('blog_posts')
+      .from("blog_posts")
       .insert({ ...post, view_count: 0 })
       .select()
-      .single()
-    if (error) throw error
-    return data
+      .single();
+    if (error) throw error;
+    return data;
   },
 
   async update(id: string, updates: Partial<BlogPost>): Promise<BlogPost> {
-    const { author: _a, category: _c, ...rest } = updates as BlogPost
+    const { author: _a, category: _c, ...rest } = updates as BlogPost;
     const { data, error } = await supabase
-      .from('blog_posts')
+      .from("blog_posts")
       .update({ ...rest, updated_at: new Date().toISOString() })
-      .eq('id', id)
+      .eq("id", id)
       .select()
-      .single()
-    if (error) throw error
-    return data
+      .single();
+    if (error) throw error;
+    return data;
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from('blog_posts').delete().eq('id', id)
-    if (error) throw error
+    const { error } = await supabase.from("blog_posts").delete().eq("id", id);
+    if (error) throw error;
   },
-}
+};
