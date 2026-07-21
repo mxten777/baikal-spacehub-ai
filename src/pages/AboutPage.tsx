@@ -27,6 +27,7 @@ export default function AboutPage() {
   // project_category='about' + stage='web' 업로드 사진 → 히어로에 crossfade
   const { data: aboutPhotos } = usePublicPhotos("about");
   const uploadedHeroUrl = aboutPhotos?.[0]?.public_url;
+  const [uploadedLoaded, setUploadedLoaded] = useState(false);
 
   const {
     hero_image_url,
@@ -67,24 +68,20 @@ export default function AboutPage() {
 
       {/* Hero */}
       <section className="relative h-[70vh] min-h-[500px]">
-        {/* 폴백: 즉시 표시 */}
+        {/* 폴백: 업로드 사진이 없거나 아직 로드 전일 때만 표시 */}
         <img
           src={hero_image_url}
           alt="The Lit"
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${uploadedLoaded ? "opacity-0" : "opacity-100"}`}
         />
         {/* 'about' 카테고리 업로드 사진: 로드 완료 후 fade in */}
         {uploadedHeroUrl && (
           <img
             src={uploadedHeroUrl}
             alt="The Lit"
-            className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
-            onLoad={(e) =>
-              (e.currentTarget as HTMLImageElement).classList.remove(
-                "opacity-0",
-              )
-            }
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${uploadedLoaded ? "opacity-100" : "opacity-0"}`}
+            onLoad={() => setUploadedLoaded(true)}
           />
         )}
         <div className="absolute inset-0 bg-gradient-overlay-center" />
