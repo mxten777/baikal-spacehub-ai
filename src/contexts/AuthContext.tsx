@@ -57,30 +57,62 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession().then(async ({ data }) => {
-      if (!mounted) return;
-      const currentUser = data.session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        await fetchProfile(currentUser.id);
+    async function initAuth() {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (!mounted) return;
+
+        if (error) {
+          // 만료·손상된 세션 — 네트워크 없이 로컬 스토리지만 제거 후 비인증 상태로 진행
+          // scope:'local' 은 서버 API 호출 없이 localStorage 토큰만 삭제한다.
+          await supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+          setUser(null);
+          setProfile(null);
+          return;
+        }
+
+        const currentUser = data.session?.user ?? null;
+        setUser(currentUser);
+        if (currentUser) {
+          try {
+            await fetchProfile(currentUser.id);
+          } catch {
+            // 프로필 조회 실패 — 인증 자체는 유지하되 프로필 없음으로 처리
+            setProfile(null);
+          }
+        }
+      } catch {
+        if (!mounted) return;
+        // Auth 초기화 예외 — 비인증 상태로 진행
+        setUser(null);
+        setProfile(null);
+      } finally {
+        // 성공·오류·예외 어느 경우에도 반드시 loading 종료
+        if (mounted) setLoading(false);
       }
-      setLoading(false);
-    });
+    }
+
+    initAuth();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // INITIAL_SESSION은 getSession()이 이미 처리 — 중복 profiles 조회 방지
+      // INITIAL_SESSION은 initAuth()가 이미 처리 — 중복 profiles 조회 방지
       if (event === 'INITIAL_SESSION') return;
       if (!mounted) return;
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      if (currentUser) {
-        await fetchProfile(currentUser.id);
-      } else {
+      try {
+        if (currentUser) {
+          await fetchProfile(currentUser.id);
+        } else {
+          setProfile(null);
+        }
+      } catch {
         setProfile(null);
+      } finally {
+        if (mounted) setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => {
