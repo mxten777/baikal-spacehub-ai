@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useArchive } from "../../hooks/useData";
 import { archiveService } from "../../services/archive";
 import type { ArchiveItem } from "../../types";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { isSupabaseConfigured } from "../../lib/supabase";
 import { Plus, Pencil, Trash2, X, Check, Loader2, Images } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,6 +23,7 @@ const archiveSchema = z.object({
   cover_image_url: z.string().nullable().optional(),
   images: z.array(z.string()).optional(),
   is_featured: z.boolean().default(false),
+  publish_status: z.enum(["draft", "published", "archived"]).default("published"),
 });
 
 type ArchiveFormData = z.infer<typeof archiveSchema>;
@@ -59,6 +60,7 @@ function ArchiveItemForm({
           cover_image_url: initialData.cover_image_url ?? null,
           images: initialData.images ?? [],
           is_featured: initialData.is_featured,
+          publish_status: (initialData.publish_status ?? "published") as "draft" | "published" | "archived",
         }
       : {
           title: "",
@@ -69,6 +71,7 @@ function ArchiveItemForm({
           cover_image_url: null,
           images: [],
           is_featured: false,
+          publish_status: "published" as const,
         },
   });
   const coverImageUrl = watch("cover_image_url");
@@ -82,6 +85,7 @@ function ArchiveItemForm({
         ...data,
         images: data.images ?? [],
         cover_image_url: data.cover_image_url ?? null,
+        publish_status: data.publish_status,
       };
       if (initialData) {
         await archiveService.update(initialData.id, payload);
@@ -273,8 +277,19 @@ function ArchiveItemForm({
                 메인 노출 (Featured)
               </span>
             </label>
-          </div>
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+          </div>          <div>
+            <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+              공개 상태
+            </label>
+            <select
+              {...register("publish_status")}
+              className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black bg-white"
+            >
+              <option value="draft">초안 (비공개)</option>
+              <option value="published">공개</option>
+              <option value="archived">보관</option>
+            </select>
+          </div>          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             {submitError && (
               <p className="flex-1 text-xs text-red-500 font-sans">
                 {submitError}
@@ -307,7 +322,17 @@ function ArchiveItemForm({
 }
 
 export default function AdminArchivePage() {
-  const { data: archives, isLoading, isError, refetch } = useArchive();
+  const {
+    data: archives,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["admin-archive"],
+    queryFn: () => archiveService.getAllAdmin(),
+    staleTime: 2 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  });
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ArchiveItem | null>(null);
@@ -315,6 +340,7 @@ export default function AdminArchivePage() {
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ["archive"] });
+    queryClient.invalidateQueries({ queryKey: ["admin-archive"] });
     setFormOpen(false);
     setEditingItem(null);
   };
@@ -325,6 +351,7 @@ export default function AdminArchivePage() {
     try {
       await archiveService.delete(id);
       queryClient.invalidateQueries({ queryKey: ["archive"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-archive"] });
     } finally {
       setDeletingId(null);
     }
@@ -368,6 +395,9 @@ export default function AdminArchivePage() {
                 <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden lg:table-cell">
                   날짜
                 </th>
+                <th className="text-left px-6 py-3 text-xs font-sans tracking-wider text-gray-500 uppercase hidden lg:table-cell">
+                  공개 상태
+                </th>
                 <th className="px-6 py-3" />
               </tr>
             </thead>
@@ -395,6 +425,23 @@ export default function AdminArchivePage() {
                         {item.date
                           ? new Date(item.date).toLocaleDateString("ko-KR")
                           : "-"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 hidden lg:table-cell">
+                      <span
+                        className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${
+                          item.publish_status === "published"
+                            ? "bg-green-100 text-green-700"
+                            : item.publish_status === "draft"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-gray-100 text-gray-500"
+                        }`}
+                      >
+                        {item.publish_status === "published"
+                          ? "공개"
+                          : item.publish_status === "draft"
+                            ? "초안"
+                            : "보관"}
                       </span>
                     </td>
                     <td className="px-6 py-4">

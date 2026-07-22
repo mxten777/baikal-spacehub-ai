@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import { useSpaces } from "../../hooks/useData";
 import { spacesService } from "../../services/spaces";
 import type { Space } from "../../types";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { isSupabaseConfigured } from "../../lib/supabase";
 import { Plus, Pencil, Trash2, X, Check, Loader2, Images } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,6 +25,7 @@ const spaceSchema = z.object({
   size_sqm: z.coerce.number().min(0).optional(),
   rental_price_per_hour: z.coerce.number().min(0).optional(),
   is_available: z.boolean().default(true),
+  publish_status: z.enum(["draft", "published", "archived"]).default("published"),
   sort_order: z.coerce.number().default(0),
   cover_image_url: z.string().nullable().optional(),
   photo_project_id: z.string().nullable().optional(),
@@ -41,6 +42,18 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: "기타",
 };
 
+const PUBLISH_STATUS_LABELS: Record<string, string> = {
+  draft: "초안",
+  published: "공개",
+  archived: "보관",
+};
+
+const PUBLISH_STATUS_COLORS: Record<string, string> = {
+  draft: "bg-yellow-100 text-yellow-700",
+  published: "bg-green-100 text-green-700",
+  archived: "bg-gray-100 text-gray-500",
+};
+
 const defaultValues: SpaceFormData = {
   name: "",
   slug: "",
@@ -50,6 +63,7 @@ const defaultValues: SpaceFormData = {
   size_sqm: undefined,
   rental_price_per_hour: undefined,
   is_available: true,
+  publish_status: "published",
   sort_order: 0,
   cover_image_url: null,
   photo_project_id: null,
@@ -152,6 +166,7 @@ function SpaceForm({
         size_sqm: data.size_sqm ?? null,
         rental_price_per_hour: data.rental_price_per_hour ?? null,
         is_available: data.is_available ?? true,
+        publish_status: data.publish_status,
         sort_order: data.sort_order ?? 0,
         cover_image_url: data.cover_image_url ?? null,
         images: imagesArr.filter((u): u is string => Boolean(u)),
@@ -347,6 +362,19 @@ function SpaceForm({
           </div>
           <div>
             <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+              공개 상태
+            </label>
+            <select
+              {...register("publish_status")}
+              className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black bg-white"
+            >
+              <option value="draft">초안 (비공개)</option>
+              <option value="published">공개</option>
+              <option value="archived">보관</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
               연결된 포토 프로젝트
             </label>
             <select
@@ -465,7 +493,17 @@ function SpaceForm({
 }
 
 export default function AdminSpacesPage() {
-  const { data: spaces, isLoading, isError, refetch } = useSpaces();
+  const {
+    data: spaces,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["admin-spaces"],
+    queryFn: () => spacesService.getAllAdmin(),
+    staleTime: 2 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  });
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingSpace, setEditingSpace] = useState<Space | null>(null);
@@ -474,6 +512,7 @@ export default function AdminSpacesPage() {
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ["spaces"] });
+    queryClient.invalidateQueries({ queryKey: ["admin-spaces"] });
     setFormOpen(false);
     setEditingSpace(null);
   };
@@ -484,6 +523,7 @@ export default function AdminSpacesPage() {
     try {
       await spacesService.delete(id);
       queryClient.invalidateQueries({ queryKey: ["spaces"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-spaces"] });
     } finally {
       setDeletingId(null);
     }
@@ -568,11 +608,18 @@ export default function AdminSpacesPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
-                      <span
-                        className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${space.is_available ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
-                      >
-                        {space.is_available ? "Available" : "Unavailable"}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${PUBLISH_STATUS_COLORS[space.publish_status] ?? "bg-gray-100 text-gray-500"}`}
+                        >
+                          {PUBLISH_STATUS_LABELS[space.publish_status] ?? space.publish_status}
+                        </span>
+                        <span
+                          className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${space.is_available ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-400"}`}
+                        >
+                          {space.is_available ? "대여가능" : "대여불가"}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">

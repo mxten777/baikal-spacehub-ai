@@ -46,6 +46,11 @@ export interface Profile {
 }
 
 // ============================================================
+// PUBLISH STATUS (Spaces, Archive)
+// ============================================================
+export type PublishStatus = "draft" | "published" | "archived";
+
+// ============================================================
 // SPACES
 // ============================================================
 export type SpaceCategory =
@@ -72,6 +77,8 @@ export interface Space {
   images?: string[];
   rental_price_per_hour?: number | null;
   is_available: boolean;
+  publish_status: PublishStatus;
+  published_at?: ISODateString | null;
   sort_order: number;
   photo_project_id?: string | null;
   created_at: ISODateString;
@@ -113,6 +120,8 @@ export interface Program {
   capacity?: number | null;
   tags?: string[];
   is_featured: boolean;
+  is_published: boolean;
+  published_at?: ISODateString | null;
   sort_order?: number;
   created_at: ISODateString;
   updated_at: ISODateString;
@@ -136,6 +145,8 @@ export interface ArchiveItem {
   tags?: string[];
   program_id?: UUID;
   is_featured: boolean;
+  publish_status: PublishStatus;
+  published_at?: ISODateString | null;
   sort_order?: number;
   created_at: ISODateString;
   updated_at: ISODateString;

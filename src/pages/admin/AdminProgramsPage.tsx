@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import { usePrograms } from "../../hooks/useData";
 import { programsService } from "../../services/programs";
 import type { Program } from "../../types";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { isSupabaseConfigured } from "../../lib/supabase";
 import { Plus, Pencil, Trash2, X, Check, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -37,6 +37,8 @@ const programSchema = z.object({
     .optional()
     .or(z.literal("")),
   is_featured: z.boolean().default(false),
+  is_published: z.boolean().default(true),
+  published_at: z.string().optional(),
   cover_image_url: z.string().nullable().optional(),
 });
 
@@ -77,6 +79,8 @@ const defaultValues: ProgramFormData = {
   capacity: undefined,
   registration_url: "",
   is_featured: false,
+  is_published: true,
+  published_at: "",
   cover_image_url: null,
 };
 
@@ -155,6 +159,8 @@ function ProgramForm({
         registration_url: data.registration_url || null,
         end_date: data.end_date || null,
         cover_image_url: data.cover_image_url ?? null,
+        is_published: data.is_published ?? true,
+        published_at: data.published_at || null,
       };
       if (initialData) {
         await programsService.update(initialData.id, payload);
@@ -367,8 +373,34 @@ function ProgramForm({
                 메인 노출 (Featured)
               </span>
             </label>
-          </div>
-          <ImageUploadField
+          </div>          {/* 공개 여부 — 행사 진행 상태(status)와 독립 */}
+          <div className="border border-gray-100 rounded p-4 space-y-3 bg-gray-50">
+            <p className="text-xs font-sans font-semibold text-gray-500 tracking-wider uppercase">
+              홈페이지 공개 설정
+            </p>
+            <div className="flex items-center">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  {...register("is_published")}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm font-sans text-gray-700">
+                  홈페이지 공개
+                </span>
+              </label>
+            </div>
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                게시일 (비워두면 즉시 공개)
+              </label>
+              <input
+                type="date"
+                {...register("published_at")}
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+              />
+            </div>
+          </div>          <ImageUploadField
             label="대표 이미지"
             value={coverImageUrl}
             onChange={(url) => setValue("cover_image_url", url)}
@@ -404,7 +436,17 @@ function ProgramForm({
 }
 
 export default function AdminProgramsPage() {
-  const { data: programs, isLoading, isError, refetch } = usePrograms();
+  const {
+    data: programs,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["admin-programs"],
+    queryFn: () => programsService.getAllAdmin(),
+    staleTime: 2 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  });
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
@@ -413,6 +455,7 @@ export default function AdminProgramsPage() {
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ["programs"] });
+    queryClient.invalidateQueries({ queryKey: ["admin-programs"] });
     setFormOpen(false);
     setEditingProgram(null);
   };
@@ -423,6 +466,7 @@ export default function AdminProgramsPage() {
     try {
       await programsService.delete(id);
       queryClient.invalidateQueries({ queryKey: ["programs"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-programs"] });
     } finally {
       setDeletingId(null);
     }
@@ -513,11 +557,22 @@ export default function AdminProgramsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
-                      <span
-                        className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${STATUS_COLORS[program.status] ?? "bg-gray-100 text-gray-500"}`}
-                      >
-                        {STATUS_LABELS[program.status] ?? program.status}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${STATUS_COLORS[program.status] ?? "bg-gray-100 text-gray-500"}`}
+                        >
+                          {STATUS_LABELS[program.status] ?? program.status}
+                        </span>
+                        <span
+                          className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${
+                            program.is_published
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {program.is_published ? "공개" : "비공개"}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">

@@ -104,8 +104,16 @@ function BlogPostForm({
   const onSubmit = async (data: PostFormData) => {
     setSaving(true);
     try {
+      // published_at 처리:
+      // - 공개 전환 시 기존 published_at이 있으면 유지, 없으면 service에서 자동 설정
+      // - 공개 취소 시 published_at 변경 안 함 (이력 보존 — service 로직 동일)
+      const published_at_carry =
+        data.is_published && initialData?.published_at
+          ? { published_at: initialData.published_at }
+          : {};
       const payload = {
         ...data,
+        ...published_at_carry,
         cover_image_url: data.cover_image_url || null,
         category_id: data.category_id || null,
       };
