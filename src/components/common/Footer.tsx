@@ -25,14 +25,19 @@ const footerLinks = {
   ],
 };
 
+function ensureHttps(url: string | undefined, fallback: string): string {
+  const raw = url || fallback;
+  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+  return `https://${raw}`;
+}
+
 export default function Footer() {
   const year = new Date().getFullYear();
   const { data: settings } = useSettings();
 
-  const instagramUrl =
-    settings?.instagram_url || "https://instagram.com/thelit_official";
-  const youtubeUrl = settings?.youtube_url || "https://youtube.com/@thelit";
-  const xUrl = settings?.x_url || "https://x.com/thelit";
+  const instagramUrl = ensureHttps(settings?.instagram_url, "instagram.com/thelit_official");
+  const youtubeUrl = ensureHttps(settings?.youtube_url, "youtube.com/@thelit");
+  const xUrl = ensureHttps(settings?.x_url, "x.com/thelit");
   const address = settings?.address || "경기도 하남시 \ubbf8사동 468";
   const phone = settings?.contact_phone || "1661-0288";
   const email = settings?.contact_email || "goworld33@naver.com";

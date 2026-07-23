@@ -6,6 +6,7 @@ import MegaMenu from "./MegaMenu";
 import SearchOverlay from "./SearchOverlay";
 import LatestFeedPanel from "./LatestFeedPanel";
 import MobileNav from "./MobileNav";
+import AnnouncementBar from "./AnnouncementBar";
 
 const NAV_ITEMS = [
   { label: "About", href: "/about", hasMega: false },
@@ -79,6 +80,7 @@ export default function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50">
+        <AnnouncementBar />
         {/* — Animated background layer — */}
         <motion.div
           className={`absolute inset-0 pointer-events-none ${currentPhase !== "top" ? "backdrop-blur-xl" : ""}`}
