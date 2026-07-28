@@ -123,6 +123,7 @@ export default function MegaMenu({
 }: MegaMenuProps) {
   const { data: spacesData } = useSpaces();
   const { data: spacePhotos } = usePublicPhotos("space");
+  const { data: programPhotos } = usePublicPhotos(null, { limit: 20 });
 
   // 업로드된 실사진을 코바 이미지로 우선 사용
   const spacePhotoMap = useMemo(() => {
@@ -134,6 +135,25 @@ export default function MegaMenu({
     }
     return map;
   }, [spacePhotos]);
+
+  // 프로그램 카테고리별 대표 사진 매핑 (space_category 기준)
+  const programPhotoMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const p of programPhotos ?? []) {
+      if (p.space_category && p.public_url && !map[p.space_category]) {
+        map[p.space_category] = p.public_url;
+      }
+    }
+    return map;
+  }, [programPhotos]);
+
+  // PROGRAMS 카테고리 → PhotoSpaceCategory 매핑
+  const PROGRAM_PHOTO_CAT: Record<string, string> = {
+    Exhibition: "exhibition",
+    Performance: "performance",
+    Workshop: "program",
+    Lecture: "program",
+  };
 
   // DB 데이터를 메뉴 카드 형식으로 변환, 없으면 정적 SPACES 사용
   const menuSpaces =
@@ -250,13 +270,24 @@ export default function MegaMenu({
                   animate="show"
                   className="grid grid-cols-5 gap-6 lg:gap-8"
                 >
-                  {PROGRAMS.map((p) => (
+                  {PROGRAMS.map((p) => {
+                    const photoUrl = programPhotoMap[PROGRAM_PHOTO_CAT[p.en] ?? ""];
+                    return (
                     <motion.div key={p.label} variants={child}>
                       <Link to={p.href} className="group block">
-                        <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3 flex items-center justify-center">
-                          <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
-                            {p.en}
-                          </span>
+                        <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3 relative flex items-center justify-center">
+                          {photoUrl ? (
+                            <img
+                              src={photoUrl}
+                              alt={p.label}
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                              {p.en}
+                            </span>
+                          )}
                         </div>
                         <p className="font-sans text-[8.5px] tracking-[0.18em] uppercase text-brand-subtle mb-0.5">
                           {p.en}
@@ -266,7 +297,8 @@ export default function MegaMenu({
                         </p>
                       </Link>
                     </motion.div>
-                  ))}
+                    );
+                  })}
                   <motion.div
                     variants={child}
                     className="flex flex-col justify-between pl-5 border-l border-brand-line"
