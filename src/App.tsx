@@ -67,7 +67,17 @@ const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
-  if (loading) return null;
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-6 h-6 border-2 border-brand-black border-t-transparent rounded-full animate-spin" />
+          <p className="font-sans text-xs tracking-widest uppercase text-brand-muted">
+            Loading
+          </p>
+        </div>
+      </div>
+    );
   if (!user) return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
 }
