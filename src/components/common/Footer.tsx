@@ -35,7 +35,10 @@ export default function Footer() {
   const year = new Date().getFullYear();
   const { data: settings } = useSettings();
 
-  const instagramUrl = ensureHttps(settings?.instagram_url, "instagram.com/thelit_official");
+  const instagramUrl = ensureHttps(
+    settings?.instagram_url,
+    "instagram.com/thelit_official",
+  );
   const youtubeUrl = ensureHttps(settings?.youtube_url, "youtube.com/@thelit");
   const xUrl = ensureHttps(settings?.x_url, "x.com/thelit");
   const address = settings?.address || "경기도 하남시 \ubbf8사동 468";

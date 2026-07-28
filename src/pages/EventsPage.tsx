@@ -34,8 +34,7 @@ const FALLBACK_EVENTS = [
     start_date: "2026-04-10",
     end_date: "2026-04-12",
     venue: "스토리지",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
+    cover_image_url: null,
     short_description: "봄 신상품 브랜드 쇼케이스",
     is_free: true,
     price: 0,
@@ -116,12 +115,20 @@ export default function EventsPage() {
                   >
                     {/* Poster */}
                     <div className="relative overflow-hidden aspect-[3/4]">
-                      <img
-                        src={getCover(event.cover_image_url, i)}
-                        alt={event.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                      {getCover(event.cover_image_url, i) ? (
+                        <img
+                          src={getCover(event.cover_image_url, i)}
+                          alt={event.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-brand-warm flex items-center justify-center">
+                          <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                            이미지 준비 중
+                          </span>
+                        </div>
+                      )}
                       <div className="absolute top-3 left-3 flex gap-2">
                         <span
                           className={`font-sans text-[9px] font-medium tracking-widest uppercase px-2 py-0.5 ${STATUS_COLORS[event.status as ProgramStatus]}`}

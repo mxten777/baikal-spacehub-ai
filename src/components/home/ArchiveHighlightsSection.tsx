@@ -10,8 +10,7 @@ const FALLBACK_ARCHIVE = [
     slug: "winter-exhibition-2025",
     title: "겨울 빛 — 설치 전시",
     date: "2025-12-01",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80",
+    cover_image_url: "",
     category: "exhibition",
   },
   {
@@ -19,8 +18,7 @@ const FALLBACK_ARCHIVE = [
     slug: "autumn-concert-2025",
     title: "가을 콘서트 2025",
     date: "2025-10-15",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80",
+    cover_image_url: "",
     category: "performance",
   },
   {
@@ -28,8 +26,7 @@ const FALLBACK_ARCHIVE = [
     slug: "brand-event-samsung",
     title: "삼성 브랜드 런칭",
     date: "2025-09-20",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
+    cover_image_url: "",
     category: "event",
   },
   {
@@ -37,8 +34,7 @@ const FALLBACK_ARCHIVE = [
     slug: "photo-workshop-2025",
     title: "필름 사진 워크숍",
     date: "2025-08-10",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=80",
+    cover_image_url: "",
     category: "workshop",
   },
 ];
@@ -86,14 +82,22 @@ export default function ArchiveHighlightsSection() {
                   i === 0
                     ? "aspect-video sm:aspect-[4/3]"
                     : "aspect-video sm:aspect-square"
-                }`}
+                } bg-brand-warm`}
               >
-                <img
-                  src={getCover(item, i)}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
+                {getCover(item, i) ? (
+                  <img
+                    src={getCover(item, i)}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                      이미지 준비 중
+                    </span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
                   <h3

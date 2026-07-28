@@ -12,25 +12,6 @@ import {
   localBusinessJsonLd,
 } from "../lib/seo";
 
-const SPACE_IMAGES: Record<string, string[]> = {
-  cafe: [
-    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1200&q=80",
-    "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=600&q=80",
-  ],
-  garden: [
-    "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1200&q=80",
-    "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=600&q=80",
-  ],
-  studio: [
-    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200&q=80",
-    "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=600&q=80",
-  ],
-  storage: [
-    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1200&q=80",
-    "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80",
-  ],
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FALLBACK_MAP: Record<string, any> = {
   cafe: {
@@ -178,11 +159,8 @@ export default function SpaceDetailPage() {
       </div>
     );
 
-  // 폴백 이미지 (즉시 표시 가능)
-  const fallbackImages: string[] =
-    displaySpace.images ||
-    SPACE_IMAGES[displaySpace.category] ||
-    Object.values(SPACE_IMAGES)[0];
+  // 실제 업로드된 갤러리 이미지만 사용 (DB images[] 또는 Supabase Storage)
+  const fallbackImages: string[] = displaySpace.images || [];
   // 업로드된 실사진 (비동기 로드 → crossfade)
   const heroUploaded = uploadedUrls[0];
 
@@ -212,14 +190,16 @@ export default function SpaceDetailPage() {
       />
 
       {/* Hero image */}
-      <div className="relative h-[70vh] min-h-[500px]">
-        {/* 폴백: 즉시 표시 */}
-        <img
-          src={fallbackImages[0] || displaySpace.cover_image_url}
-          alt={displaySpace.name}
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      <div className="relative h-[70vh] min-h-[500px] bg-brand-warm">
+        {/* 실사진: 업로드된 경우만 표시 */}
+        {(fallbackImages[0] || displaySpace.cover_image_url) && (
+          <img
+            src={fallbackImages[0] || displaySpace.cover_image_url}
+            alt={displaySpace.name}
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
         {/* 업로드 사진: 로드 완료 후 fade in */}
         {heroUploaded && (
           <img
@@ -233,6 +213,15 @@ export default function SpaceDetailPage() {
             }
           />
         )}
+        {!fallbackImages[0] &&
+          !displaySpace.cover_image_url &&
+          !heroUploaded && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="font-display text-brand-muted/30 tracking-widest uppercase">
+                이미지 준비 중
+              </span>
+            </div>
+          )}
         <div className="absolute inset-0 bg-gradient-overlay-center" />
         <div className="absolute bottom-0 left-0 right-0 container-wide pb-12">
           <p className="eyebrow text-white/60 mb-2">{displaySpace.name_en}</p>

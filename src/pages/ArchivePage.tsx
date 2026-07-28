@@ -22,8 +22,7 @@ const FALLBACK = [
     title: "겨울 빛 — 설치 전시",
     category: "전시",
     date: "2025-12",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80",
+    cover_image_url: "",
     description: "겨울의 고요와 빛의 대화",
   },
   {
@@ -32,8 +31,7 @@ const FALLBACK = [
     title: "가을 콘서트 2025",
     category: "공연",
     date: "2025-10",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80",
+    cover_image_url: "",
     description: "가을밤을 수놓는 라이브 음악",
   },
   {
@@ -42,8 +40,7 @@ const FALLBACK = [
     title: "삼성 브랜드 런칭",
     category: "이벤트",
     date: "2025-09",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
+    cover_image_url: "",
     description: "프리미엄 제품 런칭 이벤트",
   },
   {
@@ -52,8 +49,7 @@ const FALLBACK = [
     title: "필름 사진 워크숍",
     category: "워크숍",
     date: "2025-08",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600&q=80",
+    cover_image_url: "",
     description: "아날로그 사진의 매력을 발견하다",
   },
   {
@@ -62,8 +58,7 @@ const FALLBACK = [
     title: "여름 아트페어",
     category: "전시",
     date: "2025-07",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=80",
+    cover_image_url: "",
     description: "신진 작가들의 다양한 작품 전시",
   },
   {
@@ -72,8 +67,7 @@ const FALLBACK = [
     title: "문화 토크쇼 시즌 1",
     category: "강연",
     date: "2025-06",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=80",
+    cover_image_url: "",
     description: "문화 전문가들과 나누는 깊은 대화",
   },
 ];

@@ -19,7 +19,6 @@ const SPACES = [
     desc: "공연 · 강연 · 촬영",
     cap: "80명",
     href: "/spaces",
-    img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=480&q=75",
   },
   {
     label: "Open Hall",
@@ -27,7 +26,6 @@ const SPACES = [
     desc: "전시 · 대형 이벤트",
     cap: "150명",
     href: "/spaces",
-    img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=480&q=75",
   },
   {
     label: "Cafe Space",
@@ -35,7 +33,6 @@ const SPACES = [
     desc: "소모임 · 팝업",
     cap: "30명",
     href: "/spaces",
-    img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=480&q=75",
   },
   {
     label: "Garden Yard",
@@ -43,35 +40,14 @@ const SPACES = [
     desc: "야외 행사 · 파티",
     cap: "50명",
     href: "/spaces",
-    img: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=480&q=75",
   },
 ];
 
 const PROGRAMS = [
-  {
-    label: "전시",
-    en: "Exhibition",
-    href: "/programs",
-    img: "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=480&q=75",
-  },
-  {
-    label: "공연",
-    en: "Performance",
-    href: "/programs",
-    img: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=480&q=75",
-  },
-  {
-    label: "워크숍",
-    en: "Workshop",
-    href: "/programs",
-    img: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=480&q=75",
-  },
-  {
-    label: "강연",
-    en: "Lecture",
-    href: "/programs",
-    img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=480&q=75",
-  },
+  { label: "전시", en: "Exhibition", href: "/programs" },
+  { label: "공연", en: "Performance", href: "/programs" },
+  { label: "워크숍", en: "Workshop", href: "/programs" },
+  { label: "강연", en: "Lecture", href: "/programs" },
 ];
 
 const ARCHIVE_CATS = [
@@ -138,19 +114,7 @@ function CtaLink({ href, label }: { href: string; label: string }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-// Category image fallbacks (same as SpacesPreviewSection)
-const SPACE_IMAGES_FALLBACK: Record<string, string> = {
-  cafe: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=480&q=75",
-  garden:
-    "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=480&q=75",
-  studio:
-    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=480&q=75",
-  storage:
-    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=480&q=75",
-  hall: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=480&q=75",
-  other:
-    "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=480&q=75",
-};
+// Category image fallbacks removed — only real uploaded photos are used
 
 export default function MegaMenu({
   activeItem,
@@ -180,15 +144,12 @@ export default function MegaMenu({
           desc: s.description?.slice(0, 30) ?? "",
           cap: s.capacity ? `${s.capacity}명` : "",
           href: `/spaces/${s.slug}`,
-          fallbackImg:
-            s.cover_image_url ||
-            SPACE_IMAGES_FALLBACK[s.category] ||
-            SPACE_IMAGES_FALLBACK.other,
+          fallbackImg: s.cover_image_url || undefined,
           uploadedImg: spacePhotoMap[s.category] as string | undefined,
         }))
       : SPACES.map((s) => ({
           ...s,
-          fallbackImg: s.img,
+          fallbackImg: undefined as string | undefined,
           uploadedImg: undefined as string | undefined,
         }));
   return (
@@ -229,27 +190,26 @@ export default function MegaMenu({
                     <motion.div key={s.label} variants={child}>
                       <Link to={s.href} className="group block">
                         <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3 relative">
-                          {/* 폴백: 즉시 표시 */}
-                          <img
-                            src={s.fallbackImg}
-                            alt={s.ko}
-                            aria-hidden="true"
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            loading="lazy"
-                          />
-                          {/* 업로드 사진: 로드 완료 후 fade in */}
-                          {s.uploadedImg && (
+                          {s.uploadedImg ? (
                             <img
                               src={s.uploadedImg}
                               alt={s.ko}
-                              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-[opacity,transform] duration-700 group-hover:scale-105"
-                              onLoad={(e) =>
-                                (
-                                  e.currentTarget as HTMLImageElement
-                                ).classList.remove("opacity-0")
-                              }
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                               loading="lazy"
                             />
+                          ) : s.fallbackImg ? (
+                            <img
+                              src={s.fallbackImg}
+                              alt={s.ko}
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                                이미지 준비 중
+                              </span>
+                            </div>
                           )}
                         </div>
                         <p className="font-sans text-[8.5px] tracking-[0.18em] uppercase text-brand-subtle mb-0.5">
@@ -293,13 +253,10 @@ export default function MegaMenu({
                   {PROGRAMS.map((p) => (
                     <motion.div key={p.label} variants={child}>
                       <Link to={p.href} className="group block">
-                        <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3">
-                          <img
-                            src={p.img}
-                            alt={p.label}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            loading="lazy"
-                          />
+                        <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3 flex items-center justify-center">
+                          <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                            {p.en}
+                          </span>
                         </div>
                         <p className="font-sans text-[8.5px] tracking-[0.18em] uppercase text-brand-subtle mb-0.5">
                           {p.en}

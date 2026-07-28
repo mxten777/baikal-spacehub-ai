@@ -18,19 +18,6 @@ const CATEGORY_LABELS: Record<SpaceCategory | "all", string> = {
   other: "기타",
 };
 
-const SPACE_IMAGES: Record<string, string> = {
-  cafe: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=900&q=80",
-  garden:
-    "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=900&q=80",
-  studio:
-    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=900&q=80",
-  storage:
-    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=900&q=80",
-  hall: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&q=80",
-  other:
-    "https://images.unsplash.com/photo-1541516160071-4bb0c5af65ba?w=900&q=80",
-};
-
 const FALLBACK_SPACES = [
   {
     id: "1",
@@ -44,7 +31,7 @@ const FALLBACK_SPACES = [
     size_sqm: 85,
     is_available: true,
     features: ["자연 채광", "커피 바", "빔 프로젝터", "음향 시스템"],
-    cover_image_url: SPACE_IMAGES.cafe,
+    cover_image_url: null,
   },
   {
     id: "2",
@@ -58,7 +45,7 @@ const FALLBACK_SPACES = [
     size_sqm: 200,
     is_available: true,
     features: ["야외 테라스", "조명 시설", "음향 시스템", "주차 가능"],
-    cover_image_url: SPACE_IMAGES.garden,
+    cover_image_url: null,
   },
   {
     id: "3",
@@ -72,7 +59,7 @@ const FALLBACK_SPACES = [
     size_sqm: 65,
     is_available: true,
     features: ["사이클로라마", "전문 조명", "분장실", "드레스룸"],
-    cover_image_url: SPACE_IMAGES.studio,
+    cover_image_url: null,
   },
   {
     id: "4",
@@ -86,7 +73,7 @@ const FALLBACK_SPACES = [
     size_sqm: 280,
     is_available: true,
     features: ["오픈 플로어", "높은 천장", "전시 벽면", "케이터링 준비실"],
-    cover_image_url: SPACE_IMAGES.storage,
+    cover_image_url: null,
   },
 ];
 
@@ -176,18 +163,22 @@ export default function SpacesPage() {
                 >
                   <Link to={`/spaces/${space.slug}`} className="group block">
                     <div className="relative overflow-hidden aspect-[16/9]">
-                      {/* 폴백: 즉시 표시 */}
-                      <img
-                        src={
-                          space.cover_image_url ||
-                          SPACE_IMAGES[space.category] ||
-                          SPACE_IMAGES.studio
-                        }
-                        alt={space.name}
-                        aria-hidden="true"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                      {/* 실사진: 업로드된 경우 표시 */}
+                      {space.cover_image_url ? (
+                        <img
+                          src={space.cover_image_url}
+                          alt={space.name}
+                          aria-hidden="true"
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-brand-warm flex items-center justify-center">
+                          <span className="font-display text-brand-muted/30 tracking-widest text-sm uppercase">
+                            이미지 준비 중
+                          </span>
+                        </div>
+                      )}
                       {/* 업로드 사진: 로드 완료 후 fade in */}
                       {spacePhotoMap[space.category] && (
                         <img

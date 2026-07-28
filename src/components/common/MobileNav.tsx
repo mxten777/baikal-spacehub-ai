@@ -22,8 +22,8 @@ const NAV_ITEMS = [
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {
   const { data: settings } = useSettings();
-  const email = settings?.contact_email || 'goworld33@naver.com';
-  const phone = settings?.contact_phone || '1661-0288';
+  const email = settings?.contact_email || "goworld33@naver.com";
+  const phone = settings?.contact_phone || "1661-0288";
   // Lock body scroll while open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -46,14 +46,10 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
           transition={{ duration: 0.28 }}
         >
           {/* Background texture */}
-          <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
-            <img
-              src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=40"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <div
+            className="absolute inset-0 opacity-[0.06] pointer-events-none bg-brand-warm"
+            aria-hidden="true"
+          />
 
           {/* Gradient vignette */}
           <div

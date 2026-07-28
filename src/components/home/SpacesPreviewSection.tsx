@@ -5,16 +5,6 @@ import AnimatedSection from "../common/AnimatedSection";
 import SectionHeader from "../common/SectionHeader";
 import LoadingSpinner from "../common/LoadingSpinner";
 
-const SPACE_IMAGES: Record<string, string> = {
-  cafe: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80",
-  garden:
-    "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80",
-  studio:
-    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80",
-  storage:
-    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&q=80",
-};
-
 const FALLBACK_SPACES = [
   {
     id: "1",
@@ -94,16 +84,20 @@ export default function SpacesPreviewSection() {
                   className="group block overflow-hidden bg-brand-cream"
                 >
                   <div className="relative overflow-hidden aspect-[3/4]">
-                    <img
-                      src={
-                        space.cover_image_url ||
-                        SPACE_IMAGES[space.category] ||
-                        SPACE_IMAGES.studio
-                      }
-                      alt={space.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      loading="lazy"
-                    />
+                    {space.cover_image_url ? (
+                      <img
+                        src={space.cover_image_url}
+                        alt={space.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-brand-warm flex items-center justify-center">
+                        <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                          이미지 준비 중
+                        </span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                     {/* Hover overlay */}
                     <div className="absolute inset-0 bg-brand-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

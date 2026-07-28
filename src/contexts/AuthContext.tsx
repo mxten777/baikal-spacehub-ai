@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) {
           // 만료·손상된 세션 — 네트워크 없이 로컬 스토리지만 제거 후 비인증 상태로 진행
           // scope:'local' 은 서버 API 호출 없이 localStorage 토큰만 삭제한다.
-          await supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+          await supabase.auth.signOut({ scope: "local" }).catch(() => {});
           setUser(null);
           setProfile(null);
           return;
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       // INITIAL_SESSION은 initAuth()가 이미 처리 — 중복 profiles 조회 방지
-      if (event === 'INITIAL_SESSION') return;
+      if (event === "INITIAL_SESSION") return;
       if (!mounted) return;
       const currentUser = session?.user ?? null;
       setUser(currentUser);

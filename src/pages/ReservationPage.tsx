@@ -15,62 +15,16 @@ const EVENT_TYPES: {
   id: EventType;
   label: string;
   desc: string;
-  img: string;
 }[] = [
-  {
-    id: "exhibition",
-    label: "전시",
-    desc: "아트 전시 · 사진전 · 설치미술",
-    img: "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=75",
-  },
-  {
-    id: "performance",
-    label: "공연",
-    desc: "음악 · 연극 · 퍼포먼스",
-    img: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&q=75",
-  },
-  {
-    id: "workshop",
-    label: "워크숍",
-    desc: "교육 · 강연 · 클래스",
-    img: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=75",
-  },
-  {
-    id: "brand_event",
-    label: "브랜드 행사",
-    desc: "팝업 · 런칭 · 프레스",
-    img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=75",
-  },
-  {
-    id: "corporate",
-    label: "기업행사",
-    desc: "팀빌딩 · 미팅 · 연말파티",
-    img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=75",
-  },
-  {
-    id: "shoot",
-    label: "촬영",
-    desc: "사진 · 영상 · CF · 룩북",
-    img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&q=75",
-  },
-  {
-    id: "wedding",
-    label: "웨딩",
-    desc: "스몰웨딩 · 포토웨딩 · 파티",
-    img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&q=75",
-  },
-  {
-    id: "gathering",
-    label: "모임",
-    desc: "생일파티 · 소모임 · 축하",
-    img: "https://images.unsplash.com/photo-1529543544282-ea669407fca3?w=600&q=75",
-  },
-  {
-    id: "consultation",
-    label: "공간 상담",
-    desc: "방문 상담 · 맞춤 플랜",
-    img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=75",
-  },
+  { id: "exhibition", label: "전시", desc: "아트 전시 · 사진전 · 설치미술" },
+  { id: "performance", label: "공연", desc: "음악 · 연극 · 퍼포먼스" },
+  { id: "workshop", label: "워크숍", desc: "교육 · 강연 · 클래스" },
+  { id: "brand_event", label: "브랜드 행사", desc: "팝업 · 런칭 · 프레스" },
+  { id: "corporate", label: "기업행사", desc: "팀빌딩 · 미팅 · 연말파티" },
+  { id: "shoot", label: "촬영", desc: "사진 · 영상 · CF · 룩북" },
+  { id: "wedding", label: "웨딩", desc: "스몰웨딩 · 포토웨딩 · 파티" },
+  { id: "gathering", label: "모임", desc: "생일파티 · 소모임 · 축하" },
+  { id: "consultation", label: "공간 상담", desc: "방문 상담 · 맞춤 플랜" },
 ];
 
 // ─── Space recommendation logic ────────────────────────────────────────────────
@@ -81,7 +35,6 @@ const SPACES: {
   nameKo: string;
   cap: number;
   desc: string;
-  img: string;
   tags: string[];
 }[] = [
   {
@@ -90,7 +43,6 @@ const SPACES: {
     nameKo: "카페 공간",
     cap: 30,
     desc: "따뜻한 인테리어와 바 카운터. 소모임과 팝업에 최적.",
-    img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80",
     tags: ["소모임", "팝업", "파티"],
   },
   {
@@ -99,7 +51,6 @@ const SPACES: {
     nameKo: "가든 야드",
     cap: 50,
     desc: "야외 조경과 조명이 아름다운 프리미엄 야외 공간.",
-    img: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800&q=80",
     tags: ["야외", "웨딩", "파티"],
   },
   {
@@ -108,7 +59,6 @@ const SPACES: {
     nameKo: "메인 스튜디오",
     cap: 80,
     desc: "전문 조명·음향 시스템과 무대가 있는 멀티 스튜디오.",
-    img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=80",
     tags: ["공연", "촬영", "강연"],
   },
   {
@@ -117,7 +67,6 @@ const SPACES: {
     nameKo: "오픈 홀",
     cap: 150,
     desc: "화이트 갤러리 벽과 오픈 플로어의 대형 복합 공간.",
-    img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80",
     tags: ["전시", "대형행사", "런칭"],
   },
 ];
@@ -327,13 +276,10 @@ function Step1({
             }`}
           >
             {/* Image */}
-            <div className="aspect-[4/3] overflow-hidden">
-              <img
-                src={type.img}
-                alt={type.label}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
+            <div className="aspect-[4/3] overflow-hidden bg-brand-warm flex items-center justify-center">
+              <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                {type.label}
+              </span>
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
             </div>
             {/* Label */}
@@ -585,13 +531,10 @@ function Step3({
               }`}
             >
               {/* Image */}
-              <div className="w-28 shrink-0 overflow-hidden">
-                <img
-                  src={space.img}
-                  alt={space.nameKo}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
+              <div className="w-28 shrink-0 overflow-hidden bg-brand-warm flex items-center justify-center">
+                <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                  {space.id}
+                </span>
               </div>
               {/* Info */}
               <div className="flex-1 py-4 pr-4">

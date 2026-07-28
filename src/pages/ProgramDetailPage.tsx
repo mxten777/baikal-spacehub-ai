@@ -40,8 +40,7 @@ const FALLBACK: Record<string, any> = {
 참여 작가 7인이 각자의 시선으로 바라본 봄의 이야기가 더릿 스토리지 공간을 가득 채울 예정입니다. 사진 한 장 한 장에 담긴 봄의 온기를 느껴보세요.
 
 관람은 무료이며, 오프닝 리셉션은 3월 15일 오후 6시에 진행됩니다.`,
-    cover_image_url:
-      "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=1200&q=80",
+    cover_image_url: null,
     is_free: false,
     price: 8000,
     capacity: null,
@@ -123,11 +122,19 @@ export default function ProgramDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
             {/* Poster */}
             <AnimatedSection animation="fade-up">
-              <img
-                src={displayProgram.cover_image_url}
-                alt={displayProgram.title}
-                className="w-full aspect-[3/4] object-cover max-h-[600px]"
-              />
+              {displayProgram.cover_image_url ? (
+                <img
+                  src={displayProgram.cover_image_url}
+                  alt={displayProgram.title}
+                  className="w-full aspect-[3/4] object-cover max-h-[600px]"
+                />
+              ) : (
+                <div className="w-full aspect-[3/4] max-h-[600px] bg-brand-warm flex items-center justify-center">
+                  <span className="font-display text-brand-muted/30 tracking-widest uppercase">
+                    이미지 준비 중
+                  </span>
+                </div>
+              )}
             </AnimatedSection>
 
             {/* Info */}

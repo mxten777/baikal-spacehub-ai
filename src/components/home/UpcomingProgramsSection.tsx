@@ -26,8 +26,7 @@ const FALLBACK_PROGRAMS = [
     start_date: "2026-03-15",
     end_date: "2026-04-15",
     venue: "스토리지",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=600&q=80",
+    cover_image_url: null,
     short_description: "일상 속 봄의 순간을 담은 사진 전시",
   },
   {
@@ -39,8 +38,7 @@ const FALLBACK_PROGRAMS = [
     start_date: "2026-03-22",
     end_date: "2026-03-22",
     venue: "카페",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=600&q=80",
+    cover_image_url: null,
     short_description: "봄밤을 수놓는 재즈 라이브 공연",
   },
   {
@@ -52,8 +50,7 @@ const FALLBACK_PROGRAMS = [
     start_date: "2026-03-29",
     end_date: "2026-03-29",
     venue: "스튜디오",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    cover_image_url: null,
     short_description: "나만의 도자기를 만드는 1일 워크숍",
   },
 ];

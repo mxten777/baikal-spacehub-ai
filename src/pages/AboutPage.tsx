@@ -67,14 +67,16 @@ export default function AboutPage() {
       />
 
       {/* Hero */}
-      <section className="relative h-[70vh] min-h-[500px]">
-        {/* 폴백: 업로드 사진이 없거나 아직 로드 전일 때만 표시 */}
-        <img
-          src={hero_image_url}
-          alt="The Lit"
-          aria-hidden="true"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${uploadedLoaded ? "opacity-0" : "opacity-100"}`}
-        />
+      <section className="relative h-[70vh] min-h-[500px] bg-brand-warm">
+        {/* 관리자가 등록한 히어로 이미지 */}
+        {hero_image_url && (
+          <img
+            src={hero_image_url}
+            alt="The Lit"
+            aria-hidden="true"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${uploadedLoaded ? "opacity-0" : "opacity-100"}`}
+          />
+        )}
         {/* 'about' 카테고리 업로드 사진: 로드 완료 후 fade in */}
         {uploadedHeroUrl && (
           <img
@@ -83,6 +85,13 @@ export default function AboutPage() {
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${uploadedLoaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setUploadedLoaded(true)}
           />
+        )}
+        {!hero_image_url && !uploadedHeroUrl && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-display text-brand-muted/30 tracking-widest uppercase">
+              이미지 준비 중
+            </span>
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-overlay-center" />
         <div className="absolute inset-0 flex flex-col justify-end container-wide pb-16">

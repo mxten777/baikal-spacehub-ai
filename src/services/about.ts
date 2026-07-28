@@ -2,8 +2,7 @@ import { supabase } from "../lib/supabase";
 import type { AboutContent } from "../types";
 
 const DEFAULT_ABOUT: Omit<AboutContent, "id" | "updated_at"> = {
-  hero_image_url:
-    "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1920&q=80",
+  hero_image_url: "",
   hero_eyebrow: "About The Lit",
   hero_title_line1: "문화의 불꽃을",
   hero_title_line2: "켜는 공간",
@@ -75,8 +74,7 @@ const DEFAULT_ABOUT: Omit<AboutContent, "id" | "updated_at"> = {
     "더릿(The Lit)은 서울 한복판에서 문화와 예술, 그리고 사람이 만나는 복합문화공간입니다. 단순한 장소가 아닌, 창의적 에너지가 교류하고 새로운 이야기가 시작되는 플랫폼입니다.",
   brand_intro_paragraph_2:
     "전시부터 공연, 강연, 워크숍, 브랜드 이벤트까지 — 모든 문화 활동을 위한 최적의 환경을 제공합니다.",
-  brand_intro_image_url:
-    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+  brand_intro_image_url: "",
   brand_intro_pillars: [
     { label: "전시", en: "Exhibition" },
     { label: "공연", en: "Performance" },

@@ -40,7 +40,9 @@ export default function ContactPage() {
     ? `${settings.business_hours}${settings.holiday ? ` · ${settings.holiday}` : ""}`
     : DEFAULTS.hours;
   const instagramRaw = settings?.instagram_url || DEFAULTS.instagram;
-  const instagramUrl = instagramRaw.startsWith("http") ? instagramRaw : `https://${instagramRaw}`;
+  const instagramUrl = instagramRaw.startsWith("http")
+    ? instagramRaw
+    : `https://${instagramRaw}`;
   const kakaoUrl = settings?.kakao_channel_url || DEFAULTS.kakao;
   const mapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(address)}`;
   const phoneHref = `tel:${phone.replace(/[^0-9]/g, "")}`;
