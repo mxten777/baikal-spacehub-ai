@@ -98,7 +98,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
                   <NavLink
                     to={item.href}
                     className={({ isActive }) =>
-                      `block py-[13px] font-display font-extralight border-b border-white/20 transition-colors duration-200 leading-tight ${
+                      `block py-[13px] font-display font-light border-b border-white/20 transition-colors duration-200 ${
                         isActive
                           ? "text-white"
                           : "text-white/75 hover:text-white"
@@ -106,7 +106,8 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
                     }
                     style={{
                       fontSize: "clamp(1.85rem, 7.5vw, 2.4rem)",
-                      letterSpacing: "-0.01em",
+                      letterSpacing: "-0.03em",
+                      lineHeight: "1.08",
                     }}
                   >
                     {item.label}
