@@ -5,6 +5,9 @@ import App from "./App.tsx";
 import { queryClient } from "./lib/queryClient.ts";
 import { heroSlidesService } from "./services/heroSlides.ts";
 
+// 배포 버전 확인 (브라우저 콘솔: [The Lit] v2026-07-29)
+console.info(`[The Lit] v${__APP_VERSION__}`);
+
 // ── 첫 방문 성능 최적화 ────────────────────────────────────────────────────
 // 1) Supabase에 preconnect 링크를 DOM에 삽입 (TCP/TLS 핸드셰이크 조기 시작)
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;

@@ -16,6 +16,11 @@
   --letter-display: -0.03em;
   --letter-ui: 0.14em;
   --letter-label: 0.2em;
+  /* Safe area insets — viewport-fit=cover 와 함께 사용 */
+  --sat: env(safe-area-inset-top, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
 }
 
 /* ─────────────────────────────────────────
@@ -214,6 +219,16 @@
     @apply block font-sans text-[10px] font-medium tracking-[var(--letter-label)] uppercase text-brand-muted mb-2;
   }
 
+  /* ─── Hero 콘텐츠 하단 패딩 — 홈바·네비게이션 바 safe area 대응 ─── */
+  .hero-content-pad {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+  @media (min-width: 1024px) {
+    .hero-content-pad {
+      padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
   /* ─── Divider ─── */
   .divider-vert {
     @apply block w-px bg-brand-border self-stretch;
@@ -240,6 +255,15 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar   { -ms-overflow-style: none; scrollbar-width: none; }
   .underline-offset-3 { text-underline-offset: 3px; }
+
+  /* ─── 인스타그램 인앱 브라우저 vh 버그 대응
+     100vh: 기본 폴백
+     100svh: small viewport height — 브라우저 크롬이 모두 표시된 상태의 최소 높이
+     svh를 지원하는 브라우저에서 100vh를 덮어써 Hero가 화면에 딱 맞게 표시됨 ─── */
+  .h-screen-safe {
+    height: 100vh;
+    height: 100svh;
+  }
 }
 
 

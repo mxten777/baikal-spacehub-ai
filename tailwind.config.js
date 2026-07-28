@@ -82,6 +82,8 @@ export default {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-overlay":
           "linear-gradient(to bottom, transparent 0%, rgba(10,10,10,0.75) 100%)",
+        "gradient-overlay-center":
+          "linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.08) 45%, rgba(10,10,10,0.62) 100%)",
         "gradient-overlay-full":
           "linear-gradient(to bottom, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.45) 50%, rgba(10,10,10,0.85) 100%)",
       },

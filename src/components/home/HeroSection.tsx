@@ -97,7 +97,7 @@ export default function HeroSection() {
   // 로딩 중: 정적 배경이미지 표시 (즉시 로드) — 검은화면 방지
   if (!slide) {
     return (
-      <section className="relative h-screen min-h-[600px] overflow-hidden">
+      <section className="relative h-screen-safe min-h-[600px] overflow-hidden">
         <img
           src="/images/hero/hero-1.jpg"
           alt=""
@@ -111,7 +111,7 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative h-screen min-h-[600px] overflow-hidden">
+    <section className="relative h-screen-safe min-h-[600px] overflow-hidden">
       {/* Background slides — all rendered for instant preload, crossfade via opacity */}
       {displaySlides.map((s, i) => (
         <motion.div
@@ -142,7 +142,7 @@ export default function HeroSection() {
       ))}
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-end h-full container-wide pb-20 lg:pb-28">
+      <div className="relative z-10 flex flex-col justify-end h-full container-wide hero-content-pad">
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id + "-content"}
@@ -161,6 +161,8 @@ export default function HeroSection() {
                 fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
                 letterSpacing: "-0.03em",
                 lineHeight: "1.08",
+                overflowWrap: "break-word",
+                wordBreak: "keep-all",
               }}
             >
               {slide.title}
