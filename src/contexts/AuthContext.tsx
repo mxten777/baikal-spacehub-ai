@@ -64,7 +64,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (error) {
           // 만료·손상된 세션 — 네트워크 없이 로컬 스토리지만 제거 후 비인증 상태로 진행
-          // scope:'local' 은 서버 API 호출 없이 localStorage 토큰만 삭제한다.
           await supabase.auth.signOut({ scope: "local" }).catch(() => {});
           setUser(null);
           setProfile(null);
@@ -73,21 +72,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const currentUser = data.session?.user ?? null;
         setUser(currentUser);
+        // loading은 세션 확인 즉시 해제 — 프로필은 백그라운드에서 로드
+        if (mounted) setLoading(false);
+
         if (currentUser) {
-          try {
-            await fetchProfile(currentUser.id);
-          } catch {
-            // 프로필 조회 실패 — 인증 자체는 유지하되 프로필 없음으로 처리
-            setProfile(null);
-          }
+          fetchProfile(currentUser.id).catch(() => {
+            if (mounted) setProfile(null);
+          });
         }
       } catch {
         if (!mounted) return;
-        // Auth 초기화 예외 — 비인증 상태로 진행
         setUser(null);
         setProfile(null);
       } finally {
-        // 성공·오류·예외 어느 경우에도 반드시 loading 종료
         if (mounted) setLoading(false);
       }
     }
