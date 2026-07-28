@@ -271,32 +271,33 @@ export default function MegaMenu({
                   className="grid grid-cols-5 gap-6 lg:gap-8"
                 >
                   {PROGRAMS.map((p) => {
-                    const photoUrl = programPhotoMap[PROGRAM_PHOTO_CAT[p.en] ?? ""];
+                    const photoUrl =
+                      programPhotoMap[PROGRAM_PHOTO_CAT[p.en] ?? ""];
                     return (
-                    <motion.div key={p.label} variants={child}>
-                      <Link to={p.href} className="group block">
-                        <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3 relative flex items-center justify-center">
-                          {photoUrl ? (
-                            <img
-                              src={photoUrl}
-                              alt={p.label}
-                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
-                              {p.en}
-                            </span>
-                          )}
-                        </div>
-                        <p className="font-sans text-[8.5px] tracking-[0.18em] uppercase text-brand-subtle mb-0.5">
-                          {p.en}
-                        </p>
-                        <p className="font-display text-[1.05rem] font-light text-brand-black group-hover:text-brand-accent transition-colors duration-200 leading-tight">
-                          {p.label}
-                        </p>
-                      </Link>
-                    </motion.div>
+                      <motion.div key={p.label} variants={child}>
+                        <Link to={p.href} className="group block">
+                          <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3 relative flex items-center justify-center">
+                            {photoUrl ? (
+                              <img
+                                src={photoUrl}
+                                alt={p.label}
+                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
+                                {p.en}
+                              </span>
+                            )}
+                          </div>
+                          <p className="font-sans text-[8.5px] tracking-[0.18em] uppercase text-brand-subtle mb-0.5">
+                            {p.en}
+                          </p>
+                          <p className="font-display text-[1.05rem] font-light text-brand-black group-hover:text-brand-accent transition-colors duration-200 leading-tight">
+                            {p.label}
+                          </p>
+                        </Link>
+                      </motion.div>
                     );
                   })}
                   <motion.div
