@@ -63,6 +63,9 @@ const AdminPhotoAssetExplorerPage = lazy(
 const AdminHeroPage = lazy(() => import("./pages/admin/AdminHeroPage"));
 const AdminAboutPage = lazy(() => import("./pages/admin/AdminAboutPage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
+const AdminWeddingPage = lazy(
+  () => import("./pages/admin/AdminWeddingPage"),
+);
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -155,6 +158,14 @@ export default function App() {
                   <Route path="blog" element={<AdminBlogPage />} />
                   <Route path="media" element={<AdminMediaPage />} />
                   <Route path="inquiries" element={<AdminInquiriesPage />} />
+                  <Route
+                    path="wedding"
+                    element={
+                      <RoleGuard permission="wedding_photos">
+                        <AdminWeddingPage />
+                      </RoleGuard>
+                    }
+                  />
                   {/* 운영 정보 — operator 이상 접근 가능 */}
                   <Route
                     path="operator-settings"

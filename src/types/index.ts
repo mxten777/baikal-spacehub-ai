@@ -33,7 +33,8 @@ export type Permission =
   | "external_content"
   | "reservations"
   | "photo_curator"
-  | "photo_projects";
+  | "photo_projects"
+  | "wedding_photos";
 
 export interface Profile {
   id: UUID;
@@ -215,7 +216,12 @@ export interface MediaItem {
 // ============================================================
 // INQUIRIES
 // ============================================================
-export type InquiryType = "rental" | "collaboration" | "general" | "media" | "wedding";
+export type InquiryType =
+  | "rental"
+  | "collaboration"
+  | "general"
+  | "media"
+  | "wedding";
 export type InquiryStatus = "pending" | "reviewing" | "replied" | "closed";
 
 export interface Inquiry {

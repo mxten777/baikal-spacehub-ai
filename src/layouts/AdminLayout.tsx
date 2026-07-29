@@ -21,6 +21,7 @@ import {
   MonitorPlay,
   SlidersHorizontal,
   FolderKanban,
+  Heart,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
@@ -66,6 +67,12 @@ const operatorNav: NavItem[] = [
     href: "/admin/inquiries",
     icon: MessageSquare,
     permission: "inquiries",
+  },
+  {
+    label: "웨딩 사진",
+    href: "/admin/wedding",
+    icon: Heart,
+    permission: "wedding_photos",
   },
   {
     label: "운영 정보",

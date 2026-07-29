@@ -46,6 +46,8 @@ export const defaultConfig: CaptureConfig = {
     { path: "/blog", filename: "06-blog" },
     { path: "/media", filename: "07-media" },
     { path: "/contact", filename: "08-contact" },
+    { path: "/wedding", filename: "09-wedding" },
+    { path: "/contact?type=wedding", filename: "10-contact-wedding" },
   ],
 };
 

@@ -202,3 +202,33 @@ export async function getPublicPhotosByCategory(
     clearTimeout(timeoutId);
   }
 }
+
+// ─── Admin photo queries (by category, all stages) ────────────────────────────
+
+/**
+ * Admin용: 특정 project_category의 모든 사진을 stage 제한 없이 반환.
+ * 웨딩 관리 페이지 등 카테고리 전용 관리 화면에서 사용.
+ */
+export async function getAdminPhotosByCategory(
+  category: ProjectCategory,
+  options: { stage?: "source" | "selected" | "edited" | "web" | "pdf" } = {},
+): Promise<PhotoRecord[]> {
+  const { stage } = options;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query = (supabase.from(TABLE).select("*") as any).eq(
+    "project_category",
+    category,
+  );
+
+  if (stage) {
+    query = query.eq("project_stage", stage);
+  }
+
+  const { data, error } = await query
+    .order("is_featured", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []) as PhotoRecord[];
+}

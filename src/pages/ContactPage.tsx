@@ -88,7 +88,9 @@ export default function ContactPage() {
   return (
     <>
       <SeoHead
-        title={isWedding ? "Wedding Consultation — The Lit" : "Contact — The Lit"}
+        title={
+          isWedding ? "Wedding Consultation — The Lit" : "Contact — The Lit"
+        }
         description={
           isWedding
             ? "THE LIT 웨딩 공간과 일정에 대해 상담해드립니다."
