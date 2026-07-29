@@ -30,22 +30,24 @@ export default function MediaPage() {
   const { data: settings } = useSettings();
   const instagramUrl = settings?.instagram_url || INSTAGRAM_FALLBACK;
 
-  // external_contents가 주요 데이터 소스 (수집된 콘텐츠)
+  const isInstagram = activePlatform === "instagram";
+
+  // external_contents가 주요 데이터 소스 (수집된 콘텐츠) — Instagram은 조회 불필요
   const { data: externalItems = [], isLoading: externalLoading } =
     useExternalContents({
-      platform: activePlatform === "all" ? undefined : activePlatform,
+      platform: activePlatform === "all" || isInstagram ? undefined : activePlatform,
       limit: 24,
     });
 
-  // 기존 media_items도 병렬 조회 (하위 호환)
+  // 기존 media_items도 병렬 조회 (하위 호환) — Instagram, RSS는 legacy DB에 없음
   const { data: legacyMedia = [], isLoading: legacyLoading } = useMedia(
-    activePlatform === "all" || activePlatform === "rss"
+    activePlatform === "all" || activePlatform === "rss" || isInstagram
       ? undefined
       : activePlatform,
     12,
   );
 
-  const isLoading = externalLoading || legacyLoading;
+  const isLoading = !isInstagram && (externalLoading || legacyLoading);
 
   // external_contents 우선, 없으면 legacy media_items로 fallback
   const items =
@@ -145,6 +147,7 @@ export default function MediaPage() {
       )}
 
       {/* Grid */}
+      {!isInstagram && (
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
           {isLoading ? (
@@ -243,6 +246,7 @@ export default function MediaPage() {
           )}
         </div>
       </section>
+      )}
     </>
   );
 }

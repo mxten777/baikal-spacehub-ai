@@ -63,9 +63,7 @@ const AdminPhotoAssetExplorerPage = lazy(
 const AdminHeroPage = lazy(() => import("./pages/admin/AdminHeroPage"));
 const AdminAboutPage = lazy(() => import("./pages/admin/AdminAboutPage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
-const AdminWeddingPage = lazy(
-  () => import("./pages/admin/AdminWeddingPage"),
-);
+const AdminWeddingPage = lazy(() => import("./pages/admin/AdminWeddingPage"));
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -125,7 +123,10 @@ export default function App() {
                     path="/programs/:slug"
                     element={<ProgramDetailPage />}
                   />
-                  <Route path="/events" element={<Navigate to="/wedding" replace />} />
+                  <Route
+                    path="/events"
+                    element={<Navigate to="/wedding" replace />}
+                  />
                   <Route path="/wedding" element={<WeddingPage />} />
                   <Route path="/archive" element={<ArchivePage />} />
                   <Route

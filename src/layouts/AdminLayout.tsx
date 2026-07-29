@@ -161,12 +161,12 @@ export default function AdminLayout() {
   const handleLogout = async () => {
     try {
       // scope: 'local' — 네트워크 오류와 무관하게 로컬 세션을 즉시 삭제
-      await supabase.auth.signOut({ scope: 'local' });
+      await supabase.auth.signOut({ scope: "local" });
     } catch {
       // 에러 무시 — 로컬 세션은 이미 삭제됨
     } finally {
       // SPA navigate 대신 full reload: React 세션 상태까지 완전 초기화
-      window.location.href = '/admin/login';
+      window.location.href = "/admin/login";
     }
   };
 

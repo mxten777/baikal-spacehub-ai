@@ -145,13 +145,8 @@ export default function AdminWeddingPage() {
   });
 
   const toggleFeaturedMutation = useMutation({
-    mutationFn: ({
-      id,
-      is_featured,
-    }: {
-      id: string;
-      is_featured: boolean;
-    }) => updatePhotoRecord(id, { is_featured }),
+    mutationFn: ({ id, is_featured }: { id: string; is_featured: boolean }) =>
+      updatePhotoRecord(id, { is_featured }),
     onSuccess: (updated) => {
       queryClient.setQueryData<PhotoRecord[]>(
         ["admin-wedding-photos"],
@@ -175,9 +170,7 @@ export default function AdminWeddingPage() {
   );
 
   const filtered =
-    stage === "all"
-      ? photos
-      : photos.filter((p) => p.project_stage === stage);
+    stage === "all" ? photos : photos.filter((p) => p.project_stage === stage);
 
   const webReady = photos.filter((p) => p.project_stage === "web").length;
   const featuredCount = photos.filter((p) => p.is_featured).length;
