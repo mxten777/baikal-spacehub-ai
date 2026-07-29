@@ -30,11 +30,33 @@ export default function AdminLoginPage() {
   const onSubmit = async ({ email, password }: LoginForm) => {
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       setError('이메일 또는 비밀번호가 올바르지 않습니다.')
-    } else {
+      setLoading(false)
+      return
+    }
+
+    // If signIn returns a session immediately, navigate right away.
+    if (data?.session) {
       navigate('/admin')
+      setLoading(false)
+      return
+    }
+
+    // Otherwise wait for onAuthStateChange to provide the session (avoids race where session isn't available yet).
+    try {
+      await new Promise<void>((resolve) => {
+        const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+          if (session) {
+            sub.subscription.unsubscribe()
+            resolve()
+          }
+        })
+      })
+      navigate('/admin')
+    } catch {
+      setError('로그인 처리 중 오류가 발생했습니다. 다시 시도하세요.')
     }
     setLoading(false)
   }

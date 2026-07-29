@@ -35,7 +35,8 @@ export default function MediaPage() {
   // external_contents가 주요 데이터 소스 (수집된 콘텐츠) — Instagram은 조회 불필요
   const { data: externalItems = [], isLoading: externalLoading } =
     useExternalContents({
-      platform: activePlatform === "all" || isInstagram ? undefined : activePlatform,
+      platform:
+        activePlatform === "all" || isInstagram ? undefined : activePlatform,
       limit: 24,
     });
 
@@ -148,104 +149,105 @@ export default function MediaPage() {
 
       {/* Grid */}
       {!isInstagram && (
-      <section className="section-padding bg-brand-white">
-        <div className="container-wide">
-          {isLoading ? (
-            <LoadingSpinner />
-          ) : items.length === 0 ? (
-            <div className="text-center py-24 text-brand-muted">
-              <p className="font-sans text-sm">
-                현재 표시할 콘텐츠가 없습니다.
-              </p>
-              <p className="font-sans text-xs mt-2 text-gray-300">
-                관리자 페이지에서 소스를 추가하고 수집을 실행하세요.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {items.map((item, i) => {
-                const badge = PLATFORM_BADGE[item.platform];
-                const isVideo = item.platform === "youtube";
-                const isText = item.platform === "x" || item.platform === "rss";
+        <section className="section-padding bg-brand-white">
+          <div className="container-wide">
+            {isLoading ? (
+              <LoadingSpinner />
+            ) : items.length === 0 ? (
+              <div className="text-center py-24 text-brand-muted">
+                <p className="font-sans text-sm">
+                  현재 표시할 콘텐츠가 없습니다.
+                </p>
+                <p className="font-sans text-xs mt-2 text-gray-300">
+                  관리자 페이지에서 소스를 추가하고 수집을 실행하세요.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {items.map((item, i) => {
+                  const badge = PLATFORM_BADGE[item.platform];
+                  const isVideo = item.platform === "youtube";
+                  const isText =
+                    item.platform === "x" || item.platform === "rss";
 
-                return (
-                  <AnimatedSection
-                    key={item.id}
-                    animation="fade-up"
-                    delay={i * 40}
-                  >
-                    <a
-                      href={item.external_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative overflow-hidden block bg-brand-warm hover:shadow-md transition-shadow"
+                  return (
+                    <AnimatedSection
+                      key={item.id}
+                      animation="fade-up"
+                      delay={i * 40}
                     >
-                      {/* Thumbnail or text card */}
-                      {!isText && item.thumbnail_url ? (
-                        <div className="relative aspect-video overflow-hidden">
-                          <img
-                            src={item.thumbnail_url}
-                            alt={item.title ?? undefined}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            loading="lazy"
-                          />
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
-                          {isVideo && (
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                                <Play size={20} className="text-white ml-1" />
-                              </div>
-                            </div>
-                          )}
-                          <div className="absolute top-3 left-3">
-                            <span
-                              className={`font-sans text-[9px] font-medium px-2 py-1 text-white ${badge?.cls}`}
-                            >
-                              {badge?.label}
-                            </span>
-                          </div>
-                          <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                            <p className="font-sans text-sm font-medium text-white line-clamp-2">
-                              {item.title}
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        /* Text-only card (X, RSS without image) */
-                        <div className="p-5 min-h-[120px] flex flex-col justify-between">
-                          <div>
-                            <span
-                              className={`font-sans text-[9px] font-medium px-2 py-1 text-white ${badge?.cls} inline-block mb-3`}
-                            >
-                              {badge?.label}
-                            </span>
-                            <p className="font-sans text-sm font-medium text-brand-black line-clamp-3">
-                              {item.title ?? item.summary}
-                            </p>
-                          </div>
-                          <div className="flex items-center justify-between mt-3">
-                            {item.published_at && (
-                              <span className="text-xs text-gray-400">
-                                {new Date(item.published_at).toLocaleDateString(
-                                  "ko-KR",
-                                )}
-                              </span>
-                            )}
-                            <ExternalLink
-                              size={12}
-                              className="text-gray-300 group-hover:text-brand-black transition-colors"
+                      <a
+                        href={item.external_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group relative overflow-hidden block bg-brand-warm hover:shadow-md transition-shadow"
+                      >
+                        {/* Thumbnail or text card */}
+                        {!isText && item.thumbnail_url ? (
+                          <div className="relative aspect-video overflow-hidden">
+                            <img
+                              src={item.thumbnail_url}
+                              alt={item.title ?? undefined}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              loading="lazy"
                             />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
+                            {isVideo && (
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                  <Play size={20} className="text-white ml-1" />
+                                </div>
+                              </div>
+                            )}
+                            <div className="absolute top-3 left-3">
+                              <span
+                                className={`font-sans text-[9px] font-medium px-2 py-1 text-white ${badge?.cls}`}
+                              >
+                                {badge?.label}
+                              </span>
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                              <p className="font-sans text-sm font-medium text-white line-clamp-2">
+                                {item.title}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </a>
-                  </AnimatedSection>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
+                        ) : (
+                          /* Text-only card (X, RSS without image) */
+                          <div className="p-5 min-h-[120px] flex flex-col justify-between">
+                            <div>
+                              <span
+                                className={`font-sans text-[9px] font-medium px-2 py-1 text-white ${badge?.cls} inline-block mb-3`}
+                              >
+                                {badge?.label}
+                              </span>
+                              <p className="font-sans text-sm font-medium text-brand-black line-clamp-3">
+                                {item.title ?? item.summary}
+                              </p>
+                            </div>
+                            <div className="flex items-center justify-between mt-3">
+                              {item.published_at && (
+                                <span className="text-xs text-gray-400">
+                                  {new Date(
+                                    item.published_at,
+                                  ).toLocaleDateString("ko-KR")}
+                                </span>
+                              )}
+                              <ExternalLink
+                                size={12}
+                                className="text-gray-300 group-hover:text-brand-black transition-colors"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </a>
+                    </AnimatedSection>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
       )}
     </>
   );
