@@ -47,7 +47,7 @@ export default function AdminLoginPage() {
     // Otherwise wait for onAuthStateChange to provide the session (avoids race where session isn't available yet).
     try {
       await new Promise<void>((resolve) => {
-        const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+        const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
           if (session) {
             sub.subscription.unsubscribe()
             resolve()
