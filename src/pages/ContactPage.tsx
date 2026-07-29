@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useSearchParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -12,6 +13,7 @@ import AnimatedSection from "../components/common/AnimatedSection";
 import { useSettings } from "../hooks/useData";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, localBusinessJsonLd, breadcrumbJsonLd } from "../lib/seo";
+import { inquiriesService } from "../services/inquiries";
 
 // ─── Fallback constants ──────────────────────────────────────────────────
 const DEFAULTS = {
@@ -28,10 +30,24 @@ export default function ContactPage() {
   const [searchParams] = useSearchParams();
   const { data: settings } = useSettings();
 
+  // Wedding form state
+  const [wForm, setWForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    preferred_date: "",
+    message: "",
+  });
+  const [wSubmitting, setWSubmitting] = useState(false);
+  const [wDone, setWDone] = useState(false);
+  const [wError, setWError] = useState("");
+
   // /contact?type=rental → /reservation 리다이렉트
   if (searchParams.get("type") === "rental") {
     return <Navigate to="/reservation" replace />;
   }
+
+  const isWedding = searchParams.get("type") === "wedding";
 
   const phone = settings?.contact_phone || DEFAULTS.phone;
   const email = settings?.contact_email || DEFAULTS.email;
@@ -47,11 +63,37 @@ export default function ContactPage() {
   const mapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(address)}`;
   const phoneHref = `tel:${phone.replace(/[^0-9]/g, "")}`;
 
+  async function handleWeddingSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setWSubmitting(true);
+    setWError("");
+    try {
+      await inquiriesService.submit({
+        inquiry_type: "wedding",
+        name: wForm.name,
+        phone: wForm.phone || null,
+        email: wForm.email || null,
+        subject: "웨딩 상담",
+        message: wForm.message,
+        preferred_date: wForm.preferred_date || undefined,
+      });
+      setWDone(true);
+    } catch {
+      setWError("제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setWSubmitting(false);
+    }
+  }
+
   return (
     <>
       <SeoHead
-        title="Contact — The Lit"
-        description="더릿 복합문화공간 — 카카오체널, 전화, 이메일로 빠르게 연락하세요. 공간 대여 문의도 환영합니다."
+        title={isWedding ? "Wedding Consultation — The Lit" : "Contact — The Lit"}
+        description={
+          isWedding
+            ? "THE LIT 웨딩 공간과 일정에 대해 상담해드립니다."
+            : "더릿 복합문화공간 — 카카오체널, 전화, 이메일로 빠르게 연락하세요. 공간 대여 문의도 환영합니다."
+        }
         canonical={`${SITE_URL}/contact`}
         keywords="더릿 연락저, 더릿 문의, 공간 대여 문의, The Lit 연락"
         jsonLd={[
@@ -67,15 +109,145 @@ export default function ContactPage() {
       <section className="pt-32 pb-16 bg-brand-white border-b border-brand-line">
         <div className="container-wide">
           <AnimatedSection animation="fade-up">
-            <p className="eyebrow mb-4">Contact</p>
-            <h1 className="font-display text-display font-light text-brand-black leading-tight">
-              언제든지
-              <br />
-              연락주세요
-            </h1>
+            <p className="eyebrow mb-4">{isWedding ? "Wedding" : "Contact"}</p>
+            {isWedding ? (
+              <>
+                <h1 className="font-display text-display font-light text-brand-black leading-tight">
+                  Wedding Consultation
+                </h1>
+                <p className="font-sans text-sm text-brand-muted mt-4">
+                  THE LIT 웨딩 공간과 일정에 대해 상담해드립니다.
+                </p>
+              </>
+            ) : (
+              <h1 className="font-display text-display font-light text-brand-black leading-tight">
+                언제든지
+                <br />
+                연락주세요
+              </h1>
+            )}
           </AnimatedSection>
         </div>
       </section>
+
+      {/* Wedding inquiry form — only for ?type=wedding */}
+      {isWedding && (
+        <section className="section-padding bg-brand-white border-b border-brand-line">
+          <div className="container-wide max-w-2xl">
+            <AnimatedSection animation="fade-up">
+              {wDone ? (
+                <div className="py-12 text-center space-y-3">
+                  <p className="font-display text-2xl font-light text-brand-black">
+                    상담 신청이 접수되었습니다
+                  </p>
+                  <p className="font-sans text-sm text-brand-muted">
+                    담당자가 1영업일 내에 연락드립니다.
+                  </p>
+                  <Link
+                    to="/wedding"
+                    className="inline-flex items-center gap-1 font-sans text-xs tracking-widest uppercase text-brand-accent hover:text-brand-black transition-colors mt-4"
+                  >
+                    웨딩 페이지로 돌아가기 <ArrowUpRight size={11} />
+                  </Link>
+                </div>
+              ) : (
+                <form onSubmit={handleWeddingSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                        이름 <span className="text-brand-accent">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={wForm.name}
+                        onChange={(e) =>
+                          setWForm((f) => ({ ...f, name: e.target.value }))
+                        }
+                        className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black placeholder:text-brand-subtle focus:outline-none focus:border-brand-black transition-colors"
+                        placeholder="홍길동"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                        연락처
+                      </label>
+                      <input
+                        type="tel"
+                        value={wForm.phone}
+                        onChange={(e) =>
+                          setWForm((f) => ({ ...f, phone: e.target.value }))
+                        }
+                        className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black placeholder:text-brand-subtle focus:outline-none focus:border-brand-black transition-colors"
+                        placeholder="010-0000-0000"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                        이메일
+                      </label>
+                      <input
+                        type="email"
+                        value={wForm.email}
+                        onChange={(e) =>
+                          setWForm((f) => ({ ...f, email: e.target.value }))
+                        }
+                        className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black placeholder:text-brand-subtle focus:outline-none focus:border-brand-black transition-colors"
+                        placeholder="example@email.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                        희망 날짜
+                      </label>
+                      <input
+                        type="date"
+                        value={wForm.preferred_date}
+                        onChange={(e) =>
+                          setWForm((f) => ({
+                            ...f,
+                            preferred_date: e.target.value,
+                          }))
+                        }
+                        className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black focus:outline-none focus:border-brand-black transition-colors"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                      문의 내용 <span className="text-brand-accent">*</span>
+                    </label>
+                    <textarea
+                      required
+                      rows={5}
+                      value={wForm.message}
+                      onChange={(e) =>
+                        setWForm((f) => ({ ...f, message: e.target.value }))
+                      }
+                      className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black placeholder:text-brand-subtle focus:outline-none focus:border-brand-black transition-colors resize-none"
+                      placeholder="예식 규모, 희망 공간, 기타 문의사항을 자유롭게 적어주세요."
+                    />
+                  </div>
+                  {wError && (
+                    <p className="font-sans text-xs text-red-500">{wError}</p>
+                  )}
+                  <motion.button
+                    type="submit"
+                    disabled={wSubmitting}
+                    whileHover={{ y: -1 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-full bg-brand-black text-white font-sans text-xs tracking-widest uppercase py-4 hover:bg-brand-charcoal transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {wSubmitting ? "제출 중…" : "상담 신청하기"}
+                  </motion.button>
+                </form>
+              )}
+            </AnimatedSection>
+          </div>
+        </section>
+      )}
 
       <section className="section-padding bg-brand-white">
         <div className="container-wide">

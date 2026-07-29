@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { label: "About", href: "/about", hasMega: false },
   { label: "Spaces", href: "/spaces", hasMega: true },
   { label: "Programs", href: "/programs", hasMega: true },
-  { label: "Events", href: "/events", hasMega: false },
+  { label: "Wedding", href: "/wedding", hasMega: false },
   { label: "Archive", href: "/archive", hasMega: true },
   { label: "Media", href: "/media", hasMega: true },
   { label: "Blog", href: "/blog", hasMega: false },

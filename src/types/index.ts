@@ -215,7 +215,7 @@ export interface MediaItem {
 // ============================================================
 // INQUIRIES
 // ============================================================
-export type InquiryType = "rental" | "collaboration" | "general" | "media";
+export type InquiryType = "rental" | "collaboration" | "general" | "media" | "wedding";
 export type InquiryStatus = "pending" | "reviewing" | "replied" | "closed";
 
 export interface Inquiry {

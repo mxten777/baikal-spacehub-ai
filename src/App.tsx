@@ -18,7 +18,7 @@ const SpacesPage = lazy(() => import("./pages/SpacesPage"));
 const SpaceDetailPage = lazy(() => import("./pages/SpaceDetailPage"));
 const ProgramsPage = lazy(() => import("./pages/ProgramsPage"));
 const ProgramDetailPage = lazy(() => import("./pages/ProgramDetailPage"));
-const EventsPage = lazy(() => import("./pages/EventsPage"));
+const WeddingPage = lazy(() => import("./pages/WeddingPage"));
 const ArchivePage = lazy(() => import("./pages/ArchivePage"));
 const ArchiveDetailPage = lazy(() => import("./pages/ArchiveDetailPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
@@ -122,7 +122,8 @@ export default function App() {
                     path="/programs/:slug"
                     element={<ProgramDetailPage />}
                   />
-                  <Route path="/events" element={<EventsPage />} />
+                  <Route path="/events" element={<Navigate to="/wedding" replace />} />
+                  <Route path="/wedding" element={<WeddingPage />} />
                   <Route path="/archive" element={<ArchivePage />} />
                   <Route
                     path="/archive/:slug"

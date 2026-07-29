@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/events",
+      "destination": "/wedding",
+      "statusCode": 301
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

@@ -26,6 +26,7 @@ const INQUIRY_TYPE_LABELS: Record<string, string> = {
   collaboration: "협력 제안",
   general: "일반 문의",
   media: "취재/언론",
+  wedding: "웨딩 상담",
 };
 
 function InquiryModal({
