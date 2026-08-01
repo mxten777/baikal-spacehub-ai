@@ -54,6 +54,7 @@ const operatorNav: NavEntry[] = [
     exact: true,
     permission: "dashboard",
   },
+  { type: "section", label: "콘텐츠" },
   { label: "공간", href: "/admin/spaces", icon: Image, permission: "spaces" },
   {
     label: "프로그램",
@@ -62,19 +63,26 @@ const operatorNav: NavEntry[] = [
     permission: "programs",
   },
   {
-    label: "웨딩",
-    href: "/admin/wedding",
-    icon: Heart,
-    permission: "wedding_photos",
-  },
-  {
     label: "아카이브",
     href: "/admin/archive",
     icon: Archive,
     permission: "archive",
   },
   { label: "블로그", href: "/admin/blog", icon: FileText, permission: "blog" },
-  { label: "미디어", href: "/admin/media", icon: Video, permission: "media" },
+  { type: "section", label: "웨딩" },
+  {
+    label: "웨딩",
+    href: "/admin/wedding",
+    icon: Heart,
+    permission: "wedding_photos",
+  },
+  { type: "section", label: "소셜 미디어" },
+  {
+    label: "소셜 미디어",
+    href: "/admin/media",
+    icon: Video,
+    permission: "media",
+  },
   { type: "section", label: "고객 관리" },
   {
     label: "문의 관리",
@@ -127,14 +135,13 @@ const superAdminNav: NavEntry[] = [
     icon: Globe2,
     permission: "content_sources",
   },
-  { type: "section", label: "데이터 및 스토리지" },
+  { type: "section", label: "데이터 및 자산" },
   {
-    label: "촬영 프로젝트 관리",
+    label: "촬영 프로젝트",
     href: "/admin/photo-projects",
     icon: FolderKanban,
     permission: "photo_projects",
   },
-  { type: "section", label: "AI 기능" },
   {
     label: "사진 큐레이터",
     href: "/admin/photo-curator",
