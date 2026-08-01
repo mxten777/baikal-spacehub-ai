@@ -37,7 +37,8 @@ function StatCard({
   href,
   color = "bg-brand-black",
 }: StatCardProps) {
-  const iconBg = typeof value === "number" && value === 0 ? "bg-gray-300" : color;
+  const iconBg =
+    typeof value === "number" && value === 0 ? "bg-gray-300" : color;
   return (
     <Link
       to={href}
@@ -149,12 +150,18 @@ export default function AdminDashboard() {
             to="/admin/inquiries"
             className="flex items-center gap-4 bg-white border border-gray-200 p-5 hover:border-brand-black transition-colors"
           >
-            <div className={`w-10 h-10 flex items-center justify-center shrink-0 ${(inquiries?.length ?? 0) > 0 ? "bg-red-500" : "bg-gray-300"}`}>
+            <div
+              className={`w-10 h-10 flex items-center justify-center shrink-0 ${(inquiries?.length ?? 0) > 0 ? "bg-red-500" : "bg-gray-300"}`}
+            >
               <MessageSquare size={16} className="text-white" />
             </div>
             <div>
-              <p className="font-sans text-2xl font-light text-brand-black">{inquiries?.length ?? 0}</p>
-              <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">신규 문의</p>
+              <p className="font-sans text-2xl font-light text-brand-black">
+                {inquiries?.length ?? 0}
+              </p>
+              <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">
+                신규 문의
+              </p>
             </div>
           </Link>
 
@@ -163,12 +170,18 @@ export default function AdminDashboard() {
             to="/admin/reservations"
             className="flex items-center gap-4 bg-white border border-gray-200 p-5 hover:border-brand-black transition-colors"
           >
-            <div className={`w-10 h-10 flex items-center justify-center shrink-0 ${(newReservations?.length ?? 0) > 0 ? "bg-teal-600" : "bg-gray-300"}`}>
+            <div
+              className={`w-10 h-10 flex items-center justify-center shrink-0 ${(newReservations?.length ?? 0) > 0 ? "bg-teal-600" : "bg-gray-300"}`}
+            >
               <Calendar size={16} className="text-white" />
             </div>
             <div>
-              <p className="font-sans text-2xl font-light text-brand-black">{newReservations?.length ?? 0}</p>
-              <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">신규 예약</p>
+              <p className="font-sans text-2xl font-light text-brand-black">
+                {newReservations?.length ?? 0}
+              </p>
+              <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">
+                신규 예약
+              </p>
             </div>
           </Link>
 
@@ -182,8 +195,12 @@ export default function AdminDashboard() {
                 <Globe2 size={16} className="text-white" />
               </div>
               <div>
-                <p className="font-sans text-2xl font-light text-brand-black">{pendingExternal}</p>
-                <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">승인 대기 콘텐츠</p>
+                <p className="font-sans text-2xl font-light text-brand-black">
+                  {pendingExternal}
+                </p>
+                <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">
+                  승인 대기 콘텐츠
+                </p>
               </div>
             </Link>
           )}

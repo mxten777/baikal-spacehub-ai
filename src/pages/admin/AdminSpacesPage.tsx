@@ -25,7 +25,9 @@ const spaceSchema = z.object({
   size_sqm: z.coerce.number().min(0).optional(),
   rental_price_per_hour: z.coerce.number().min(0).optional(),
   is_available: z.boolean().default(true),
-  publish_status: z.enum(["draft", "published", "archived"]).default("published"),
+  publish_status: z
+    .enum(["draft", "published", "archived"])
+    .default("published"),
   sort_order: z.coerce.number().default(0),
   cover_image_url: z.string().nullable().optional(),
   photo_project_id: z.string().nullable().optional(),
@@ -84,7 +86,7 @@ function SpaceForm({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
   const handleUploadingChange = (uploading: boolean) =>
-    setUploadingCount((prev) => uploading ? prev + 1 : Math.max(0, prev - 1));
+    setUploadingCount((prev) => (uploading ? prev + 1 : Math.max(0, prev - 1)));
   const originalImageUrl = useRef<string | null>(
     initialData?.cover_image_url ?? null,
   );
@@ -617,7 +619,8 @@ export default function AdminSpacesPage() {
                         <span
                           className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${PUBLISH_STATUS_COLORS[space.publish_status] ?? "bg-gray-100 text-gray-500"}`}
                         >
-                          {PUBLISH_STATUS_LABELS[space.publish_status] ?? space.publish_status}
+                          {PUBLISH_STATUS_LABELS[space.publish_status] ??
+                            space.publish_status}
                         </span>
                         <span
                           className={`inline-block px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${space.is_available ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-400"}`}

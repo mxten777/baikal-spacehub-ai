@@ -195,7 +195,9 @@ function ProgramForm({
           .catch(console.error);
       }
     } catch (e) {
-      setSubmitError(e instanceof Error ? e.message : "저장 중 오류가 발생했습니다.");
+      setSubmitError(
+        e instanceof Error ? e.message : "저장 중 오류가 발생했습니다.",
+      );
     } finally {
       setSaving(false);
     }
@@ -379,7 +381,8 @@ function ProgramForm({
                 메인 노출 (Featured)
               </span>
             </label>
-          </div>          {/* 공개 여부 — 행사 진행 상태(status)와 독립 */}
+          </div>{" "}
+          {/* 공개 여부 — 행사 진행 상태(status)와 독립 */}
           <div className="border border-gray-100 rounded p-4 space-y-3 bg-gray-50">
             <p className="text-xs font-sans font-semibold text-gray-500 tracking-wider uppercase">
               홈페이지 공개 설정
@@ -406,7 +409,8 @@ function ProgramForm({
                 className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
               />
             </div>
-          </div>          <ImageUploadField
+          </div>{" "}
+          <ImageUploadField
             label="대표 이미지"
             value={coverImageUrl}
             onChange={(url) => setValue("cover_image_url", url)}
@@ -417,7 +421,9 @@ function ProgramForm({
           />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             {submitError && (
-              <p className="flex-1 text-xs text-red-500 font-sans">{submitError}</p>
+              <p className="flex-1 text-xs text-red-500 font-sans">
+                {submitError}
+              </p>
             )}
             <button
               type="button"

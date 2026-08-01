@@ -229,7 +229,9 @@ function SlideForm({
           .catch(console.error);
       }
     } catch (e) {
-      setSubmitError(e instanceof Error ? e.message : "저장 중 오류가 발생했습니다.");
+      setSubmitError(
+        e instanceof Error ? e.message : "저장 중 오류가 발생했습니다.",
+      );
     } finally {
       setSaving(false);
     }
@@ -437,7 +439,9 @@ function SlideForm({
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             {submitError && (
-              <p className="flex-1 text-xs text-red-500 font-sans">{submitError}</p>
+              <p className="flex-1 text-xs text-red-500 font-sans">
+                {submitError}
+              </p>
             )}
             <button
               type="button"

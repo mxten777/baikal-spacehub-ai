@@ -1,7 +1,11 @@
 import { useState, useRef } from "react";
 import { Upload, X, Loader2, Images } from "lucide-react";
 import { supabase } from "../../lib/supabase";
-import { ALLOWED_TYPES, MAX_SIZE_MB, getExtension } from "../../services/photoStorage";
+import {
+  ALLOWED_TYPES,
+  MAX_SIZE_MB,
+  getExtension,
+} from "../../services/photoStorage";
 import PhotoPickerModal from "./PhotoPickerModal";
 import type { ProjectCategory } from "../../types";
 

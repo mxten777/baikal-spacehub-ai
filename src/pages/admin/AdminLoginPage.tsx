@@ -72,7 +72,6 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-brand-black flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
-
         {/* ─ 브랜드 영역 ─ */}
         <div className="text-center mb-10">
           <h1 className="font-display text-3xl font-light text-white tracking-widest">
@@ -146,7 +145,6 @@ export default function AdminLoginPage() {
             </button>
           </form>
         </div>
-
       </div>
     </div>
   );

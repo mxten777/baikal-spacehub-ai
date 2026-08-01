@@ -24,7 +24,9 @@ const archiveSchema = z.object({
   cover_image_url: z.string().nullable().optional(),
   images: z.array(z.string()).optional(),
   is_featured: z.boolean().default(false),
-  publish_status: z.enum(["draft", "published", "archived"]).default("published"),
+  publish_status: z
+    .enum(["draft", "published", "archived"])
+    .default("published"),
 });
 
 type ArchiveFormData = z.infer<typeof archiveSchema>;
@@ -89,7 +91,10 @@ function ArchiveItemForm({
           cover_image_url: initialData.cover_image_url ?? null,
           images: initialData.images ?? [],
           is_featured: initialData.is_featured,
-          publish_status: (initialData.publish_status ?? "published") as "draft" | "published" | "archived",
+          publish_status: (initialData.publish_status ?? "published") as
+            | "draft"
+            | "published"
+            | "archived",
         }
       : {
           title: "",
@@ -329,7 +334,8 @@ function ArchiveItemForm({
                 메인 노출 (Featured)
               </span>
             </label>
-          </div>          <div>
+          </div>{" "}
+          <div>
             <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
               공개 상태
             </label>
@@ -341,7 +347,8 @@ function ArchiveItemForm({
               <option value="published">공개</option>
               <option value="archived">보관</option>
             </select>
-          </div>          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+          </div>{" "}
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             {submitError && (
               <p className="flex-1 text-xs text-red-500 font-sans">
                 {submitError}

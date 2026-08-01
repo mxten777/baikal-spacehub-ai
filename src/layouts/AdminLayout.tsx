@@ -47,34 +47,100 @@ type NavEntry = NavItem | NavSection;
 
 // operator 메뉴 (THE LIT 운영자)
 const operatorNav: NavEntry[] = [
-  { label: "대시보드", href: "/admin", icon: LayoutDashboard, exact: true, permission: "dashboard" },
+  {
+    label: "대시보드",
+    href: "/admin",
+    icon: LayoutDashboard,
+    exact: true,
+    permission: "dashboard",
+  },
   { label: "공간", href: "/admin/spaces", icon: Image, permission: "spaces" },
-  { label: "프로그램", href: "/admin/programs", icon: Calendar, permission: "programs" },
-  { label: "웨딩", href: "/admin/wedding", icon: Heart, permission: "wedding_photos" },
-  { label: "아카이브", href: "/admin/archive", icon: Archive, permission: "archive" },
+  {
+    label: "프로그램",
+    href: "/admin/programs",
+    icon: Calendar,
+    permission: "programs",
+  },
+  {
+    label: "웨딩",
+    href: "/admin/wedding",
+    icon: Heart,
+    permission: "wedding_photos",
+  },
+  {
+    label: "아카이브",
+    href: "/admin/archive",
+    icon: Archive,
+    permission: "archive",
+  },
   { label: "블로그", href: "/admin/blog", icon: FileText, permission: "blog" },
   { label: "미디어", href: "/admin/media", icon: Video, permission: "media" },
   { type: "section", label: "고객 관리" },
-  { label: "문의 관리", href: "/admin/inquiries", icon: MessageSquare, permission: "inquiries" },
-  { label: "예약 관리", href: "/admin/reservations", icon: CalendarCheck, permission: "reservations" },
+  {
+    label: "문의 관리",
+    href: "/admin/inquiries",
+    icon: MessageSquare,
+    permission: "inquiries",
+  },
+  {
+    label: "예약 관리",
+    href: "/admin/reservations",
+    icon: CalendarCheck,
+    permission: "reservations",
+  },
   { type: "section", label: "운영" },
-  { label: "운영 정보", href: "/admin/operator-settings", icon: SlidersHorizontal, permission: "operator_settings" },
+  {
+    label: "운영 정보",
+    href: "/admin/operator-settings",
+    icon: SlidersHorizontal,
+    permission: "operator_settings",
+  },
 ];
 
 // super_admin 전용 추가 메뉴 (바이칼시스템즈)
 const superAdminNav: NavEntry[] = [
   { type: "section", label: "사이트 구성" },
-  { label: "사이트 구성", href: "/admin/site", icon: MonitorPlay, permission: "hero" },
+  {
+    label: "사이트 구성",
+    href: "/admin/site",
+    icon: MonitorPlay,
+    permission: "hero",
+  },
   { type: "section", label: "사용자 및 권한" },
-  { label: "사용자 관리", href: "/admin/users", icon: Users, permission: "users" },
+  {
+    label: "사용자 관리",
+    href: "/admin/users",
+    icon: Users,
+    permission: "users",
+  },
   { type: "section", label: "시스템" },
-  { label: "시스템 설정", href: "/admin/settings", icon: Settings, permission: "system_settings" },
+  {
+    label: "시스템 설정",
+    href: "/admin/settings",
+    icon: Settings,
+    permission: "system_settings",
+  },
   { type: "section", label: "외부 콘텐츠" },
-  { label: "외부 콘텐츠 관리", href: "/admin/external", icon: Globe2, permission: "content_sources" },
+  {
+    label: "외부 콘텐츠 관리",
+    href: "/admin/external",
+    icon: Globe2,
+    permission: "content_sources",
+  },
   { type: "section", label: "데이터 및 스토리지" },
-  { label: "촬영 프로젝트 관리", href: "/admin/photo-projects", icon: FolderKanban, permission: "photo_projects" },
+  {
+    label: "촬영 프로젝트 관리",
+    href: "/admin/photo-projects",
+    icon: FolderKanban,
+    permission: "photo_projects",
+  },
   { type: "section", label: "AI 기능" },
-  { label: "사진 큐레이터", href: "/admin/photo-curator", icon: Images, permission: "photo_curator" },
+  {
+    label: "사진 큐레이터",
+    href: "/admin/photo-curator",
+    icon: Images,
+    permission: "photo_curator",
+  },
 ];
 
 function filterNavEntries(
@@ -204,7 +270,7 @@ export default function AdminLayout() {
                   <span className="tracking-wide">{entry.label}</span>
                 )}
               </NavLink>
-            )
+            ),
           )}
         </nav>
 
