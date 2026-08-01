@@ -37,13 +37,14 @@ function StatCard({
   href,
   color = "bg-brand-black",
 }: StatCardProps) {
+  const iconBg = typeof value === "number" && value === 0 ? "bg-gray-300" : color;
   return (
     <Link
       to={href}
       className="group block bg-white rounded-none border border-gray-200 p-6 hover:border-brand-black transition-colors"
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-10 h-10 ${color} flex items-center justify-center`}>
+        <div className={`w-10 h-10 ${iconBg} flex items-center justify-center`}>
           <Icon size={18} className="text-white" />
         </div>
         <TrendingUp
@@ -89,13 +90,6 @@ export default function AdminDashboard() {
           href: "/admin/hero",
           color: "bg-indigo-600",
         },
-        {
-          icon: Info,
-          label: "About 페이지",
-          value: "편집",
-          href: "/admin/about",
-          color: "bg-teal-600",
-        },
       ]
     : [];
 
@@ -103,58 +97,35 @@ export default function AdminDashboard() {
     ...superAdminStats,
     {
       icon: Image,
-      label: "Spaces",
+      label: "공간",
       value: spaces?.length ?? 0,
       href: "/admin/spaces",
       color: "bg-blue-600",
     },
     {
       icon: Calendar,
-      label: "Programs",
+      label: "프로그램",
       value: programs?.length ?? 0,
       href: "/admin/programs",
       color: "bg-purple-600",
     },
     {
       icon: Archive,
-      label: "Archive",
+      label: "아카이브",
       value: archives?.length ?? 0,
       href: "/admin/archive",
       color: "bg-orange-500",
     },
     {
       icon: FileText,
-      label: "Blog Posts",
+      label: "블로그",
       value: blogResult?.count ?? 0,
       href: "/admin/blog",
       color: "bg-green-600",
     },
-    {
-      icon: MessageSquare,
-      label: "Pending Inquiries",
-      value: inquiries?.length ?? 0,
-      href: "/admin/inquiries",
-      color: "bg-red-500",
-    },
-    {
-      icon: Calendar,
-      label: "신규 예약",
-      value: newReservations?.length ?? 0,
-      href: "/admin/reservations",
-      color: "bg-teal-600",
-    },
-    {
-      icon: Globe2,
-      label: "Pending Content",
-      value: pendingExternal,
-      href: "/admin/external",
-      color: pendingExternal > 0 ? "bg-amber-500" : "bg-gray-400",
-    },
   ];
 
-  const visibleStats = isSuperAdmin
-    ? stats
-    : stats.filter((s) => s.label !== "Pending Content");
+  const visibleStats = stats;
 
   return (
     <div>
@@ -241,18 +212,18 @@ export default function AdminDashboard() {
           <div className="space-y-3">
             {[
               {
-                label: "New Program",
+                label: "프로그램 추가",
                 href: "/admin/programs",
                 icon: Calendar,
               },
               {
-                label: "New Blog Post",
+                label: "블로그 추가",
                 href: "/admin/blog",
                 icon: FileText,
               },
-              { label: "New Space", href: "/admin/spaces", icon: Image },
+              { label: "공간 추가", href: "/admin/spaces", icon: Image },
               {
-                label: "View Inquiries",
+                label: "문의 관리",
                 href: "/admin/inquiries",
                 icon: MessageSquare,
               },
@@ -269,7 +240,7 @@ export default function AdminDashboard() {
                       icon: Info,
                     },
                     {
-                      label: "Content Sources",
+                      label: "콘텐츠 소스 관리",
                       href: "/admin/content-sources",
                       icon: Globe2,
                     },
@@ -298,7 +269,7 @@ export default function AdminDashboard() {
               to="/admin/inquiries"
               className="text-xs text-brand-accent hover:underline"
             >
-              View all
+              전체 보기
             </Link>
           </div>
           {inquiries && inquiries.length > 0 ? (
