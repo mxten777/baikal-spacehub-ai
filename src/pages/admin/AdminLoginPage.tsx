@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useForm } from "react-hook-form";
+import { Loader2 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 
 interface LoginForm {
@@ -69,53 +70,83 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-black flex items-center justify-center px-4">
+    <div className="min-h-screen bg-brand-black flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
+
+        {/* ─ 브랜드 영역 ─ */}
         <div className="text-center mb-10">
-          <h1 className="font-display text-2xl font-light text-white tracking-widest">
+          <h1 className="font-display text-3xl font-light text-white tracking-widest">
             The Lit
           </h1>
-          <p className="font-sans text-xs text-white/40 tracking-widest uppercase mt-2">
+          <p className="font-sans text-[10px] text-white/30 tracking-wider uppercase mt-2">
             Admin
+          </p>
+          <p className="font-sans text-[10px] text-white/20 tracking-wide mt-4">
+            공간과 콘텐츠 운영을 위한 관리자 시스템
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
-            <label className="block text-xs font-sans font-medium tracking-widest uppercase text-white/40 mb-2">
-              Email
-            </label>
-            <input
-              {...register("email")}
-              type="email"
-              required
-              className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/30 focus:border-white focus:outline-none font-sans text-sm"
-              placeholder="admin@thelit.kr"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-sans font-medium tracking-widest uppercase text-white/40 mb-2">
-              Password
-            </label>
-            <input
-              {...register("password")}
-              type="password"
-              required
-              className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/30 focus:border-white focus:outline-none font-sans text-sm"
-              placeholder="••••••••"
-            />
-          </div>
+        {/* ─ 폼 패널 ─ */}
+        <div className="border border-white/10 bg-white/[0.02] px-8 py-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div>
+              <label
+                htmlFor="login-email"
+                className="block text-[10px] font-sans font-medium tracking-wider uppercase text-white/40 mb-2"
+              >
+                Email
+              </label>
+              <input
+                id="login-email"
+                {...register("email")}
+                type="email"
+                autoComplete="email"
+                required
+                className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/25 focus:border-brand-accent focus:outline-none font-sans text-sm transition-colors [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#0A0A0A] [&:-webkit-autofill]:[caret-color:white]"
+                placeholder="admin@thelit.kr"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="login-password"
+                className="block text-[10px] font-sans font-medium tracking-wider uppercase text-white/40 mb-2"
+              >
+                Password
+              </label>
+              <input
+                id="login-password"
+                {...register("password")}
+                type="password"
+                autoComplete="current-password"
+                required
+                className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/25 focus:border-brand-accent focus:outline-none font-sans text-sm transition-colors [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#0A0A0A] [&:-webkit-autofill]:[caret-color:white]"
+                placeholder="••••••••"
+              />
+            </div>
 
-          {error && <p className="text-red-400 text-sm font-sans">{error}</p>}
+            {error && (
+              <div className="border-l-2 border-red-400 pl-3 py-0.5">
+                <p className="text-red-400/80 text-xs font-sans">{error}</p>
+              </div>
+            )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-4 bg-white text-brand-black font-sans text-sm font-medium tracking-widest uppercase transition-all hover:bg-brand-accent hover:text-white disabled:opacity-50"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-white text-brand-black font-sans text-xs font-medium tracking-widest uppercase transition-all hover:bg-brand-accent hover:text-white disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={13} className="animate-spin" />
+                  <span>Signing In</span>
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </button>
+          </form>
+        </div>
+
       </div>
     </div>
   );
