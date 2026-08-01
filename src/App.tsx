@@ -48,6 +48,9 @@ const AdminContentSourcesPage = lazy(
 const AdminExternalContentPage = lazy(
   () => import("./pages/admin/AdminExternalContentPage"),
 );
+const AdminExternalPage = lazy(
+  () => import("./pages/admin/AdminExternalPage"),
+);
 const AdminReservationsPage = lazy(
   () => import("./pages/admin/AdminReservationsPage"),
 );
@@ -62,6 +65,7 @@ const AdminPhotoAssetExplorerPage = lazy(
 );
 const AdminHeroPage = lazy(() => import("./pages/admin/AdminHeroPage"));
 const AdminAboutPage = lazy(() => import("./pages/admin/AdminAboutPage"));
+const AdminSitePage = lazy(() => import("./pages/admin/AdminSitePage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
 const AdminWeddingPage = lazy(() => import("./pages/admin/AdminWeddingPage"));
 
@@ -152,13 +156,62 @@ export default function App() {
                     </RequireAuth>
                   }
                 >
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="spaces" element={<AdminSpacesPage />} />
-                  <Route path="programs" element={<AdminProgramsPage />} />
-                  <Route path="archive" element={<AdminArchivePage />} />
-                  <Route path="blog" element={<AdminBlogPage />} />
-                  <Route path="media" element={<AdminMediaPage />} />
-                  <Route path="inquiries" element={<AdminInquiriesPage />} />
+                  <Route
+                    index
+                    element={
+                      <RoleGuard permission="dashboard">
+                        <AdminDashboard />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="spaces"
+                    element={
+                      <RoleGuard permission="spaces">
+                        <AdminSpacesPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="programs"
+                    element={
+                      <RoleGuard permission="programs">
+                        <AdminProgramsPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="archive"
+                    element={
+                      <RoleGuard permission="archive">
+                        <AdminArchivePage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="blog"
+                    element={
+                      <RoleGuard permission="blog">
+                        <AdminBlogPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="media"
+                    element={
+                      <RoleGuard permission="media">
+                        <AdminMediaPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="inquiries"
+                    element={
+                      <RoleGuard permission="inquiries">
+                        <AdminInquiriesPage />
+                      </RoleGuard>
+                    }
+                  />
                   <Route
                     path="wedding"
                     element={
@@ -202,6 +255,14 @@ export default function App() {
                     }
                   />
                   <Route
+                    path="site"
+                    element={
+                      <RoleGuard permission="hero">
+                        <AdminSitePage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
                     path="users"
                     element={
                       <RoleGuard permission="users">
@@ -222,6 +283,14 @@ export default function App() {
                     element={
                       <RoleGuard permission="external_content">
                         <AdminExternalContentPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="external"
+                    element={
+                      <RoleGuard permission="content_sources">
+                        <AdminExternalPage />
                       </RoleGuard>
                     }
                   />

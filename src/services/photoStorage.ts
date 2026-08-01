@@ -11,7 +11,7 @@ export interface UploadResult {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getExtension(mimeType: string): string {
+export function getExtension(mimeType: string): string {
   const map: Record<string, string> = {
     "image/jpeg": "jpg",
     "image/png": "png",
@@ -85,8 +85,9 @@ export function buildProjectStoragePath(
 
 // ─── Project Upload ────────────────────────────────────────────────────────────
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE_MB = 20;
+export const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+export const MAX_SIZE_MB = 20;
+export const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 export interface UploadProjectPhotoParams {
   projectId: string;

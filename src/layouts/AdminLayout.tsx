@@ -13,7 +13,6 @@ import {
   ChevronLeft,
   Menu,
   X,
-  Rss,
   Globe2,
   UserCircle2,
   Users,
@@ -31,6 +30,7 @@ import type { Permission } from "../types";
 import { ROLE_LABELS } from "../lib/permissions";
 
 interface NavItem {
+  type?: "item";
   label: string;
   href: string;
   icon: React.ElementType;
@@ -38,108 +38,59 @@ interface NavItem {
   permission: Permission;
 }
 
+interface NavSection {
+  type: "section";
+  label: string;
+}
+
+type NavEntry = NavItem | NavSection;
+
 // operator 메뉴 (THE LIT 운영자)
-const operatorNav: NavItem[] = [
-  {
-    label: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-    exact: true,
-    permission: "dashboard",
-  },
-  { label: "Spaces", href: "/admin/spaces", icon: Image, permission: "spaces" },
-  {
-    label: "Programs",
-    href: "/admin/programs",
-    icon: Calendar,
-    permission: "programs",
-  },
-  {
-    label: "Archive",
-    href: "/admin/archive",
-    icon: Archive,
-    permission: "archive",
-  },
-  { label: "Blog", href: "/admin/blog", icon: FileText, permission: "blog" },
-  { label: "Media", href: "/admin/media", icon: Video, permission: "media" },
-  {
-    label: "Inquiries",
-    href: "/admin/inquiries",
-    icon: MessageSquare,
-    permission: "inquiries",
-  },
-  {
-    label: "웨딩 사진",
-    href: "/admin/wedding",
-    icon: Heart,
-    permission: "wedding_photos",
-  },
-  {
-    label: "운영 정보",
-    href: "/admin/operator-settings",
-    icon: SlidersHorizontal,
-    permission: "operator_settings",
-  },
+const operatorNav: NavEntry[] = [
+  { label: "대시보드", href: "/admin", icon: LayoutDashboard, exact: true, permission: "dashboard" },
+  { label: "공간", href: "/admin/spaces", icon: Image, permission: "spaces" },
+  { label: "프로그램", href: "/admin/programs", icon: Calendar, permission: "programs" },
+  { label: "웨딩", href: "/admin/wedding", icon: Heart, permission: "wedding_photos" },
+  { label: "아카이브", href: "/admin/archive", icon: Archive, permission: "archive" },
+  { label: "블로그", href: "/admin/blog", icon: FileText, permission: "blog" },
+  { label: "미디어", href: "/admin/media", icon: Video, permission: "media" },
+  { type: "section", label: "고객 관리" },
+  { label: "문의 관리", href: "/admin/inquiries", icon: MessageSquare, permission: "inquiries" },
+  { label: "예약 관리", href: "/admin/reservations", icon: CalendarCheck, permission: "reservations" },
+  { type: "section", label: "운영" },
+  { label: "운영 정보", href: "/admin/operator-settings", icon: SlidersHorizontal, permission: "operator_settings" },
 ];
 
 // super_admin 전용 추가 메뉴 (바이칼시스템즈)
-const superAdminNav: NavItem[] = [
-  {
-    label: "Hero 슬라이드",
-    href: "/admin/hero",
-    icon: MonitorPlay,
-    permission: "hero",
-  },
-  {
-    label: "About 페이지",
-    href: "/admin/about",
-    icon: UserCircle2,
-    permission: "about",
-  },
-  {
-    label: "시스템 설정",
-    href: "/admin/settings",
-    icon: Settings,
-    permission: "system_settings",
-  },
-  {
-    label: "사용자 관리",
-    href: "/admin/users",
-    icon: Users,
-    permission: "users",
-  },
-  // Phase 2 예정 (super_admin에게만 노출)
-  {
-    label: "콘텐츠 소스",
-    href: "/admin/content-sources",
-    icon: Rss,
-    permission: "content_sources",
-  },
-  {
-    label: "외부 콘텐츠",
-    href: "/admin/external-content",
-    icon: Globe2,
-    permission: "external_content",
-  },
-  {
-    label: "예약 관리",
-    href: "/admin/reservations",
-    icon: CalendarCheck,
-    permission: "reservations",
-  },
-  {
-    label: "이미지 자산 관리",
-    href: "/admin/photo-projects",
-    icon: FolderKanban,
-    permission: "photo_projects",
-  },
-  {
-    label: "AI 사진 큐레이터",
-    href: "/admin/photo-curator",
-    icon: Images,
-    permission: "photo_curator",
-  },
+const superAdminNav: NavEntry[] = [
+  { type: "section", label: "사이트 구성" },
+  { label: "사이트 구성", href: "/admin/site", icon: MonitorPlay, permission: "hero" },
+  { type: "section", label: "사용자 및 권한" },
+  { label: "사용자 관리", href: "/admin/users", icon: Users, permission: "users" },
+  { type: "section", label: "시스템" },
+  { label: "시스템 설정", href: "/admin/settings", icon: Settings, permission: "system_settings" },
+  { type: "section", label: "외부 콘텐츠" },
+  { label: "외부 콘텐츠 관리", href: "/admin/external", icon: Globe2, permission: "content_sources" },
+  { type: "section", label: "데이터 및 스토리지" },
+  { label: "촬영 프로젝트 관리", href: "/admin/photo-projects", icon: FolderKanban, permission: "photo_projects" },
+  { type: "section", label: "AI 기능" },
+  { label: "사진 큐레이터", href: "/admin/photo-curator", icon: Images, permission: "photo_curator" },
 ];
+
+function filterNavEntries(
+  entries: NavEntry[],
+  canAccess: (p: Permission) => boolean,
+): NavEntry[] {
+  const withItems = entries.filter((e) => {
+    if (e.type === "section") return true;
+    return canAccess(e.permission);
+  });
+  return withItems.filter((e, i) => {
+    if (e.type !== "section") return true;
+    const next = withItems[i + 1];
+    return next !== undefined && next.type !== "section";
+  });
+}
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -175,10 +126,10 @@ export default function AdminLayout() {
     emailDisplay.length > 20 ? emailDisplay.slice(0, 18) + "…" : emailDisplay;
 
   // role 기반 nav 조합: operator 메뉴 + super_admin 추가 메뉴
-  const visibleNav = [
-    ...operatorNav.filter((item) => hasPermission(item.permission)),
-    ...(isSuperAdmin ? superAdminNav : []),
-  ];
+  const visibleNav = filterNavEntries(
+    [...operatorNav, ...(isSuperAdmin ? superAdminNav : [])],
+    hasPermission,
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -221,29 +172,40 @@ export default function AdminLayout() {
 
         {/* Nav items */}
         <nav className="flex-1 overflow-y-auto py-4">
-          {visibleNav.map((item) => (
-            <NavLink
-              key={item.href}
-              to={item.href}
-              end={item.exact}
-              onClick={() => {
-                if (window.innerWidth < 768) setSidebarOpen(false);
-              }}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 text-sm font-sans transition-colors duration-150
-                ${
-                  isActive
-                    ? "bg-brand-accent/20 text-brand-accent border-r-2 border-brand-accent"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                }`
-              }
-            >
-              <item.icon size={18} className="shrink-0" />
-              {sidebarOpen && (
-                <span className="tracking-wide">{item.label}</span>
-              )}
-            </NavLink>
-          ))}
+          {visibleNav.map((entry, i) =>
+            entry.type === "section" ? (
+              <div key={`section-${i}`} className="mt-3 mb-1">
+                <div className="border-t border-white/10 mx-2 mb-2" />
+                {sidebarOpen && (
+                  <span className="px-4 text-[10px] font-medium uppercase tracking-widest text-white/30 select-none">
+                    {entry.label}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <NavLink
+                key={entry.href}
+                to={entry.href}
+                end={entry.exact}
+                onClick={() => {
+                  if (window.innerWidth < 768) setSidebarOpen(false);
+                }}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 text-sm font-sans transition-colors duration-150
+                  ${
+                    isActive
+                      ? "bg-brand-accent/20 text-brand-accent border-r-2 border-brand-accent"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`
+                }
+              >
+                <entry.icon size={18} className="shrink-0" />
+                {sidebarOpen && (
+                  <span className="tracking-wide">{entry.label}</span>
+                )}
+              </NavLink>
+            )
+          )}
         </nav>
 
         {/* User info + Logout */}

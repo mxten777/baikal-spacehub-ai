@@ -1,12 +1,11 @@
 import { useState, useRef } from "react";
 import { Upload, X, Loader2, Images } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import { ALLOWED_TYPES, MAX_SIZE_MB, getExtension } from "../../services/photoStorage";
 import PhotoPickerModal from "./PhotoPickerModal";
 import type { ProjectCategory } from "../../types";
 
 const BUCKET = "photos";
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE_MB = 20;
 
 interface ImageUploadFieldProps {
   label?: string;
@@ -56,12 +55,7 @@ export default function ImageUploadField({
     const timeoutId = setTimeout(() => abort.abort(), 30_000);
     try {
       // No async auth call — path uses UUID, access control handled by RLS
-      const extMap: Record<string, string> = {
-        "image/jpeg": "jpg",
-        "image/png": "png",
-        "image/webp": "webp",
-      };
-      const ext = extMap[file.type] ?? "jpg";
+      const ext = getExtension(file.type);
       const path = `cms/${folder}/${crypto.randomUUID()}.${ext}`;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

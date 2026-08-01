@@ -94,6 +94,9 @@ function SlideForm({
   onWarning?: (msg: string) => void;
 }) {
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [uploadingDesktopImage, setUploadingDesktopImage] = useState(false);
+  const [uploadingMobileImage, setUploadingMobileImage] = useState(false);
   const originalDesktopUrl = useRef<string | null>(
     initialData?.desktop_image_url ?? null,
   );
@@ -105,6 +108,7 @@ function SlideForm({
     uploadedUrlsRef.current.add(url);
   };
   const handleClose = () => {
+    setSubmitError(null);
     const toClean = new Set(uploadedUrlsRef.current);
     uploadedUrlsRef.current.clear();
     onClose();
@@ -171,6 +175,7 @@ function SlideForm({
 
   const onSubmit = async (data: SlideFormData) => {
     setSaving(true);
+    setSubmitError(null);
     try {
       const payload: HeroSlideCreateInput = {
         title: data.title,
@@ -223,6 +228,8 @@ function SlideForm({
           })
           .catch(console.error);
       }
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : "저장 중 오류가 발생했습니다.");
     } finally {
       setSaving(false);
     }
@@ -297,6 +304,7 @@ function SlideForm({
               label="데스크톱 이미지"
               value={desktopImageUrl}
               onChange={(url) => setValue("desktop_image_url", url)}
+              onUploadingChange={setUploadingDesktopImage}
               onUploadComplete={handleUploadComplete}
               folder="hero/desktop"
             />
@@ -304,6 +312,7 @@ function SlideForm({
               label="모바일 이미지 (선택)"
               value={mobileImageUrl}
               onChange={(url) => setValue("mobile_image_url", url)}
+              onUploadingChange={setUploadingMobileImage}
               onUploadComplete={handleUploadComplete}
               folder="hero/mobile"
             />
@@ -427,6 +436,9 @@ function SlideForm({
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+            {submitError && (
+              <p className="flex-1 text-xs text-red-500 font-sans">{submitError}</p>
+            )}
             <button
               type="button"
               onClick={handleClose}
@@ -436,7 +448,7 @@ function SlideForm({
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || uploadingDesktopImage || uploadingMobileImage}
               className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50"
             >
               {saving ? (

@@ -40,6 +40,7 @@ function BlogPostForm({
   onWarning?: (msg: string) => void;
 }) {
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const originalImageUrl = useRef<string | null>(
     initialData?.cover_image_url ?? null,
@@ -49,6 +50,7 @@ function BlogPostForm({
     uploadedUrlsRef.current.add(url);
   };
   const handleClose = () => {
+    setSubmitError(null);
     const toClean = new Set(uploadedUrlsRef.current);
     uploadedUrlsRef.current.clear();
     onClose();
@@ -103,6 +105,7 @@ function BlogPostForm({
 
   const onSubmit = async (data: PostFormData) => {
     setSaving(true);
+    setSubmitError(null);
     try {
       // published_at 처리:
       // - 공개 전환 시 기존 published_at이 있으면 유지, 없으면 service에서 자동 설정
@@ -145,6 +148,8 @@ function BlogPostForm({
           })
           .catch(console.error);
       }
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : "저장 중 오류가 발생했습니다.");
     } finally {
       setSaving(false);
     }
@@ -275,6 +280,9 @@ function BlogPostForm({
             </label>
           </div>
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+            {submitError && (
+              <p className="flex-1 text-xs text-red-500 font-sans">{submitError}</p>
+            )}
             <button
               type="button"
               onClick={handleClose}

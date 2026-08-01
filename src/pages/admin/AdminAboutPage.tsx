@@ -8,6 +8,7 @@ import type {
   BrandIntroPillar,
 } from "../../types";
 import { Check, Loader2, Plus, Trash2, GripVertical } from "lucide-react";
+import { deleteStorageFilesByUrls } from "../../lib/storage";
 
 type SectionKey =
   | "hero"
@@ -28,6 +29,7 @@ export default function AdminAboutPage() {
   const [savingSection, setSavingSection] = useState<SectionKey | null>(null);
   const [savedSection, setSavedSection] = useState<SectionKey | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 8000);
@@ -49,11 +51,41 @@ export default function AdminAboutPage() {
       if (!content) return;
       setSavingSection(section);
       setError(null);
+      // Capture image URLs that will be replaced by this save
+      const urlsToDelete = new Set<string>();
+      if (
+        "hero_image_url" in updates &&
+        content.hero_image_url &&
+        updates.hero_image_url !== content.hero_image_url
+      ) {
+        urlsToDelete.add(content.hero_image_url);
+      }
+      if (
+        "brand_intro_image_url" in updates &&
+        content.brand_intro_image_url &&
+        updates.brand_intro_image_url !== content.brand_intro_image_url
+      ) {
+        urlsToDelete.add(content.brand_intro_image_url);
+      }
       try {
         const updated = await aboutService.update(content.id, updates);
         setContent(updated);
         setSavedSection(section);
         setTimeout(() => setSavedSection(null), 2000);
+        if (urlsToDelete.size > 0) {
+          deleteStorageFilesByUrls(urlsToDelete)
+            .then((result) => {
+              if (result.failed.length > 0) {
+                result.failed.forEach(({ url, error }) =>
+                  console.error("[Storage cleanup]", url, error),
+                );
+                setStorageWarning(
+                  "내용은 저장되었지만 일부 이전 이미지 파일을 정리하지 못했습니다.",
+                );
+              }
+            })
+            .catch(console.error);
+        }
       } catch (e) {
         setError(e instanceof Error ? e.message : "저장에 실패했습니다.");
       } finally {
@@ -82,6 +114,19 @@ export default function AdminAboutPage() {
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 text-sm text-red-700">
           {error}
+        </div>
+      )}
+
+      {storageWarning && (
+        <div className="flex items-center justify-between gap-3 mb-6 px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-sans">
+          <span>{storageWarning}</span>
+          <button
+            type="button"
+            onClick={() => setStorageWarning(null)}
+            className="shrink-0 text-amber-600 hover:text-amber-900"
+          >
+            ✕
+          </button>
         </div>
       )}
 

@@ -6,6 +6,9 @@ import { useBlogPosts } from "../../hooks/useData";
 import { useExternalContentStats } from "../../hooks/useData";
 import { useHeroSlides } from "../../hooks/useData";
 import { useAuth } from "../../hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { reservationsService } from "../../services/reservations";
+import { isSupabaseConfigured } from "../../lib/supabase";
 import {
   Image,
   Calendar,
@@ -66,6 +69,12 @@ export default function AdminDashboard() {
   const { data: blogResult } = useBlogPosts({ limit: 1 });
   const { data: extStats } = useExternalContentStats();
   const { data: heroSlides } = useHeroSlides();
+  const { data: newReservations } = useQuery({
+    queryKey: ["reservations", { status: "new" }],
+    queryFn: () => reservationsService.getAll({ status: "new" }),
+    staleTime: 1 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  });
   const { isSuperAdmin } = useAuth();
 
   const pendingExternal =
@@ -128,13 +137,24 @@ export default function AdminDashboard() {
       color: "bg-red-500",
     },
     {
+      icon: Calendar,
+      label: "신규 예약",
+      value: newReservations?.length ?? 0,
+      href: "/admin/reservations",
+      color: "bg-teal-600",
+    },
+    {
       icon: Globe2,
       label: "Pending Content",
       value: pendingExternal,
-      href: "/admin/external-content",
+      href: "/admin/external",
       color: pendingExternal > 0 ? "bg-amber-500" : "bg-gray-400",
     },
   ];
+
+  const visibleStats = isSuperAdmin
+    ? stats
+    : stats.filter((s) => s.label !== "Pending Content");
 
   return (
     <div>
@@ -147,32 +167,90 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        {stats.map((stat) => (
-          <StatCard key={stat.label} {...stat} />
-        ))}
+      {/* ── 오늘 할 일 (My Work) ── */}
+      <div className="mb-10">
+        <h2 className="font-sans text-sm font-semibold text-brand-black tracking-wider uppercase mb-4">
+          오늘 할 일
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* 신규 문의 */}
+          <Link
+            to="/admin/inquiries"
+            className="flex items-center gap-4 bg-white border border-gray-200 p-5 hover:border-brand-black transition-colors"
+          >
+            <div className={`w-10 h-10 flex items-center justify-center shrink-0 ${(inquiries?.length ?? 0) > 0 ? "bg-red-500" : "bg-gray-300"}`}>
+              <MessageSquare size={16} className="text-white" />
+            </div>
+            <div>
+              <p className="font-sans text-2xl font-light text-brand-black">{inquiries?.length ?? 0}</p>
+              <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">신규 문의</p>
+            </div>
+          </Link>
+
+          {/* 신규 예약 */}
+          <Link
+            to="/admin/reservations"
+            className="flex items-center gap-4 bg-white border border-gray-200 p-5 hover:border-brand-black transition-colors"
+          >
+            <div className={`w-10 h-10 flex items-center justify-center shrink-0 ${(newReservations?.length ?? 0) > 0 ? "bg-teal-600" : "bg-gray-300"}`}>
+              <Calendar size={16} className="text-white" />
+            </div>
+            <div>
+              <p className="font-sans text-2xl font-light text-brand-black">{newReservations?.length ?? 0}</p>
+              <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">신규 예약</p>
+            </div>
+          </Link>
+
+          {/* 승인 대기 콘텐츠 — super_admin, 건수 있을 때만 표시 */}
+          {isSuperAdmin && pendingExternal > 0 && (
+            <Link
+              to="/admin/external"
+              className="flex items-center gap-4 bg-white border border-gray-200 p-5 hover:border-brand-black transition-colors"
+            >
+              <div className="w-10 h-10 bg-amber-500 flex items-center justify-center shrink-0">
+                <Globe2 size={16} className="text-white" />
+              </div>
+              <div>
+                <p className="font-sans text-2xl font-light text-brand-black">{pendingExternal}</p>
+                <p className="font-sans text-xs text-gray-500 tracking-widest uppercase">승인 대기 콘텐츠</p>
+              </div>
+            </Link>
+          )}
+          {/* 최근 오류 — 데이터 없음, 숨김 */}
+        </div>
       </div>
 
-      {/* Quick actions */}
+      {/* ── 주요 현황 (Statistics) ── */}
+      <div className="mb-10">
+        <h2 className="font-sans text-sm font-semibold text-brand-black tracking-wider uppercase mb-4">
+          주요 현황
+        </h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {visibleStats.map((stat) => (
+            <StatCard key={stat.label} {...stat} />
+          ))}
+        </div>
+      </div>
+
+      {/* ── 빠른 작업 / 최근 활동 ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white border border-gray-200 p-6">
           <h2 className="font-sans text-sm font-semibold text-brand-black tracking-wider uppercase mb-4">
-            Quick Actions
+            빠른 작업
           </h2>
           <div className="space-y-3">
             {[
               {
                 label: "New Program",
-                href: "/admin/programs/new",
+                href: "/admin/programs",
                 icon: Calendar,
               },
               {
                 label: "New Blog Post",
-                href: "/admin/blog/new",
+                href: "/admin/blog",
                 icon: FileText,
               },
-              { label: "New Space", href: "/admin/spaces/new", icon: Image },
+              { label: "New Space", href: "/admin/spaces", icon: Image },
               {
                 label: "View Inquiries",
                 href: "/admin/inquiries",
@@ -210,11 +288,11 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Recent inquiries preview */}
+        {/* ── 최근 활동 ── */}
         <div className="bg-white border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-sans text-sm font-semibold text-brand-black tracking-wider uppercase">
-              Pending Inquiries
+              최근 활동
             </h2>
             <Link
               to="/admin/inquiries"

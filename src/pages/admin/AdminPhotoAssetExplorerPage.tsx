@@ -500,7 +500,7 @@ export default function AdminPhotoAssetExplorerPage() {
     );
   }
 
-  if (isError || !project) {
+  if (isError) {
     return (
       <div className="space-y-4">
         <Link
@@ -512,6 +512,23 @@ export default function AdminPhotoAssetExplorerPage() {
         </Link>
         <p className="font-sans text-sm text-red-600">
           프로젝트를 불러오지 못했습니다.
+        </p>
+      </div>
+    );
+  }
+
+  if (!project) {
+    return (
+      <div className="space-y-4">
+        <Link
+          to="/admin/photo-projects"
+          className="inline-flex items-center gap-1.5 text-sm font-sans text-gray-500 hover:text-brand-black transition-colors"
+        >
+          <ArrowLeft size={14} />
+          Photo Projects
+        </Link>
+        <p className="font-sans text-sm text-red-600">
+          존재하지 않는 프로젝트입니다.
         </p>
       </div>
     );

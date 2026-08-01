@@ -82,6 +82,9 @@ function SpaceForm({
 }) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [uploadingCount, setUploadingCount] = useState(0);
+  const handleUploadingChange = (uploading: boolean) =>
+    setUploadingCount((prev) => uploading ? prev + 1 : Math.max(0, prev - 1));
   const originalImageUrl = useRef<string | null>(
     initialData?.cover_image_url ?? null,
   );
@@ -397,6 +400,7 @@ function SpaceForm({
             label="대표 이미지"
             value={coverImageUrl}
             onChange={(url) => setValue("cover_image_url", url)}
+            onUploadingChange={handleUploadingChange}
             onUploadComplete={handleUploadComplete}
             folder="spaces"
             photoPickerCategory="space"
@@ -433,6 +437,7 @@ function SpaceForm({
                     label=""
                     value={url}
                     onChange={(u) => updateImageSlot(idx, u)}
+                    onUploadingChange={handleUploadingChange}
                     onUploadComplete={handleUploadComplete}
                     folder="spaces"
                     photoPickerCategory="space"
@@ -461,7 +466,7 @@ function SpaceForm({
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || uploadingCount > 0}
               className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50"
             >
               {saving ? (

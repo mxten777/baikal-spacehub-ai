@@ -224,7 +224,7 @@ export default function AdminPhotoProjectsPage() {
             Photo Projects
           </h1>
           <p className="font-sans text-sm text-gray-500 mt-1">
-            이미지 자산 프로젝트 관리
+            프로젝트별 사진과 콘텐츠 연결 자산을 관리합니다.
           </p>
         </div>
         <button

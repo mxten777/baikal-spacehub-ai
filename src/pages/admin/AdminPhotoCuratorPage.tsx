@@ -2,7 +2,7 @@
 import { Images, Upload, X, CheckCircle2, Loader2, ImageOff, Star, Heart, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
-import { uploadPhoto, deletePhoto, extractImageDimensions } from "../../services/photoStorage";
+import { uploadPhoto, deletePhoto, extractImageDimensions, ALLOWED_TYPES, MAX_SIZE_BYTES } from "../../services/photoStorage";
 import {
   createPhotoRecord,
   getPhotoRecords,
@@ -45,7 +45,7 @@ const SORT_OPTIONS: { value: PhotoSortOption; label: string }[] = [
 const AI_STATUS_CONFIG: Record<AiAnalysisStatus, {
   badge: string; badgeClass: string; buttonLabel: string; buttonClass: string;
 }> = {
-  not_requested: { badge: "미분석",   badgeClass: "text-brand-muted border-brand-border",           buttonLabel: "AI 분석",       buttonClass: "text-brand-muted hover:text-brand-black" },
+  not_requested: { badge: "미분석",   badgeClass: "text-brand-muted border-brand-border",           buttonLabel: "준비 중",       buttonClass: "text-brand-muted cursor-not-allowed" },
   processing:    { badge: "분석 중",  badgeClass: "text-blue-700 bg-blue-50 border-blue-200",        buttonLabel: "분석 중...",    buttonClass: "text-blue-600 cursor-not-allowed" },
   completed:     { badge: "분석 완료",badgeClass: "text-green-700 bg-green-50 border-green-200",     buttonLabel: "결과 보기",     buttonClass: "text-green-700 hover:text-green-900" },
   error:         { badge: "분석 실패",badgeClass: "text-rose-700 bg-rose-50 border-rose-200",        buttonLabel: "다시 시도",     buttonClass: "text-rose-600 hover:text-rose-800" },
@@ -65,8 +65,6 @@ interface UploadCounts { total: number; pending: number; uploading: number; succ
 
 // ─── Constants & helpers ──────────────────────────────────────────────────────
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE_BYTES = 20 * 1024 * 1024;
 const CONCURRENCY = 3;
 
 const UPLOAD_STATUS_CONFIG: Record<UploadStatus, { label: string; cls: string }> = {
@@ -433,7 +431,7 @@ function PhotoRecordCard({ record, isDeleting, isToggling, onEdit, onDelete, onR
             </span>
             <button
               onClick={record.ai_analysis_status === "completed" ? onEdit : onAnalyze}
-              disabled={record.ai_analysis_status === "processing" || isDeleting}
+              disabled={record.ai_analysis_status === "not_requested" || record.ai_analysis_status === "processing" || isDeleting}
               className={`text-2xs font-sans transition-colors disabled:opacity-40 ${AI_STATUS_CONFIG[record.ai_analysis_status].buttonClass}`}
             >
               {AI_STATUS_CONFIG[record.ai_analysis_status].buttonLabel}
@@ -844,7 +842,7 @@ export default function AdminPhotoCuratorPage() {
           <h1 className="font-sans text-xl font-semibold text-brand-black">AI 사진 큐레이터</h1>
           <span className="text-xs font-sans text-green-700 bg-green-50 border border-green-200 px-2 py-0.5">Sprint 4 · 분류 & 검색</span>
         </div>
-        <p className="font-sans text-sm text-brand-muted">THE LIT의 공간, 프로그램, 행사 사진을 업로드하고 관리할 수 있습니다.</p>
+        <p className="font-sans text-sm text-brand-muted">사진 분석과 메타데이터 생성 작업을 관리합니다.</p>
       </div>
 
       {/* Tabs */}

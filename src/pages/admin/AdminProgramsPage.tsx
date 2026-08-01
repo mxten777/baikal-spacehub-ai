@@ -96,6 +96,8 @@ function ProgramForm({
   onWarning?: (msg: string) => void;
 }) {
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const originalImageUrl = useRef<string | null>(
     initialData?.cover_image_url ?? null,
   );
@@ -104,6 +106,7 @@ function ProgramForm({
     uploadedUrlsRef.current.add(url);
   };
   const handleClose = () => {
+    setSubmitError(null);
     const toClean = new Set(uploadedUrlsRef.current);
     uploadedUrlsRef.current.clear();
     onClose();
@@ -153,6 +156,7 @@ function ProgramForm({
 
   const onSubmit = async (data: ProgramFormData) => {
     setSaving(true);
+    setSubmitError(null);
     try {
       const payload = {
         ...data,
@@ -190,6 +194,8 @@ function ProgramForm({
           })
           .catch(console.error);
       }
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : "저장 중 오류가 발생했습니다.");
     } finally {
       setSaving(false);
     }
@@ -404,11 +410,15 @@ function ProgramForm({
             label="대표 이미지"
             value={coverImageUrl}
             onChange={(url) => setValue("cover_image_url", url)}
+            onUploadingChange={setUploadingImage}
             onUploadComplete={handleUploadComplete}
             folder="programs"
             photoPickerCategory={null}
           />
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+            {submitError && (
+              <p className="flex-1 text-xs text-red-500 font-sans">{submitError}</p>
+            )}
             <button
               type="button"
               onClick={handleClose}
@@ -418,7 +428,7 @@ function ProgramForm({
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || uploadingImage}
               className="flex items-center gap-2 px-6 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50"
             >
               {saving ? (

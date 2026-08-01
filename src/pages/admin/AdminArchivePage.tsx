@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { archiveService } from "../../services/archive";
 import type { ArchiveItem } from "../../types";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploadField from "../../components/admin/ImageUploadField";
+import { deleteStorageFilesByUrls } from "../../lib/storage";
 import PhotoPickerModal from "../../components/admin/PhotoPickerModal";
 import AdminQueryError from "../../components/admin/AdminQueryError";
 
@@ -32,15 +33,43 @@ function ArchiveItemForm({
   initialData,
   onClose,
   onSuccess,
+  onWarning,
 }: {
   initialData?: ArchiveItem;
   onClose: () => void;
   onSuccess: () => void;
+  onWarning?: (msg: string) => void;
 }) {
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [galleryPickerOpen, setGalleryPickerOpen] = useState(false);
+  const uploadedUrlsRef = useRef<Set<string>>(new Set());
+  const originalCoverUrlRef = useRef<string | null>(
+    initialData?.cover_image_url ?? null,
+  );
+  const handleUploadComplete = (url: string) => {
+    uploadedUrlsRef.current.add(url);
+  };
+  const handleClose = () => {
+    const toClean = new Set(uploadedUrlsRef.current);
+    uploadedUrlsRef.current.clear();
+    onClose();
+    if (toClean.size > 0) {
+      deleteStorageFilesByUrls(toClean)
+        .then((result) => {
+          if (result.failed.length > 0) {
+            result.failed.forEach(({ url, error }) =>
+              console.error("[Storage cleanup]", url, error),
+            );
+            onWarning?.(
+              "화면은 닫혀진만 일부 임시 이미지 파일을 정리하지 못했습니다.",
+            );
+          }
+        })
+        .catch(console.error);
+    }
+  };
   const {
     register,
     handleSubmit,
@@ -92,7 +121,29 @@ function ArchiveItemForm({
       } else {
         await archiveService.create(payload);
       }
+      const savedUrl = payload.cover_image_url;
+      if (savedUrl !== null) uploadedUrlsRef.current.delete(savedUrl);
+      const toClean = new Set(uploadedUrlsRef.current);
+      uploadedUrlsRef.current.clear();
+      const prevUrl = originalCoverUrlRef.current;
+      originalCoverUrlRef.current = savedUrl;
       onSuccess();
+      const urlsToDelete = new Set(toClean);
+      if (prevUrl !== null && prevUrl !== savedUrl) urlsToDelete.add(prevUrl);
+      if (urlsToDelete.size > 0) {
+        deleteStorageFilesByUrls(urlsToDelete)
+          .then((result) => {
+            if (result.failed.length > 0) {
+              result.failed.forEach(({ url, error }) =>
+                console.error("[Storage cleanup]", url, error),
+              );
+              onWarning?.(
+                "내용은 저장되었지만 일부 임시 이미지 파일을 정리하지 못했습니다.",
+              );
+            }
+          })
+          .catch(console.error);
+      }
     } catch (e) {
       console.error("[AdminArchivePage] save error:", e);
       setSubmitError(
@@ -111,7 +162,7 @@ function ArchiveItemForm({
             {initialData ? "아카이브 편집" : "아카이브 추가"}
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-gray-400 hover:text-brand-black"
           >
             <X size={20} />
@@ -263,6 +314,7 @@ function ArchiveItemForm({
             value={coverImageUrl}
             onChange={(url) => setValue("cover_image_url", url)}
             onUploadingChange={setUploadingImage}
+            onUploadComplete={handleUploadComplete}
             folder="archive"
             photoPickerCategory="archive"
           />{" "}
@@ -297,7 +349,7 @@ function ArchiveItemForm({
             )}
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-4 py-2 text-sm font-sans text-gray-600 hover:text-brand-black"
             >
               취소
@@ -337,6 +389,7 @@ export default function AdminArchivePage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ArchiveItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ["archive"] });
@@ -359,6 +412,18 @@ export default function AdminArchivePage() {
 
   return (
     <div>
+      {storageWarning && (
+        <div className="flex items-center justify-between gap-3 mb-4 px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-sans">
+          <span>{storageWarning}</span>
+          <button
+            type="button"
+            onClick={() => setStorageWarning(null)}
+            className="shrink-0 text-amber-600 hover:text-amber-900"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display text-2xl font-light text-brand-black">
@@ -490,6 +555,7 @@ export default function AdminArchivePage() {
             setEditingItem(null);
           }}
           onSuccess={handleSuccess}
+          onWarning={setStorageWarning}
         />
       )}
     </div>
