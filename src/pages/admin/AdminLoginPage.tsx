@@ -101,8 +101,8 @@ export default function AdminLoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/25 focus:border-brand-accent focus:outline-none font-sans text-sm transition-colors [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#0A0A0A] [&:-webkit-autofill]:[caret-color:white]"
-                placeholder="admin@thelit.kr"
+                className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/25 focus:border-brand-accent focus:outline-none font-sans text-sm transition-colors [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#0A0A0A] [&:-webkit-autofill]:[-webkit-text-fill-color:white] [&:-webkit-autofill]:[caret-color:white]"
+                placeholder="litadmin@naver.com"
               />
             </div>
             <div>
@@ -118,7 +118,7 @@ export default function AdminLoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/25 focus:border-brand-accent focus:outline-none font-sans text-sm transition-colors [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#0A0A0A] [&:-webkit-autofill]:[caret-color:white]"
+                className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/25 focus:border-brand-accent focus:outline-none font-sans text-sm transition-colors [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#0A0A0A] [&:-webkit-autofill]:[-webkit-text-fill-color:white] [&:-webkit-autofill]:[caret-color:white]"
                 placeholder="••••••••"
               />
             </div>
