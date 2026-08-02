@@ -20,6 +20,16 @@ function getWebPSrc(url: string | null | undefined): string | null {
   return null;
 }
 
+/** Appends ?v=<updatedAt> (or &v=...) to bust browser cache on image replacement. */
+function withVersion(
+  url: string | null | undefined,
+  updatedAt: string | null | undefined,
+): string | null | undefined {
+  if (!url || !updatedAt) return url;
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}v=${updatedAt}`;
+}
+
 // ─── Button helper ────────────────────────────────────────────────────────────
 
 function HeroButton({
@@ -112,8 +122,14 @@ export default function HeroSection() {
     preloadedRef.current = true;
     displaySlides.slice(1).forEach((s) => {
       // Use WebP URL when available — must match what <picture> actually requests
-      const desktop = getWebPSrc(s.desktop_image_url) ?? s.desktop_image_url;
-      const mobile = getWebPSrc(s.mobile_image_url) ?? s.mobile_image_url;
+      const desktop = withVersion(
+        getWebPSrc(s.desktop_image_url) ?? s.desktop_image_url,
+        s.updated_at,
+      );
+      const mobile = withVersion(
+        getWebPSrc(s.mobile_image_url) ?? s.mobile_image_url,
+        s.updated_at,
+      );
       [desktop, mobile].forEach((url) => {
         if (!url) return;
         const link = document.createElement("link");
@@ -149,8 +165,16 @@ export default function HeroSection() {
     <section className="relative h-screen-safe min-h-[600px] overflow-hidden bg-brand-black">
       {/* Background slides — all rendered for instant preload, crossfade via opacity */}
       {displaySlides.map((s, i) => {
-        const desktopWebP = getWebPSrc(s.desktop_image_url);
-        const mobileWebP = getWebPSrc(s.mobile_image_url);
+        const desktopWebP = withVersion(
+          getWebPSrc(s.desktop_image_url),
+          s.updated_at,
+        );
+        const mobileWebP = withVersion(
+          getWebPSrc(s.mobile_image_url),
+          s.updated_at,
+        );
+        const deskUrl = withVersion(s.desktop_image_url, s.updated_at);
+        const mobUrl = withVersion(s.mobile_image_url, s.updated_at);
         return (
           <motion.div
             key={s.id}
@@ -173,15 +197,12 @@ export default function HeroSection() {
                 />
               )}
               {s.mobile_image_url && (
-                <source
-                  media="(max-width: 767px)"
-                  srcSet={s.mobile_image_url}
-                />
+                <source media="(max-width: 767px)" srcSet={mobUrl || ""} />
               )}
               {/* Desktop: WebP first, then original via <img> fallback */}
               {desktopWebP && <source srcSet={desktopWebP} type="image/webp" />}
               <img
-                src={s.desktop_image_url || ""}
+                src={deskUrl || ""}
                 alt=""
                 aria-hidden="true"
                 className={
