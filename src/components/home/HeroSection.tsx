@@ -7,6 +7,19 @@ import { useActiveHeroSlides, usePublicPhotos } from "../../hooks/useData";
 import { HERO_FALLBACK_SLIDES } from "../../data/heroFallbackData";
 import type { HeroSlide } from "../../types";
 
+// ─── Image optimization helpers ───────────────────────────────────────────────
+
+/**
+ * Returns a WebP source URL for local /images/ paths only.
+ * Supabase Storage render endpoint is excluded — not available on free plan (ORB blocked).
+ */
+function getWebPSrc(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith("/images/"))
+    return url.replace(/\.(jpe?g|png)$/i, ".webp");
+  return null;
+}
+
 // ─── Button helper ────────────────────────────────────────────────────────────
 
 function HeroButton({
@@ -82,13 +95,35 @@ export default function HeroSection() {
   };
 
   // Initial autoplay — runs once; interval reads ref which stays current
-
   useEffect(() => {
     startAuto();
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
+
+  // Blur placeholder → fade-in: track when first image finishes loading
+  const [firstLoaded, setFirstLoaded] = useState(false);
+  const preloadedRef = useRef(false);
+
+  // After first image loads: queue remaining slides for background preload
+  useEffect(() => {
+    if (!firstLoaded || preloadedRef.current) return;
+    preloadedRef.current = true;
+    displaySlides.slice(1).forEach((s) => {
+      // Use WebP URL when available — must match what <picture> actually requests
+      const desktop = getWebPSrc(s.desktop_image_url) ?? s.desktop_image_url;
+      const mobile = getWebPSrc(s.mobile_image_url) ?? s.mobile_image_url;
+      [desktop, mobile].forEach((url) => {
+        if (!url) return;
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = url;
+        document.head.appendChild(link);
+      });
+    });
+  }, [firstLoaded, displaySlides]);
 
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
   const safeIdx = Math.min(current, displaySlides.length - 1);
@@ -97,7 +132,7 @@ export default function HeroSection() {
   // 로딩 중: 정적 배경이미지 표시 (즉시 로드) — 검은화면 방지
   if (!slide) {
     return (
-      <section className="relative h-screen-safe min-h-[600px] overflow-hidden">
+      <section className="relative h-screen-safe min-h-[600px] overflow-hidden bg-brand-black">
         <img
           src="/images/hero/hero-1.jpg"
           alt=""
@@ -111,35 +146,66 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative h-screen-safe min-h-[600px] overflow-hidden">
+    <section className="relative h-screen-safe min-h-[600px] overflow-hidden bg-brand-black">
       {/* Background slides — all rendered for instant preload, crossfade via opacity */}
-      {displaySlides.map((s, i) => (
-        <motion.div
-          key={s.id}
-          className="absolute inset-0"
-          initial={false}
-          animate={{
-            opacity: i === safeIdx ? 1 : 0,
-            scale: i === safeIdx ? 1 : 1.04,
-          }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          style={{ zIndex: i === safeIdx ? 1 : 0 }}
-        >
-          <picture>
-            {s.mobile_image_url && (
-              <source media="(max-width: 767px)" srcSet={s.mobile_image_url} />
-            )}
-            <img
-              src={s.desktop_image_url || ""}
-              alt=""
-              className="w-full h-full object-cover"
-              aria-hidden="true"
-              fetchPriority={i === 0 ? "high" : "low"}
-            />
-          </picture>
-          <div className="absolute inset-0 bg-gradient-overlay-center" />
-        </motion.div>
-      ))}
+      {displaySlides.map((s, i) => {
+        const desktopWebP = getWebPSrc(s.desktop_image_url);
+        const mobileWebP = getWebPSrc(s.mobile_image_url);
+        return (
+          <motion.div
+            key={s.id}
+            className="absolute inset-0"
+            initial={false}
+            animate={{
+              opacity: i === safeIdx ? 1 : 0,
+              scale: i === safeIdx ? 1 : 1.04,
+            }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            style={{ zIndex: i === safeIdx ? 1 : 0 }}
+          >
+            <picture>
+              {/* Mobile: WebP first, then original */}
+              {mobileWebP && (
+                <source
+                  media="(max-width: 767px)"
+                  srcSet={mobileWebP}
+                  type="image/webp"
+                />
+              )}
+              {s.mobile_image_url && (
+                <source
+                  media="(max-width: 767px)"
+                  srcSet={s.mobile_image_url}
+                />
+              )}
+              {/* Desktop: WebP first, then original via <img> fallback */}
+              {desktopWebP && <source srcSet={desktopWebP} type="image/webp" />}
+              <img
+                src={s.desktop_image_url || ""}
+                alt=""
+                aria-hidden="true"
+                className={
+                  i === 0
+                    ? `w-full h-full object-cover transition-opacity duration-700${firstLoaded ? "" : " opacity-0"}`
+                    : "w-full h-full object-cover"
+                }
+                fetchPriority={i === 0 ? "high" : "low"}
+                loading={i === 0 ? "eager" : undefined}
+                decoding={i === 0 ? "sync" : "async"}
+                ref={
+                  i === 0
+                    ? (el) => {
+                        if (el?.complete) setFirstLoaded(true);
+                      }
+                    : undefined
+                }
+                onLoad={i === 0 ? () => setFirstLoaded(true) : undefined}
+              />
+            </picture>
+            <div className="absolute inset-0 bg-gradient-overlay-center" />
+          </motion.div>
+        );
+      })}
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-end h-full container-wide hero-content-pad">
