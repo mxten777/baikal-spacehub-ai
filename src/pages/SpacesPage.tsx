@@ -135,7 +135,7 @@ export default function SpacesPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`shrink-0 px-5 py-2.5 font-sans text-[10.5px] font-medium tracking-[0.16em] uppercase transition-all duration-300
+              className={`shrink-0 px-5 py-2 font-sans text-xs font-medium tracking-widest uppercase transition-all duration-300
                 ${
                   activeCategory === cat
                     ? "bg-brand-black text-white"
@@ -278,7 +278,7 @@ export default function SpacesPage() {
             맞춤형 공간 구성과 특별 요청 사항은 문의 주세요.
           </p>
           <Link to="/reservation" className="btn-primary">
-            대관 문의하기 <ArrowRight size={16} />
+            대관 문의 <ArrowRight size={16} />
           </Link>
         </div>
       </section>

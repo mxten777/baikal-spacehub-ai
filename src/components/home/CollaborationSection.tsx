@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import AnimatedSection from "../common/AnimatedSection";
+import SectionHeader from "../common/SectionHeader";
 
 const collabTypes = [
   {
@@ -40,14 +41,13 @@ export default function CollaborationSection() {
       <div className="container-wide relative">
         <AnimatedSection animation="fade-up">
           <div className="text-center mb-16">
-            <p className="eyebrow text-white/40 mb-4">Collaboration</p>
-            <h2 className="font-display text-display font-light text-white mb-4">
-              함께 만드는 특별한 경험
-            </h2>
-            <p className="font-sans text-base text-white/60 max-w-xl mx-auto">
-              브랜드, 기업, 크리에이터와 함께 더릿만의 특별한 공간에서 잊을 수
-              없는 경험을 만들어 드립니다.
-            </p>
+            <SectionHeader
+              eyebrow="Collaboration"
+              title="함께 만드는 특별한 경험"
+              subtitle="브랜드, 기업, 크리에이터와 함께 더릿만의 특별한 공간에서 잊을 수 없는 경험을 만들어 드립니다."
+              align="center"
+              light
+            />
           </div>
         </AnimatedSection>
 

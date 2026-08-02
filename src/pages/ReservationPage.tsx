@@ -707,7 +707,7 @@ function Step4({
             disabled={loading}
             className="flex items-center gap-2 px-8 py-3 bg-brand-black text-white font-sans text-[10px] tracking-[0.2em] uppercase hover:bg-brand-charcoal transition-colors disabled:opacity-50"
           >
-            {loading ? "접수 중..." : "예약 요청 접수"}
+            {loading ? "접수 중..." : "예약 신청"}
             {!loading && <Check size={14} />}
           </button>
         </div>
@@ -741,7 +741,7 @@ function Step5({
       </motion.div>
 
       <h1 className="font-display text-[2.4rem] font-light text-brand-black mb-3 leading-tight">
-        예약 요청이
+        예약 신청이
         <br />
         접수되었습니다
       </h1>
@@ -994,7 +994,7 @@ export default function ReservationPage() {
   return (
     <>
       <Helmet>
-        <title>공간 예약 — The Lit</title>
+        <title>예약 신청 — The Lit</title>
         <meta
           name="description"
           content="더릿 복합문화공간 예약 — 전시, 공연, 브랜드 행사, 촬영 등 맞춤 공간을 예약하세요."
@@ -1010,7 +1010,7 @@ export default function ReservationPage() {
       <div className="pt-20 pb-6 px-6 lg:px-0 border-b border-brand-line">
         <div className="container-narrow">
           <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-brand-subtle">
-            The Lit — 공간 예약
+            The Lit — 예약 신청
           </p>
         </div>
       </div>

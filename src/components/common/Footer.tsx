@@ -21,7 +21,8 @@ const footerLinks = {
     { label: "Blog", href: "/blog" },
     { label: "Media", href: "/media" },
     { label: "Contact", href: "/contact" },
-    { label: "Reserve Space", href: "/reservation" },
+    { label: "Wedding", href: "/wedding" },
+    { label: "예약 신청", href: "/reservation" },
   ],
 };
 

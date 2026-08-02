@@ -100,7 +100,7 @@ export function hasMinRole(
 
 /** role 표시 레이블 */
 export const ROLE_LABELS: Record<AdminRole, string> = {
-  super_admin: "공급자 관리자",
+  super_admin: "시스템 관리자",
   operator: "운영자",
-  viewer: "뷰어",
+  viewer: "조회자",
 };

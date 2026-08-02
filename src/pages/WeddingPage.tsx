@@ -180,7 +180,7 @@ export default function WeddingPage() {
       />
 
       {/* ── 1. Hero ──────────────────────────────────────────────────────────── */}
-      <section className="relative h-screen min-h-[600px] flex items-end">
+      <section className="relative h-screen-safe min-h-[600px] flex items-end">
         {/* Background image */}
         <div className="absolute inset-0 overflow-hidden">
           <img

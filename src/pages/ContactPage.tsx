@@ -156,7 +156,7 @@ export default function ContactPage() {
                 <form onSubmit={handleWeddingSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                      <label className="form-label">
                         이름 <span className="text-brand-accent">*</span>
                       </label>
                       <input
@@ -166,12 +166,12 @@ export default function ContactPage() {
                         onChange={(e) =>
                           setWForm((f) => ({ ...f, name: e.target.value }))
                         }
-                        className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black placeholder:text-brand-subtle focus:outline-none focus:border-brand-black transition-colors"
+                        className="form-input"
                         placeholder="홍길동"
                       />
                     </div>
                     <div>
-                      <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                      <label className="form-label">
                         연락처
                       </label>
                       <input
@@ -180,14 +180,14 @@ export default function ContactPage() {
                         onChange={(e) =>
                           setWForm((f) => ({ ...f, phone: e.target.value }))
                         }
-                        className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black placeholder:text-brand-subtle focus:outline-none focus:border-brand-black transition-colors"
+                        className="form-input"
                         placeholder="010-0000-0000"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                      <label className="form-label">
                         이메일
                       </label>
                       <input
@@ -196,12 +196,12 @@ export default function ContactPage() {
                         onChange={(e) =>
                           setWForm((f) => ({ ...f, email: e.target.value }))
                         }
-                        className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black placeholder:text-brand-subtle focus:outline-none focus:border-brand-black transition-colors"
+                        className="form-input"
                         placeholder="example@email.com"
                       />
                     </div>
                     <div>
-                      <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                      <label className="form-label">
                         희망 날짜
                       </label>
                       <input
@@ -213,12 +213,12 @@ export default function ContactPage() {
                             preferred_date: e.target.value,
                           }))
                         }
-                        className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black focus:outline-none focus:border-brand-black transition-colors"
+                        className="form-input"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block font-sans text-[9px] tracking-widest uppercase text-brand-subtle mb-2">
+                    <label className="form-label">
                       문의 내용 <span className="text-brand-accent">*</span>
                     </label>
                     <textarea
@@ -228,7 +228,7 @@ export default function ContactPage() {
                       onChange={(e) =>
                         setWForm((f) => ({ ...f, message: e.target.value }))
                       }
-                      className="w-full border border-brand-line bg-transparent px-4 py-3 font-sans text-sm text-brand-black placeholder:text-brand-subtle focus:outline-none focus:border-brand-black transition-colors resize-none"
+                      className="form-input resize-none"
                       placeholder="예식 규모, 희망 공간, 기타 문의사항을 자유롭게 적어주세요."
                     />
                   </div>

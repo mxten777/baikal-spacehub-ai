@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
+import SectionHeader from "../components/common/SectionHeader";
 import { aboutService, DEFAULT_ABOUT } from "../services/about";
 import type { AboutContent } from "../types";
 import SeoHead from "../components/common/SeoHead";
@@ -178,10 +179,12 @@ export default function AboutPage() {
       <section className="section-padding bg-brand-black">
         <div className="container-wide">
           <AnimatedSection animation="fade-up" className="text-center mb-16">
-            <p className="eyebrow text-white/40 mb-4">{values_eyebrow}</p>
-            <h2 className="font-display text-display font-light text-white">
-              {values_title}
-            </h2>
+            <SectionHeader
+              eyebrow={values_eyebrow}
+              title={values_title}
+              align="center"
+              light
+            />
           </AnimatedSection>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
