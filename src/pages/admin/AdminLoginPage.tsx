@@ -23,16 +23,21 @@ export default function AdminLoginPage() {
   const onSubmit = async ({ email, password }: LoginForm) => {
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setLoading(false);
-    if (error) {
-      setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+      }
+      // 성공 시 navigate 불필요 — AuthContext.user+role 설정 후 위 redirect 조건이 발동
+    } catch {
+      // cold start 타임아웃 등 네트워크 예외 시에도 setLoading(false) 보장
+      setError("네트워크 오류가 발생했습니다. 잠시 후 다시 시도하세요.");
+    } finally {
+      setLoading(false);
     }
-    // navigate 불필요 — signInWithPassword 성공 시 AuthContext.user가 설정되고
-    // 위의 if (user) 조건이 트리거되어 /admin으로 자동 이동
   };
 
   return (
