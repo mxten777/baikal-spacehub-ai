@@ -227,11 +227,12 @@ export default function AdminLayout() {
         {/* Sidebar header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-white/10 shrink-0">
           {sidebarOpen && (
-            <Link
-              to="/"
-              className="font-display text-lg font-light tracking-wider text-white"
-            >
-              The Lit
+            <Link to="/" aria-label="The Lit — 홈">
+              <img
+                src="/images/thelitlogo_red.png"
+                alt="The Lit"
+                className="h-9"
+              />
             </Link>
           )}
           <button

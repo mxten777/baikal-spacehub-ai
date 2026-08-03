@@ -201,11 +201,7 @@ export default function AdminInquiriesPage() {
         ))}
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center h-40">
-          <Loader2 size={24} className="animate-spin text-brand-muted" />
-        </div>
-      ) : isError ? (
+      {isError ? (
         <AdminQueryError onRetry={refetch} />
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
@@ -231,7 +227,15 @@ export default function AdminInquiriesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {inquiries && inquiries.length > 0 ? (
+              {isLoading ? (
+                Array.from({ length: 5 }, (_, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td colSpan={99} className="px-6 py-4">
+                      <div className="h-3 bg-gray-100 rounded animate-pulse w-3/4" />
+                    </td>
+                  </tr>
+                ))
+              ) : inquiries && inquiries.length > 0 ? (
                 inquiries.map((inq) => (
                   <tr
                     key={inq.id}

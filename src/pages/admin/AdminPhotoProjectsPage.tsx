@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2,
   Plus,
   X,
   Pencil,
@@ -260,15 +259,7 @@ export default function AdminPhotoProjectsPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center h-40 gap-3">
-          <Loader2 size={24} className="animate-spin text-brand-muted" />
-          <p className="font-sans text-xs text-gray-400">
-            연결 중… 최초 접속 시 잠시 걸릴 수 있습니다
-          </p>
-        </div>
-      ) : (
-        <div className="bg-white border border-gray-200 overflow-hidden">
+      <div className="bg-white border border-gray-200 overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
@@ -293,7 +284,15 @@ export default function AdminPhotoProjectsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {projects && projects.length > 0 ? (
+              {isLoading ? (
+                Array.from({ length: 5 }, (_, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td colSpan={99} className="px-6 py-4">
+                      <div className="h-3 bg-gray-100 rounded animate-pulse w-3/4" />
+                    </td>
+                  </tr>
+                ))
+              ) : projects && projects.length > 0 ? (
                 projects.map((project) => (
                   <ProjectRow
                     key={project.id}
@@ -316,7 +315,6 @@ export default function AdminPhotoProjectsPage() {
             </tbody>
           </table>
         </div>
-      )}
 
       {/* Create Modal */}
       {showCreateModal && (

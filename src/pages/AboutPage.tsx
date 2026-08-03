@@ -218,8 +218,8 @@ export default function AboutPage() {
               {cta_description}
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link to="/programs" className="btn-primary">
-                프로그램 보기 <ArrowRight size={16} />
+              <Link to="/archive" className="btn-primary">
+                아카이브 보기 <ArrowRight size={16} />
               </Link>
               <Link to="/contact" className="btn-secondary">
                 문의하기

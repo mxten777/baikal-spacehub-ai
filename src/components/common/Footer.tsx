@@ -14,7 +14,6 @@ const footerLinks = {
   explore: [
     { label: "About", href: "/about" },
     { label: "Spaces", href: "/spaces" },
-    { label: "Programs", href: "/programs" },
     { label: "Archive", href: "/archive" },
   ],
   connect: [

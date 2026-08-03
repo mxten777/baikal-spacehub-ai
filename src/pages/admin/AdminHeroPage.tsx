@@ -580,14 +580,7 @@ export default function AdminHeroPage() {
         </button>
       </div>
 
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center h-48 gap-2">
-          <Loader2 size={24} className="animate-spin text-brand-muted" />
-          <p className="font-sans text-xs text-gray-400">
-            데이터를 불러오는 중입니다…
-          </p>
-        </div>
-      ) : isError ? (
+      {isError ? (
         <div className="text-center py-16 border border-dashed border-red-200">
           <p className="font-sans text-sm text-red-400 mb-3">
             데이터를 불러오지 못했습니다.
@@ -599,6 +592,12 @@ export default function AdminHeroPage() {
           >
             다시 시도
           </button>
+        </div>
+      ) : isLoading ? (
+        <div className="space-y-3">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="h-20 bg-gray-100 animate-pulse border border-gray-200" />
+          ))}
         </div>
       ) : !slides || slides.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-gray-200">

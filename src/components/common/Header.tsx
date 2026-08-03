@@ -11,7 +11,6 @@ import AnnouncementBar from "./AnnouncementBar";
 const NAV_ITEMS = [
   { label: "About", href: "/about", hasMega: false },
   { label: "Spaces", href: "/spaces", hasMega: true },
-  { label: "Programs", href: "/programs", hasMega: true },
   { label: "Wedding", href: "/wedding", hasMega: false },
   { label: "Archive", href: "/archive", hasMega: true },
   { label: "Media", href: "/media", hasMega: true },
@@ -110,22 +109,13 @@ export default function Header() {
         <div className="relative container-wide">
           <div className="flex items-center justify-between h-16 lg:h-[72px]">
             {/* Logo */}
-            <motion.div
-              animate={{
-                color: lightText ? "#ffffff" : "#0A0A0A",
-                textShadow: lightText ? "0 1px 6px rgba(0,0,0,0.55)" : "none",
-              }}
-              transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              <Link
-                to="/"
-                aria-label="The Lit — 홈"
-                className="font-display text-xl font-light tracking-[0.22em] uppercase"
-                style={{ color: "inherit" }}
-              >
-                The Lit
-              </Link>
-            </motion.div>
+            <Link to="/" aria-label="The Lit — 홈">
+              <img
+                src="/images/thelitlogo_red.png"
+                alt="The Lit"
+                className="h-10"
+              />
+            </Link>
 
             {/* Desktop Nav */}
             <nav aria-label="메인 메뉴" className="hidden lg:flex items-center">

@@ -366,12 +366,14 @@ export default function AdminContentSourcesPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <div className="text-center py-16 text-gray-400">
-          <Loader2 size={32} className="animate-spin mx-auto" />
-        </div>
-      ) : isError ? (
+      {isError ? (
         <AdminQueryError onRetry={refetch} />
+      ) : isLoading ? (
+        <div className="space-y-2 py-2">
+          {Array.from({ length: 5 }, (_, i) => (
+            <div key={i} className="h-14 bg-gray-100 animate-pulse border border-gray-200" />
+          ))}
+        </div>
       ) : sources.length === 0 ? (
         <div className="text-center py-16 text-gray-400 border border-dashed border-gray-200">
           <Rss size={32} className="mx-auto mb-3 opacity-40" />

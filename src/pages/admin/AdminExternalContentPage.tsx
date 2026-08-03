@@ -411,12 +411,14 @@ export default function AdminExternalContentPage() {
       </div>
 
       {/* Content list */}
-      {isLoading ? (
-        <div className="text-center py-16">
-          <Loader2 size={32} className="animate-spin mx-auto text-gray-400" />
-        </div>
-      ) : isError ? (
+      {isError ? (
         <AdminQueryError onRetry={refetch} />
+      ) : isLoading ? (
+        <div className="space-y-2">
+          {Array.from({ length: 5 }, (_, i) => (
+            <div key={i} className="h-16 bg-gray-100 animate-pulse border border-gray-200" />
+          ))}
+        </div>
       ) : items.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-gray-200 text-gray-400">
           <Filter size={32} className="mx-auto mb-3 opacity-40" />

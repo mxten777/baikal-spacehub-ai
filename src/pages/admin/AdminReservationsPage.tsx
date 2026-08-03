@@ -382,12 +382,14 @@ export default function AdminReservationsPage() {
       </div>
 
       {/* Reservations list */}
-      {isLoading ? (
-        <div className="py-16 text-center font-sans text-sm text-brand-muted">
-          불러오는 중...
-        </div>
-      ) : isError ? (
+      {isError ? (
         <AdminQueryError onRetry={refetch} />
+      ) : isLoading ? (
+        <div className="space-y-2">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i} className="h-16 bg-gray-100 animate-pulse border border-brand-line" />
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
         <div className="py-16 text-center border border-brand-line">
           <p className="font-display text-lg font-light text-brand-muted">

@@ -494,8 +494,10 @@ export default function AdminPhotoAssetExplorerPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-40">
-        <Loader2 size={24} className="animate-spin text-brand-muted" />
+      <div className="space-y-4 animate-pulse">
+        <div className="h-4 bg-gray-100 rounded w-28" />
+        <div className="h-7 bg-gray-100 rounded w-56" />
+        <div className="h-64 bg-gray-100 rounded" />
       </div>
     );
   }

@@ -381,14 +381,7 @@ export default function AdminBlogPage() {
         </button>
       </div>
 
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center h-40 gap-2">
-          <Loader2 size={24} className="animate-spin text-brand-muted" />
-          <p className="font-sans text-xs text-gray-400">
-            連結 웽… 초기 접속 시 잠시 걸릴 수 있습니다
-          </p>
-        </div>
-      ) : isError ? (
+      {isError ? (
         <AdminQueryError onRetry={refetch} />
       ) : (
         <div className="bg-white border border-gray-200 overflow-hidden">
@@ -411,7 +404,15 @@ export default function AdminBlogPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {posts.length > 0 ? (
+              {isLoading ? (
+                Array.from({ length: 5 }, (_, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td colSpan={99} className="px-6 py-4">
+                      <div className="h-3 bg-gray-100 rounded animate-pulse w-3/4" />
+                    </td>
+                  </tr>
+                ))
+              ) : posts.length > 0 ? (
                 posts.map((post) => (
                   <tr key={post.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">

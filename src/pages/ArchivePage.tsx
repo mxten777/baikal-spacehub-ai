@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useArchive, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
-import LoadingSpinner from "../components/common/LoadingSpinner";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
@@ -84,7 +83,7 @@ type ImageTile = {
 
 export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
-  const { data: archives, isLoading } = useArchive();
+  const { data: archives } = useArchive();
   const { data: archivePhotos } = usePublicPhotos("archive");
   const items = archives && archives.length > 0 ? archives : FALLBACK;
   const filtered =
@@ -112,14 +111,16 @@ export default function ArchivePage() {
       });
     }
 
-    return allUrls.map((url, i) => ({
-      url,
-      slug: item.slug,
-      title: item.title,
-      category: item.category,
-      date: item.date,
-      isCover: i === 0,
-    }));
+    return allUrls.length > 0
+      ? allUrls.map((url, i) => ({
+          url,
+          slug: item.slug,
+          title: item.title,
+          category: item.category,
+          date: item.date,
+          isCover: i === 0,
+        }))
+      : [{ url: "", slug: item.slug, title: item.title, category: item.category, date: item.date, isCover: true }];
   });
 
   return (
@@ -173,9 +174,6 @@ export default function ArchivePage() {
       {/* Grid */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          {isLoading ? (
-            <LoadingSpinner />
-          ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 auto-rows-[220px] gap-3 lg:gap-4">
               {tiles.map((tile, i) => {
                 // 7타일 반복 패턴: 0번·4번은 tall(2행), 나머지는 normal(1행)
@@ -191,12 +189,16 @@ export default function ArchivePage() {
                       to={`/archive/${tile.slug}`}
                       className="group block relative overflow-hidden h-full bg-brand-warm"
                     >
-                      <img
-                        src={tile.url}
-                        alt={tile.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                      {tile.url ? (
+                        <img
+                          src={tile.url}
+                          alt={tile.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-end p-5 bg-brand-warm" />
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
                       {tile.isCover && (
                         <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
@@ -227,7 +229,6 @@ export default function ArchivePage() {
                 );
               })}
             </div>
-          )}
         </div>
       </section>
     </>
