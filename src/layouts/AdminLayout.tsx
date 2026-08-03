@@ -21,6 +21,7 @@ import {
   SlidersHorizontal,
   FolderKanban,
   Heart,
+  Sparkles,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
@@ -69,6 +70,13 @@ const operatorNav: NavEntry[] = [
     permission: "archive",
   },
   { label: "블로그", href: "/admin/blog", icon: FileText, permission: "blog" },
+  { type: "section", label: "브랜드" },
+  {
+    label: "Brand CMS",
+    href: "/admin/brand",
+    icon: Sparkles,
+    permission: "brand",
+  },
   { type: "section", label: "웨딩" },
   {
     label: "웨딩",

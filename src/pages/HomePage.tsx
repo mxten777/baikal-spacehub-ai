@@ -31,7 +31,7 @@ export default function HomePage() {
       />
 
       <HeroSection />
-      <ExperienceJourneySection />
+      <ExperienceJourneySection steps={aboutContent?.journey_steps} />
       <BrandIntroSection data={aboutContent ?? undefined} />
       <SpacesPreviewSection />
       <UpcomingProgramsSection />

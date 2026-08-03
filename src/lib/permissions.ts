@@ -35,6 +35,7 @@ const SUPER_ADMIN_PERMISSIONS: Permission[] = [
   "photo_curator",
   "photo_projects",
   "wedding_photos",
+  "brand",
 ];
 
 const OPERATOR_PERMISSIONS: Permission[] = [
@@ -49,6 +50,7 @@ const OPERATOR_PERMISSIONS: Permission[] = [
   "photo_curator",
   "wedding_photos",
   "operator_settings",
+  "brand",
 ];
 
 const VIEWER_PERMISSIONS: Permission[] = ["dashboard"];

@@ -67,6 +67,7 @@ const AdminHeroPage = lazy(() => import("./pages/admin/AdminHeroPage"));
 const AdminAboutPage = lazy(() => import("./pages/admin/AdminAboutPage"));
 const AdminSitePage = lazy(() => import("./pages/admin/AdminSitePage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
+const AdminBrandPage = lazy(() => import("./pages/admin/AdminBrandPage"));
 const AdminWeddingPage = lazy(() => import("./pages/admin/AdminWeddingPage"));
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -243,6 +244,14 @@ export default function App() {
                     element={
                       <RoleGuard permission="hero">
                         <AdminHeroPage />
+                      </RoleGuard>
+                    }
+                  />
+                  <Route
+                    path="brand"
+                    element={
+                      <RoleGuard permission="brand">
+                        <AdminBrandPage />
                       </RoleGuard>
                     }
                   />

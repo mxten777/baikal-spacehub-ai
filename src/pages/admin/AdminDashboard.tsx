@@ -8,6 +8,7 @@ import { useHeroSlides } from "../../hooks/useData";
 import { useAuth } from "../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { reservationsService } from "../../services/reservations";
+import { aboutService } from "../../services/about";
 import { isSupabaseConfigured } from "../../lib/supabase";
 import {
   Image,
@@ -19,6 +20,9 @@ import {
   Globe2,
   SlidersHorizontal,
   Info,
+  Sparkles,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -75,6 +79,12 @@ export default function AdminDashboard() {
     queryKey: ["reservations", { status: "new" }],
     queryFn: () => reservationsService.getAll({ status: "new" }),
     staleTime: 1 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  });
+  const { data: brandContent } = useQuery({
+    queryKey: ["about-content"],
+    queryFn: () => aboutService.get(),
+    staleTime: 5 * 60 * 1000,
     enabled: isSupabaseConfigured,
   });
   const { isSuperAdmin } = useAuth();
@@ -220,6 +230,106 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* ── Brand Status ── */}
+      <div className="mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-sans text-sm font-semibold text-brand-black tracking-wider uppercase">
+            Brand Status
+          </h2>
+          <Link
+            to="/admin/brand"
+            className="text-xs text-brand-accent hover:underline font-sans"
+          >
+            Brand CMS →
+          </Link>
+        </div>
+        <div className="bg-white border border-gray-200 p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[
+              {
+                label: "Experience Journey",
+                ok: (brandContent?.journey_steps?.filter((s) => s.is_visible).length ?? 0) > 0,
+                count: brandContent?.journey_steps?.filter((s) => s.is_visible).length ?? 0,
+                unit: "단계",
+              },
+              {
+                label: "Wedding Experience",
+                ok: (brandContent?.wedding_experiences?.filter((w) => w.is_visible).length ?? 0) > 0,
+                count: brandContent?.wedding_experiences?.filter((w) => w.is_visible).length ?? 0,
+                unit: "트랙",
+              },
+              {
+                label: "History",
+                ok: (brandContent?.timeline?.length ?? 0) > 0,
+                count: brandContent?.timeline?.length ?? 0,
+                unit: "항목",
+              },
+              {
+                label: "Philosophy",
+                ok: (brandContent?.brand_values?.length ?? 0) > 0,
+                count: brandContent?.brand_values?.length ?? 0,
+                unit: "항목",
+              },
+              {
+                label: "Stories (Featured)",
+                ok: true,
+                count: null,
+                unit: null,
+                href: "/admin/blog",
+              },
+              {
+                label: "SEO",
+                ok: !!(brandContent?.seo_title && brandContent?.seo_description),
+                count: null,
+                unit: null,
+                superAdminOnly: true,
+              },
+            ]
+              .filter((item) => !item.superAdminOnly || isSuperAdmin)
+              .map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.href ?? "/admin/brand"}
+                  className="flex flex-col gap-2 p-3 border border-gray-100 hover:border-brand-black transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-sans text-[10px] text-gray-400 tracking-widest uppercase leading-tight">
+                      {item.label}
+                    </span>
+                    {item.ok ? (
+                      <CheckCircle size={12} className="text-green-500 shrink-0" />
+                    ) : (
+                      <AlertCircle size={12} className="text-amber-400 shrink-0" />
+                    )}
+                  </div>
+                  {item.count !== null ? (
+                    <p className="font-display text-xl font-light text-brand-black">
+                      {item.count}
+                      <span className="font-sans text-xs text-gray-400 ml-1">{item.unit}</span>
+                    </p>
+                  ) : (
+                    <p className="font-sans text-xs text-gray-400">
+                      {item.ok ? "설정됨" : "미작성"}
+                    </p>
+                  )}
+                </Link>
+              ))}
+          </div>
+          {brandContent?.updated_at && (
+            <p className="font-sans text-[11px] text-gray-400 mt-4 pt-4 border-t border-gray-100">
+              마지막 수정:{" "}
+              {new Date(brandContent.updated_at).toLocaleString("ko-KR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          )}
+        </div>
+      </div>
+
       {/* ── 빠른 작업 / 최근 활동 ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white border border-gray-200 p-6">
@@ -239,11 +349,8 @@ export default function AdminDashboard() {
                 icon: FileText,
               },
               { label: "공간 추가", href: "/admin/spaces", icon: Image },
-              {
-                label: "문의 관리",
-                href: "/admin/inquiries",
-                icon: MessageSquare,
-              },
+              { label: "문의 관리", href: "/admin/inquiries", icon: MessageSquare },
+              { label: "Brand CMS", href: "/admin/brand", icon: Sparkles },
               ...(isSuperAdmin
                 ? [
                     {

@@ -7,6 +7,9 @@ import {
   useArchive,
   useBlogPosts,
 } from "../hooks/useData";
+import { useQuery } from "@tanstack/react-query";
+import { aboutService } from "../services/about";
+import { isSupabaseConfigured } from "../lib/supabase";
 import AnimatedSection from "../components/common/AnimatedSection";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
@@ -101,6 +104,10 @@ interface WeddingTrack {
   desc: string;
   recommended: string[];
   venue: string;
+  cta_text?: string;
+  cta_href?: string;
+  is_visible?: boolean;
+  sort_order?: number;
 }
 
 const WEDDING_TRACKS: WeddingTrack[] = [
@@ -139,6 +146,19 @@ export default function WeddingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   // ── Data ──────────────────────────────────────────────────────────────────
+  const { data: aboutContent } = useQuery({
+    queryKey: ["about-content"],
+    queryFn: () => aboutService.get(),
+    staleTime: 10 * 60 * 1000,
+    enabled: isSupabaseConfigured,
+  });
+
+  const weddingTracks = useMemo(() => {
+    const dbTracks = aboutContent?.wedding_experiences?.filter((w) => w.is_visible);
+    return dbTracks && dbTracks.length > 0
+      ? dbTracks.sort((a, b) => a.sort_order - b.sort_order)
+      : WEDDING_TRACKS;
+  }, [aboutContent]);
   const { data: weddingPhotos } = usePublicPhotos("wedding", { limit: 24 });
   const { data: onlineWeddingPhotos } = usePublicPhotos("online_wedding", {
     limit: 12,
@@ -313,7 +333,7 @@ export default function WeddingPage() {
           </AnimatedSection>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/[0.08]">
-            {WEDDING_TRACKS.map((wt, i) => (
+            {weddingTracks.map((wt, i) => (
               <AnimatedSection
                 key={wt.track}
                 animation="fade-up"
@@ -379,10 +399,10 @@ export default function WeddingPage() {
 
                   {/* CTA */}
                   <Link
-                    to="/contact?type=wedding"
+                    to={wt.cta_href ?? "/contact?type=wedding"}
                     className="btn-ghost-light self-start"
                   >
-                    Explore {wt.track} <ArrowRight size={12} />
+                    {wt.cta_text ?? `Explore ${wt.track}`} <ArrowRight size={12} />
                   </Link>
 
                 </div>

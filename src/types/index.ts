@@ -34,7 +34,8 @@ export type Permission =
   | "reservations"
   | "photo_curator"
   | "photo_projects"
-  | "wedding_photos";
+  | "wedding_photos"
+  | "brand";
 
 export interface Profile {
   id: UUID;
@@ -704,6 +705,30 @@ export interface NormalizedContent {
 // ============================================================
 // ABOUT PAGE CMS
 // ============================================================
+export interface JourneyStep {
+  number: string;
+  emotion: string;
+  desc: string;
+  is_visible: boolean;
+  icon?: string;
+  cta_text?: string;
+  cta_href?: string;
+}
+
+export interface WeddingExperience {
+  number: string;
+  track: string;
+  keywords: string[];
+  title: string;
+  desc: string;
+  recommended: string[];
+  venue: string;
+  cta_text?: string;
+  cta_href?: string;
+  is_visible: boolean;
+  sort_order: number;
+}
+
 export interface AboutTimelineItem {
   year: string;
   title: string;
@@ -748,5 +773,11 @@ export interface AboutContent {
   brand_intro_paragraph_2: string;
   brand_intro_image_url: string;
   brand_intro_pillars: BrandIntroPillar[];
+  journey_steps: JourneyStep[];
+  wedding_experiences: WeddingExperience[];
+  seo_title: string;
+  seo_description: string;
+  seo_og_image: string;
+  seo_keywords: string;
   updated_at: ISODateString;
 }

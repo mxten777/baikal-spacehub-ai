@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import AnimatedSection from "../common/AnimatedSection";
 import SectionHeader from "../common/SectionHeader";
+import type { JourneyStep } from "../../types";
 
-interface JourneyStep {
+interface JourneyStepDisplay {
   number: string;
   emotion: string;
   desc: string;
@@ -13,7 +14,7 @@ interface JourneyStep {
 
 // 감정 흐름: Arrival → Curiosity → Dark Passage → Transformation → Light → WOW → Memory
 // 숫자 + 감정 레이블 색상이 어두움→빛 흐름을 시각적으로 표현
-const STEPS: JourneyStep[] = [
+const FALLBACK_STEPS: JourneyStepDisplay[] = [
   {
     number: "01",
     emotion: "Arrival",
@@ -65,7 +66,34 @@ const STEPS: JourneyStep[] = [
   },
 ];
 
-export default function ExperienceJourneySection() {
+// 위치별 고정 색상 클래스 (UI 디자인 — 변경 불가)
+const POSITION_CLASSES: { numClass: string; emotionClass: string }[] = [
+  { numClass: "text-white/10",        emotionClass: "text-white/25" },
+  { numClass: "text-white/10",        emotionClass: "text-white/30" },
+  { numClass: "text-brand-accent/30", emotionClass: "text-brand-accent/60" },
+  { numClass: "text-white/15",        emotionClass: "text-white/40" },
+  { numClass: "text-brand-accent/40", emotionClass: "text-brand-accent/80" },
+  { numClass: "text-brand-accent/60", emotionClass: "text-brand-accent" },
+  { numClass: "text-brand-accent/40", emotionClass: "text-brand-accent/70" },
+];
+
+interface Props {
+  steps?: JourneyStep[];
+}
+
+export default function ExperienceJourneySection({ steps }: Props) {
+  const displaySteps: JourneyStepDisplay[] =
+    steps && steps.length > 0
+      ? steps
+          .filter((s) => s.is_visible)
+          .map((s, i) => ({
+            number: s.number,
+            emotion: s.emotion,
+            desc: s.desc,
+            ...(POSITION_CLASSES[i] ?? POSITION_CLASSES[POSITION_CLASSES.length - 1]),
+          }))
+      : FALLBACK_STEPS;
+
   return (
     <section className="section-padding bg-brand-black">
       <div className="container-wide">
@@ -90,7 +118,7 @@ export default function ExperienceJourneySection() {
 
         {/* Journey steps — 숫자와 레이블 색상 대비가 감정 흐름을 나타냄 */}
         <div className="divide-y divide-white/[0.06]">
-          {STEPS.map((step, i) => (
+          {displaySteps.map((step, i) => (
             <AnimatedSection
               key={step.emotion}
               animation="fade-up"
@@ -146,3 +174,4 @@ export default function ExperienceJourneySection() {
     </section>
   );
 }
+
