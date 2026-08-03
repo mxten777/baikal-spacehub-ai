@@ -1,4 +1,5 @@
 import { Outlet, NavLink, Link } from "react-router-dom";
+import { Suspense } from "react";
 import {
   LayoutDashboard,
   Image,
@@ -189,15 +190,12 @@ export default function AdminLayout() {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      // scope: 'local' — 네트워크 오류와 무관하게 로컬 세션을 즉시 삭제
-      await supabase.auth.signOut({ scope: "local" });
-    } catch {
-      // 에러 무시 — 로컬 세션은 이미 삭제됨
-    } finally {
-      // SPA navigate 대신 full reload: React 세션 상태까지 완전 초기화
-      window.location.href = "/admin/login";
-    }
+    // 2초 내 signOut 안 되면 강제 리다이렉트 (네트워크 hang 방지)
+    await Promise.race([
+      supabase.auth.signOut({ scope: "local" }).catch(() => {}),
+      new Promise<void>((resolve) => setTimeout(resolve, 2000)),
+    ]);
+    window.location.href = "/admin/login";
   };
 
   const emailDisplay = user?.email ?? "";
@@ -360,7 +358,13 @@ export default function AdminLayout() {
         </header>
 
         <main className="p-4 sm:p-6 lg:p-8">
-          <Outlet />
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-64">
+              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+            </div>
+          }>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>
