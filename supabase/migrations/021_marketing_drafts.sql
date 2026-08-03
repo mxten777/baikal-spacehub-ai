@@ -63,7 +63,7 @@ CREATE INDEX IF NOT EXISTS marketing_drafts_created_at_idx  ON public.marketing_
 
 ALTER TABLE public.marketing_drafts ENABLE ROW LEVEL SECURITY;
 
--- operator 이상 전체 조회 (viewer 포함)
+-- viewer 이상 전체 조회 (viewer/operator/super_admin 모두 허용)
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -74,7 +74,7 @@ BEGIN
   ) THEN
     CREATE POLICY "marketing_drafts_select" ON public.marketing_drafts
       FOR SELECT TO authenticated
-      USING (public.is_operator());
+      USING (public.has_permission('viewer'));
   END IF;
 END;
 $$;
