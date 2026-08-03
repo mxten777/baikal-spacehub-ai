@@ -82,8 +82,11 @@ interface Props {
 }
 
 export default function ExperienceJourneySection({ steps }: Props) {
+  // steps=undefined → DB not loaded, use fallback
+  // steps=[] → no steps in DB (migration not applied), use fallback
+  // steps=[items] → DB loaded, filter by is_visible (may produce empty if all hidden)
   const displaySteps: JourneyStepDisplay[] =
-    steps && steps.length > 0
+    steps !== undefined && steps.length > 0
       ? steps
           .filter((s) => s.is_visible)
           .map((s, i) => ({
@@ -93,6 +96,9 @@ export default function ExperienceJourneySection({ steps }: Props) {
             ...(POSITION_CLASSES[i] ?? POSITION_CLASSES[POSITION_CLASSES.length - 1]),
           }))
       : FALLBACK_STEPS;
+
+  // Operator intentionally hid all steps → don't render section
+  if (steps !== undefined && steps.length > 0 && displaySteps.length === 0) return null;
 
   return (
     <section className="section-padding bg-brand-black">

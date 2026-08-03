@@ -154,10 +154,13 @@ export default function WeddingPage() {
   });
 
   const weddingTracks = useMemo(() => {
-    const dbTracks = aboutContent?.wedding_experiences?.filter((w) => w.is_visible);
-    return dbTracks && dbTracks.length > 0
-      ? dbTracks.sort((a, b) => a.sort_order - b.sort_order)
-      : WEDDING_TRACKS;
+    // DB not loaded → fallback
+    if (!aboutContent) return WEDDING_TRACKS;
+    const configured = aboutContent.wedding_experiences ?? [];
+    // No tracks configured (migration not applied) → fallback
+    if (configured.length === 0) return WEDDING_TRACKS;
+    // DB has tracks: respect operator settings (empty = all intentionally hidden)
+    return configured.filter((w) => w.is_visible).sort((a, b) => a.sort_order - b.sort_order);
   }, [aboutContent]);
   const { data: weddingPhotos } = usePublicPhotos("wedding", { limit: 24 });
   const { data: onlineWeddingPhotos } = usePublicPhotos("online_wedding", {
@@ -303,7 +306,7 @@ export default function WeddingPage() {
       </section>
 
       {/* ── 3. 3-Track Wedding Experience ──────────────────────────────────── */}
-      <section className="section-padding bg-brand-black">
+      {weddingTracks.length > 0 && <section className="section-padding bg-brand-black">
         <div className="container-wide">
 
           <AnimatedSection animation="fade-up" className="mb-4">
@@ -411,7 +414,7 @@ export default function WeddingPage() {
           </div>
 
         </div>
-      </section>
+      </section>}
 
       {/* ── 4. Venue ─────────────────────────────────────────────────────────── */}
       <section className="section-padding bg-brand-warm">
