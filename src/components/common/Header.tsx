@@ -111,7 +111,7 @@ export default function Header() {
             {/* Logo */}
             <Link to="/" aria-label="The Lit — 홈">
               <img
-                src="/images/thelitlogo_red.png"
+                src="/images/thelitlogo_red_trans.png"
                 alt="The Lit"
                 className="h-10"
               />

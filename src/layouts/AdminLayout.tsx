@@ -229,7 +229,7 @@ export default function AdminLayout() {
           {sidebarOpen && (
             <Link to="/" aria-label="The Lit — 홈">
               <img
-                src="/images/thelitlogo_red.png"
+                src="/images/thelitlogo_red_trans.png"
                 alt="The Lit"
                 className="h-9"
               />
