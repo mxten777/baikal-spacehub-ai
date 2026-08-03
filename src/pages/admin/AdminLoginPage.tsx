@@ -30,12 +30,13 @@ export default function AdminLoginPage() {
       });
       if (error) {
         setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+        setLoading(false);
+        return;
       }
-      // 성공 시 navigate 불필요 — AuthContext.user+role 설정 후 위 redirect 조건이 발동
+      // 성공 시 loading=true 유지 — profile 로딩 후 redirect(컴포넌트 언마운트)로 자연 해제
+      // 버튼이 "Sign In"으로 되돌아가는 UX 깜빡임 방지
     } catch {
-      // cold start 타임아웃 등 네트워크 예외 시에도 setLoading(false) 보장
       setError("네트워크 오류가 발생했습니다. 잠시 후 다시 시도하세요.");
-    } finally {
       setLoading(false);
     }
   };
