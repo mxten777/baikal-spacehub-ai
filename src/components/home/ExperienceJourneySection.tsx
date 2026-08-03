@@ -68,10 +68,10 @@ const FALLBACK_STEPS: JourneyStepDisplay[] = [
 
 // 위치별 고정 색상 클래스 (UI 디자인 — 변경 불가)
 const POSITION_CLASSES: { numClass: string; emotionClass: string }[] = [
-  { numClass: "text-white/10",        emotionClass: "text-white/25" },
-  { numClass: "text-white/10",        emotionClass: "text-white/30" },
+  { numClass: "text-white/10", emotionClass: "text-white/25" },
+  { numClass: "text-white/10", emotionClass: "text-white/30" },
   { numClass: "text-brand-accent/30", emotionClass: "text-brand-accent/60" },
-  { numClass: "text-white/15",        emotionClass: "text-white/40" },
+  { numClass: "text-white/15", emotionClass: "text-white/40" },
   { numClass: "text-brand-accent/40", emotionClass: "text-brand-accent/80" },
   { numClass: "text-brand-accent/60", emotionClass: "text-brand-accent" },
   { numClass: "text-brand-accent/40", emotionClass: "text-brand-accent/70" },
@@ -93,17 +93,18 @@ export default function ExperienceJourneySection({ steps }: Props) {
             number: s.number,
             emotion: s.emotion,
             desc: s.desc,
-            ...(POSITION_CLASSES[i] ?? POSITION_CLASSES[POSITION_CLASSES.length - 1]),
+            ...(POSITION_CLASSES[i] ??
+              POSITION_CLASSES[POSITION_CLASSES.length - 1]),
           }))
       : FALLBACK_STEPS;
 
   // Operator intentionally hid all steps → don't render section
-  if (steps !== undefined && steps.length > 0 && displaySteps.length === 0) return null;
+  if (steps !== undefined && steps.length > 0 && displaySteps.length === 0)
+    return null;
 
   return (
     <section className="section-padding bg-brand-black">
       <div className="container-wide">
-
         {/* Header */}
         <AnimatedSection animation="fade-up" className="mb-4">
           <SectionHeader
@@ -114,7 +115,11 @@ export default function ExperienceJourneySection({ steps }: Props) {
         </AnimatedSection>
 
         {/* Intro copy */}
-        <AnimatedSection animation="fade-up" delay={80} className="mb-16 lg:mb-24">
+        <AnimatedSection
+          animation="fade-up"
+          delay={80}
+          className="mb-16 lg:mb-24"
+        >
           <p className="font-sans text-sm text-white/40 leading-relaxed max-w-sm">
             THE LIT에 들어서는 순간,
             <br />
@@ -175,9 +180,7 @@ export default function ExperienceJourneySection({ steps }: Props) {
             Experience THE LIT <ArrowRight size={14} />
           </Link>
         </AnimatedSection>
-
       </div>
     </section>
   );
 }
-

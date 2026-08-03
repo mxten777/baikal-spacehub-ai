@@ -1,7 +1,7 @@
 # BAIKAL Admin Framework v2.0 Standard
 
 **Based on THE LIT — Verified in Production**
-*Enterprise Admin Architecture for All BAIKAL Projects*
+_Enterprise Admin Architecture for All BAIKAL Projects_
 
 ---
 
@@ -91,30 +91,30 @@ BAIKAL Admin Framework v2.0
 
 **Operator 메뉴** (운영자가 매일 사용)
 
-| 섹션 | 메뉴 항목 | 경로 | 권한 |
-|------|-----------|------|------|
-| — | 대시보드 | `/admin` | dashboard |
-| 콘텐츠 | 공간 | `/admin/spaces` | spaces |
-| 콘텐츠 | 프로그램 | `/admin/programs` | programs |
-| 콘텐츠 | 아카이브 | `/admin/archive` | archive |
-| 콘텐츠 | 블로그 | `/admin/blog` | blog |
-| 브랜드 | Brand CMS | `/admin/brand` | brand |
-| 웨딩 | 웨딩 | `/admin/wedding` | wedding_photos |
-| 소셜 미디어 | 소셜 미디어 | `/admin/media` | media |
-| 고객 관리 | 문의 관리 | `/admin/inquiries` | inquiries |
-| 고객 관리 | 예약 관리 | `/admin/reservations` | reservations |
-| 운영 | 운영 정보 | `/admin/operator-settings` | operator_settings |
+| 섹션        | 메뉴 항목   | 경로                       | 권한              |
+| ----------- | ----------- | -------------------------- | ----------------- |
+| —           | 대시보드    | `/admin`                   | dashboard         |
+| 콘텐츠      | 공간        | `/admin/spaces`            | spaces            |
+| 콘텐츠      | 프로그램    | `/admin/programs`          | programs          |
+| 콘텐츠      | 아카이브    | `/admin/archive`           | archive           |
+| 콘텐츠      | 블로그      | `/admin/blog`              | blog              |
+| 브랜드      | Brand CMS   | `/admin/brand`             | brand             |
+| 웨딩        | 웨딩        | `/admin/wedding`           | wedding_photos    |
+| 소셜 미디어 | 소셜 미디어 | `/admin/media`             | media             |
+| 고객 관리   | 문의 관리   | `/admin/inquiries`         | inquiries         |
+| 고객 관리   | 예약 관리   | `/admin/reservations`      | reservations      |
+| 운영        | 운영 정보   | `/admin/operator-settings` | operator_settings |
 
 **Super Admin 추가 메뉴** (구조 관리, 비정기적 사용)
 
-| 섹션 | 메뉴 항목 | 경로 | 권한 |
-|------|-----------|------|------|
-| 사이트 구성 | 사이트 구성 | `/admin/site` | hero |
-| 사용자 및 권한 | 사용자 관리 | `/admin/users` | users |
-| 시스템 | 시스템 설정 | `/admin/settings` | system_settings |
-| 외부 콘텐츠 | 외부 콘텐츠 관리 | `/admin/external` | content_sources |
-| 데이터 및 자산 | 촬영 프로젝트 | `/admin/photo-projects` | photo_projects |
-| 데이터 및 자산 | 사진 큐레이터 | `/admin/photo-curator` | photo_curator |
+| 섹션           | 메뉴 항목        | 경로                    | 권한            |
+| -------------- | ---------------- | ----------------------- | --------------- |
+| 사이트 구성    | 사이트 구성      | `/admin/site`           | hero            |
+| 사용자 및 권한 | 사용자 관리      | `/admin/users`          | users           |
+| 시스템         | 시스템 설정      | `/admin/settings`       | system_settings |
+| 외부 콘텐츠    | 외부 콘텐츠 관리 | `/admin/external`       | content_sources |
+| 데이터 및 자산 | 촬영 프로젝트    | `/admin/photo-projects` | photo_projects  |
+| 데이터 및 자산 | 사진 큐레이터    | `/admin/photo-curator`  | photo_curator   |
 
 ### 메뉴 설계 규칙
 
@@ -139,37 +139,37 @@ Viewer       ←  읽기 전용 (확장 예정)
 
 ### 권한 매트릭스
 
-| 권한 키 | Viewer | Operator | Super Admin | 설명 |
-|---------|--------|----------|-------------|------|
-| `dashboard` | ✅ | ✅ | ✅ | 대시보드 조회 |
-| `spaces` | — | ✅ | ✅ | 공간 관리 |
-| `programs` | — | ✅ | ✅ | 프로그램 관리 |
-| `archive` | — | ✅ | ✅ | 아카이브 관리 |
-| `blog` | — | ✅ | ✅ | 블로그 관리 |
-| `brand` | — | ✅ | ✅ | Brand CMS (콘텐츠 탭) |
-| `media` | — | ✅ | ✅ | 소셜 미디어 |
-| `inquiries` | — | ✅ | ✅ | 문의 관리 |
-| `reservations` | — | ✅ | ✅ | 예약 관리 |
-| `wedding_photos` | — | ✅ | ✅ | 웨딩 사진/문의 |
-| `photo_curator` | — | ✅ | ✅ | 사진 큐레이션 |
-| `operator_settings` | — | ✅ | ✅ | 운영 정보 |
-| `hero` | — | — | ✅ | Hero 슬라이드 |
-| `about` | — | — | ✅ | About 구조 편집 |
-| `system_settings` | — | — | ✅ | SEO·API·도메인 |
-| `users` | — | — | ✅ | 사용자·계정 |
-| `security` | — | — | ✅ | 보안·키 |
-| `content_sources` | — | — | ✅ | 외부 콘텐츠 소스 |
-| `photo_projects` | — | — | ✅ | 촬영 프로젝트 |
+| 권한 키             | Viewer | Operator | Super Admin | 설명                  |
+| ------------------- | ------ | -------- | ----------- | --------------------- |
+| `dashboard`         | ✅     | ✅       | ✅          | 대시보드 조회         |
+| `spaces`            | —      | ✅       | ✅          | 공간 관리             |
+| `programs`          | —      | ✅       | ✅          | 프로그램 관리         |
+| `archive`           | —      | ✅       | ✅          | 아카이브 관리         |
+| `blog`              | —      | ✅       | ✅          | 블로그 관리           |
+| `brand`             | —      | ✅       | ✅          | Brand CMS (콘텐츠 탭) |
+| `media`             | —      | ✅       | ✅          | 소셜 미디어           |
+| `inquiries`         | —      | ✅       | ✅          | 문의 관리             |
+| `reservations`      | —      | ✅       | ✅          | 예약 관리             |
+| `wedding_photos`    | —      | ✅       | ✅          | 웨딩 사진/문의        |
+| `photo_curator`     | —      | ✅       | ✅          | 사진 큐레이션         |
+| `operator_settings` | —      | ✅       | ✅          | 운영 정보             |
+| `hero`              | —      | —        | ✅          | Hero 슬라이드         |
+| `about`             | —      | —        | ✅          | About 구조 편집       |
+| `system_settings`   | —      | —        | ✅          | SEO·API·도메인        |
+| `users`             | —      | —        | ✅          | 사용자·계정           |
+| `security`          | —      | —        | ✅          | 보안·키               |
+| `content_sources`   | —      | —        | ✅          | 외부 콘텐츠 소스      |
+| `photo_projects`    | —      | —        | ✅          | 촬영 프로젝트         |
 
 ### Brand CMS 탭별 권한
 
-| 탭 | Operator | Super Admin |
-|----|----------|-------------|
-| Brand Story | ✅ 수정 | ✅ 수정 |
-| Experience / Journey | ✅ 수정 | ✅ 수정 |
-| Philosophy / Values | ✅ 수정 | ✅ 수정 |
-| History | ✅ 수정 | ✅ 수정 |
-| **SEO** | ❌ 숨김 | ✅ 수정 |
+| 탭                   | Operator | Super Admin |
+| -------------------- | -------- | ----------- |
+| Brand Story          | ✅ 수정  | ✅ 수정     |
+| Experience / Journey | ✅ 수정  | ✅ 수정     |
+| Philosophy / Values  | ✅ 수정  | ✅ 수정     |
+| History              | ✅ 수정  | ✅ 수정     |
+| **SEO**              | ❌ 숨김  | ✅ 수정     |
 
 ### 권한 구현 패턴
 
@@ -216,10 +216,10 @@ const visibleTabs = TABS.filter(t => !t.superAdminOnly || isSuperAdmin);
 ```typescript
 interface StatCard {
   icon: LucideIcon;
-  label: string;           // 영문 UPPERCASE 표시
+  label: string; // 영문 UPPERCASE 표시
   value: number | string;
-  href: string;            // 클릭 시 해당 관리 페이지로
-  color: string;           // bg-{color}-600
+  href: string; // 클릭 시 해당 관리 페이지로
+  color: string; // bg-{color}-600
 }
 // value === 0 → bg-gray-300 (아이콘 비활성)
 // value > 0  → color 적용
@@ -229,11 +229,11 @@ interface StatCard {
 
 ```typescript
 interface BrandStatusItem {
-  label: string;       // 항목명
-  ok: boolean;         // true = 정상, false = 주의 필요
-  count?: number;      // 항목 수 (있을 때만)
-  unit?: string;       // 단위 ("단계", "트랙", "항목")
-  href: string;        // 클릭 시 이동 경로
+  label: string; // 항목명
+  ok: boolean; // true = 정상, false = 주의 필요
+  count?: number; // 항목 수 (있을 때만)
+  unit?: string; // 단위 ("단계", "트랙", "항목")
+  href: string; // 클릭 시 이동 경로
   superAdminOnly?: boolean;
 }
 ```
@@ -301,13 +301,13 @@ CREATE TABLE about_content (
 
 ```typescript
 interface JourneyStep {
-  number:     string;   // "01" ~ "07"
-  emotion:    string;   // 단계명 (영문 권장)
-  desc:       string;   // 한국어 설명
-  is_visible: boolean;  // 홈페이지 노출 여부
-  icon?:      string;   // 선택적 아이콘 (이모지/기호)
-  cta_text?:  string;   // 선택적 CTA 텍스트
-  cta_href?:  string;   // 선택적 CTA 링크
+  number: string; // "01" ~ "07"
+  emotion: string; // 단계명 (영문 권장)
+  desc: string; // 한국어 설명
+  is_visible: boolean; // 홈페이지 노출 여부
+  icon?: string; // 선택적 아이콘 (이모지/기호)
+  cta_text?: string; // 선택적 CTA 텍스트
+  cta_href?: string; // 선택적 CTA 링크
 }
 ```
 
@@ -315,17 +315,17 @@ interface JourneyStep {
 
 ```typescript
 interface DomainExperience {
-  number:      string;    // "01", "02", "03"
-  track:       string;    // 트랙명 (예: "House Wedding")
-  keywords:    string[];  // 키워드 배지
-  title:       string;    // 한국어 타이틀
-  desc:        string;    // 설명
-  recommended: string[];  // 추천 대상
-  venue:       string;    // 장소/카테고리명
-  cta_text?:   string;
-  cta_href?:   string;
-  is_visible:  boolean;
-  sort_order:  number;
+  number: string; // "01", "02", "03"
+  track: string; // 트랙명 (예: "House Wedding")
+  keywords: string[]; // 키워드 배지
+  title: string; // 한국어 타이틀
+  desc: string; // 설명
+  recommended: string[]; // 추천 대상
+  venue: string; // 장소/카테고리명
+  cta_text?: string;
+  cta_href?: string;
+  is_visible: boolean;
+  sort_order: number;
 }
 ```
 
@@ -344,14 +344,15 @@ DB 정상, 일부 visible              → 해당 항목만 표시
 ```typescript
 // 올바른 Fallback 판단 패턴
 const displayItems = useMemo(() => {
-  if (!dbData) return FALLBACK;               // 미로딩
+  if (!dbData) return FALLBACK; // 미로딩
   const configured = dbData.items ?? [];
   if (configured.length === 0) return FALLBACK; // 미설정
-  return configured.filter(i => i.is_visible);  // 운영자 의도 존중
+  return configured.filter((i) => i.is_visible); // 운영자 의도 존중
 }, [dbData]);
 
 // 섹션 숨김 guard
-if (dbData && dbData.items?.length > 0 && displayItems.length === 0) return null;
+if (dbData && dbData.items?.length > 0 && displayItems.length === 0)
+  return null;
 ```
 
 ---
@@ -364,25 +365,25 @@ if (dbData && dbData.items?.length > 0 && displayItems.length === 0) return null
 
 ```typescript
 interface ContentBase {
-  id:             UUID;
-  slug:           string;    // URL-safe identifier
-  title:          string;
-  is_published:   boolean;
-  publish_status: 'draft' | 'published' | 'archived';
-  is_featured:    boolean;   // 홈페이지 노출
-  sort_order:     number;    // 표시 순서
-  created_at:     ISODateString;
-  updated_at:     ISODateString;
+  id: UUID;
+  slug: string; // URL-safe identifier
+  title: string;
+  is_published: boolean;
+  publish_status: "draft" | "published" | "archived";
+  is_featured: boolean; // 홈페이지 노출
+  sort_order: number; // 표시 순서
+  created_at: ISODateString;
+  updated_at: ISODateString;
 }
 ```
 
 **Publish Status 3단계**
 
-| 상태 | 설명 | 홈페이지 표시 |
-|------|------|-------------|
-| `draft` | 작성 중 | ❌ |
-| `published` | 공개 | ✅ |
-| `archived` | 보관 | ❌ |
+| 상태        | 설명    | 홈페이지 표시 |
+| ----------- | ------- | ------------- |
+| `draft`     | 작성 중 | ❌            |
+| `published` | 공개    | ✅            |
+| `archived`  | 보관    | ❌            |
 
 **Stories (Blog) 특화**
 
@@ -420,9 +421,18 @@ interface ContentBase {
 
 ```typescript
 // 전체 저장이 아닌 섹션별 독립 저장
-type SectionKey = 'story' | 'journey' | 'wedding' | 'philosophy' | 'history' | 'seo';
+type SectionKey =
+  | "story"
+  | "journey"
+  | "wedding"
+  | "philosophy"
+  | "history"
+  | "seo";
 
-const handleSave = async (section: SectionKey, updates: Partial<AboutContent>) => {
+const handleSave = async (
+  section: SectionKey,
+  updates: Partial<AboutContent>,
+) => {
   setSavingSection(section);
   const updated = await aboutService.update(content.id, updates);
   setContent(updated);
@@ -456,15 +466,15 @@ Photo Project (최상위 — 촬영 목적 단위)
 
 ```typescript
 type ProjectCategory =
-  | 'main'           // 메인 홈페이지용
-  | 'wedding'        // 웨딩 갤러리
-  | 'space'          // 공간 소개
-  | 'about'          // About 히어로
-  | 'brand'          // 브랜드 이미지
-  | 'archive'        // 아카이브 커버
-  | 'food_beverage'  // F&B
-  | 'online_wedding' // 온라인 웨딩
-  | 'contact';       // 문의 페이지
+  | "main" // 메인 홈페이지용
+  | "wedding" // 웨딩 갤러리
+  | "space" // 공간 소개
+  | "about" // About 히어로
+  | "brand" // 브랜드 이미지
+  | "archive" // 아카이브 커버
+  | "food_beverage" // F&B
+  | "online_wedding" // 온라인 웨딩
+  | "contact"; // 문의 페이지
 ```
 
 ### 자동 대표 이미지 연결 원칙
@@ -473,9 +483,9 @@ type ProjectCategory =
 
 ```typescript
 // 프런트엔드 패턴
-const { data: heroPhotos }    = usePublicPhotos('about');    // About 히어로
-const { data: weddingPhotos } = usePublicPhotos('wedding');  // Wedding 갤러리
-const { data: brandPhotos }   = usePublicPhotos('brand');    // Brand 섹션
+const { data: heroPhotos } = usePublicPhotos("about"); // About 히어로
+const { data: weddingPhotos } = usePublicPhotos("wedding"); // Wedding 갤러리
+const { data: brandPhotos } = usePublicPhotos("brand"); // Brand 섹션
 ```
 
 ### 미디어 파이프라인 (Stage Flow)
@@ -494,14 +504,14 @@ pdf (인쇄물용)          ← 별도 관리
 
 ### Photo Stage 권한
 
-| 액션 | Operator | Super Admin |
-|------|----------|-------------|
-| web 단계 사진 조회 | ✅ | ✅ |
-| featured 설정 | ✅ | ✅ |
-| 태그 수정 | ✅ | ✅ |
-| project 생성 | — | ✅ |
-| stage 변경 | — | ✅ |
-| 삭제 | — | ✅ |
+| 액션               | Operator | Super Admin |
+| ------------------ | -------- | ----------- |
+| web 단계 사진 조회 | ✅       | ✅          |
+| featured 설정      | ✅       | ✅          |
+| 태그 수정          | ✅       | ✅          |
+| project 생성       | —        | ✅          |
+| stage 변경         | —        | ✅          |
+| 삭제               | —        | ✅          |
 
 ---
 
@@ -510,14 +520,14 @@ pdf (인쇄물용)          ← 별도 관리
 ### 문의 (Inquiry)
 
 ```typescript
-type InquiryStatus = 'pending' | 'reviewing' | 'replied' | 'closed';
+type InquiryStatus = "pending" | "reviewing" | "replied" | "closed";
 
 type InquiryType =
-  | 'rental'        // 공간 대관
-  | 'collaboration' // 협업
-  | 'general'       // 일반 문의
-  | 'media'         // 미디어/촬영
-  | 'wedding';      // 웨딩 문의
+  | "rental" // 공간 대관
+  | "collaboration" // 협업
+  | "general" // 일반 문의
+  | "media" // 미디어/촬영
+  | "wedding"; // 웨딩 문의
 ```
 
 **문의 처리 흐름**
@@ -532,22 +542,22 @@ pending → reviewing → replied → closed
 
 ```typescript
 type ReservationStatus =
-  | 'new'          // 신규 — 대시보드 Today에 표시
-  | 'consulting'   // 상담 중
-  | 'quote_sent'   // 견적 발송
-  | 'confirmed'    // 확정
-  | 'completed'    // 완료
-  | 'cancelled';   // 취소
+  | "new" // 신규 — 대시보드 Today에 표시
+  | "consulting" // 상담 중
+  | "quote_sent" // 견적 발송
+  | "confirmed" // 확정
+  | "completed" // 완료
+  | "cancelled"; // 취소
 ```
 
 **예약 단계별 어드민 액션**
 
-| 상태 | 어드민 할 일 |
-|------|------------|
-| new | 상담 일정 잡기 → consulting으로 변경 |
-| consulting | 견적 작성 → quote_sent |
-| quote_sent | 고객 확인 대기 → confirmed |
-| confirmed | 행사 진행 → completed |
+| 상태       | 어드민 할 일                         |
+| ---------- | ------------------------------------ |
+| new        | 상담 일정 잡기 → consulting으로 변경 |
+| consulting | 견적 작성 → quote_sent               |
+| quote_sent | 고객 확인 대기 → confirmed           |
+| confirmed  | 행사 진행 → completed                |
 
 ### CRM (v3.0 예정)
 
@@ -562,13 +572,13 @@ type ReservationStatus =
 
 THE LIT에서 구현된 모든 콘텐츠 필드는 AI 확장을 위해 다음 조건을 충족한다.
 
-| 조건 | 구현 |
-|------|------|
-| 구조화된 JSONB (journey_steps, brand_values) | ✅ |
-| 분리된 텍스트 필드 (title, description, keywords) | ✅ |
-| SEO 전용 필드 (seo_title, seo_description, seo_og_image, seo_keywords) | ✅ |
-| 태그 배열 (tags[]) | ✅ |
-| 다국어 확장 가능 필드 (title_en 등) | ✅ |
+| 조건                                                                   | 구현 |
+| ---------------------------------------------------------------------- | ---- |
+| 구조화된 JSONB (journey_steps, brand_values)                           | ✅   |
+| 분리된 텍스트 필드 (title, description, keywords)                      | ✅   |
+| SEO 전용 필드 (seo_title, seo_description, seo_og_image, seo_keywords) | ✅   |
+| 태그 배열 (tags[])                                                     | ✅   |
+| 다국어 확장 가능 필드 (title_en 등)                                    | ✅   |
 
 ### AI 기능 확장 포인트
 
@@ -584,14 +594,14 @@ AI Assistant 호출 (Supabase Edge Function)
 
 **v3.0 AI 기능 목록**
 
-| 기능 | 입력 | 출력 | 저장 위치 |
-|------|------|------|-----------|
-| SEO 제목 생성 | 콘텐츠 전문 | seo_title 후보 3개 | 임시 → 승인 시 seo_title |
-| SEO 설명 생성 | 콘텐츠 전문 | seo_description 후보 | 임시 → 승인 시 seo_description |
-| 블로그 초안 | 키워드 + 개요 | 마크다운 draft | blog_posts.content |
-| SNS 카피 생성 | 블로그/아카이브 | 인스타/X용 텍스트 | 별도 SNS draft 테이블 |
-| 이미지 추천 | 콘텐츠 context | photo_id[] | 수동 선택 후 적용 |
-| 자동 번역 | 한국어 필드 | 영문 title_en 등 | 해당 _en 필드 |
+| 기능          | 입력            | 출력                 | 저장 위치                      |
+| ------------- | --------------- | -------------------- | ------------------------------ |
+| SEO 제목 생성 | 콘텐츠 전문     | seo_title 후보 3개   | 임시 → 승인 시 seo_title       |
+| SEO 설명 생성 | 콘텐츠 전문     | seo_description 후보 | 임시 → 승인 시 seo_description |
+| 블로그 초안   | 키워드 + 개요   | 마크다운 draft       | blog_posts.content             |
+| SNS 카피 생성 | 블로그/아카이브 | 인스타/X용 텍스트    | 별도 SNS draft 테이블          |
+| 이미지 추천   | 콘텐츠 context  | photo_id[]           | 수동 선택 후 적용              |
+| 자동 번역     | 한국어 필드     | 영문 title_en 등     | 해당 \_en 필드                 |
 
 **AI 확장 원칙**
 
@@ -635,10 +645,10 @@ holiday           → 정기 휴무
 
 ```typescript
 interface Profile {
-  id:         UUID;
-  email:      string;
+  id: UUID;
+  email: string;
   full_name?: string;
-  role:       'super_admin' | 'operator' | 'viewer';
+  role: "super_admin" | "operator" | "viewer";
   created_at: ISODateString;
   updated_at: ISODateString;
 }
@@ -699,20 +709,21 @@ Framework 개념과 DB 스키마만 이식하고, 각 프로젝트 스택에 맞
 
 ### 프로젝트별 Brand 구조 매핑
 
-| 구조 | THE LIT | SafeLyn | GOLF DNA | BAIKAL |
-|------|---------|---------|----------|--------|
-| Brand Story | 더릿의 시작 | SafeLyn 철학 | 골프 DNA 이야기 | 바이칼 소개 |
-| Experience / Journey | Walk Into The Light | Safety Journey | Golf Round Flow | 프로젝트 과정 |
-| Philosophy | Dark·Passage·Light·Memory | 안전 가치 | Golf 정신 | 개발 철학 |
-| History | 2018→2024 | 설립→현재 | 창단→현재 | 법인→현재 |
-| SEO | About 페이지 | 메인 페이지 | 메인 페이지 | 포트폴리오 |
+| 구조                 | THE LIT                   | SafeLyn        | GOLF DNA        | BAIKAL        |
+| -------------------- | ------------------------- | -------------- | --------------- | ------------- |
+| Brand Story          | 더릿의 시작               | SafeLyn 철학   | 골프 DNA 이야기 | 바이칼 소개   |
+| Experience / Journey | Walk Into The Light       | Safety Journey | Golf Round Flow | 프로젝트 과정 |
+| Philosophy           | Dark·Passage·Light·Memory | 안전 가치      | Golf 정신       | 개발 철학     |
+| History              | 2018→2024                 | 설립→현재      | 창단→현재       | 법인→현재     |
+| SEO                  | About 페이지              | 메인 페이지    | 메인 페이지     | 포트폴리오    |
 
 ### 도메인 메뉴 활성화 방법
 
 ```typescript
 // 프로젝트에서 필요한 권한만 OPERATOR_PERMISSIONS에 포함
 const OPERATOR_PERMISSIONS: Permission[] = [
-  'dashboard', 'brand',
+  "dashboard",
+  "brand",
   // THE LIT:  spaces, programs, archive, blog, wedding_photos
   // SafeLyn:  cases, articles, resources
   // GOLF DNA: courses, tournaments, news
@@ -873,5 +884,5 @@ data.all_hidden     → 0개 표시 (운영자 의도)
 
 ---
 
-*BAIKAL Admin Framework v2.0 — Based on THE LIT Production Verification*
-*Authored: 2026-08-03*
+_BAIKAL Admin Framework v2.0 — Based on THE LIT Production Verification_
+_Authored: 2026-08-03_

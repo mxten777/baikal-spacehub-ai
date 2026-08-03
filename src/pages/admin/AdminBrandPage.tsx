@@ -27,12 +27,12 @@ type SectionKey =
   | "seo";
 
 const TABS: { key: BrandTab; label: string; superAdminOnly?: boolean }[] = [
-  { key: "story",      label: "Brand Story" },
-  { key: "journey",    label: "Experience Journey" },
-  { key: "wedding",    label: "Wedding Experience" },
+  { key: "story", label: "Brand Story" },
+  { key: "journey", label: "Experience Journey" },
+  { key: "wedding", label: "Wedding Experience" },
   { key: "philosophy", label: "Philosophy" },
-  { key: "history",    label: "History" },
-  { key: "seo",        label: "SEO", superAdminOnly: true },
+  { key: "history", label: "History" },
+  { key: "seo", label: "SEO", superAdminOnly: true },
 ];
 
 export default function AdminBrandPage() {
@@ -82,9 +82,7 @@ export default function AdminBrandPage() {
     [content],
   );
 
-  const visibleTabs = TABS.filter(
-    (t) => !t.superAdminOnly || isSuperAdmin,
-  );
+  const visibleTabs = TABS.filter((t) => !t.superAdminOnly || isSuperAdmin);
 
   return (
     <div>
@@ -284,14 +282,14 @@ function StorySectionPanel({
   saved: boolean;
   onSave: (u: Partial<AboutContent>) => void;
 }) {
-  const [eyebrow, setEyebrow]       = useState(content.story_eyebrow);
+  const [eyebrow, setEyebrow] = useState(content.story_eyebrow);
   const [titleLine1, setTitleLine1] = useState(content.story_title_line1);
   const [titleLine2, setTitleLine2] = useState(content.story_title_line2);
-  const [p1, setP1]                 = useState(content.story_paragraph_1);
-  const [p2, setP2]                 = useState(content.story_paragraph_2);
-  const [p3, setP3]                 = useState(content.story_paragraph_3);
-  const [ctaTitle, setCtaTitle]     = useState(content.cta_title);
-  const [ctaDesc, setCtaDesc]       = useState(content.cta_description);
+  const [p1, setP1] = useState(content.story_paragraph_1);
+  const [p2, setP2] = useState(content.story_paragraph_2);
+  const [p3, setP3] = useState(content.story_paragraph_3);
+  const [ctaTitle, setCtaTitle] = useState(content.cta_title);
+  const [ctaDesc, setCtaDesc] = useState(content.cta_description);
 
   useEffect(() => {
     setEyebrow(content.story_eyebrow);
@@ -328,14 +326,40 @@ function StorySectionPanel({
         <Field label="제목 1행" value={titleLine1} onChange={setTitleLine1} />
         <Field label="제목 2행" value={titleLine2} onChange={setTitleLine2} />
       </div>
-      <Field label="본문 단락 1" value={p1} onChange={setP1} multiline rows={3} />
-      <Field label="본문 단락 2" value={p2} onChange={setP2} multiline rows={3} />
-      <Field label="본문 단락 3" value={p3} onChange={setP3} multiline rows={3} />
+      <Field
+        label="본문 단락 1"
+        value={p1}
+        onChange={setP1}
+        multiline
+        rows={3}
+      />
+      <Field
+        label="본문 단락 2"
+        value={p2}
+        onChange={setP2}
+        multiline
+        rows={3}
+      />
+      <Field
+        label="본문 단락 3"
+        value={p3}
+        onChange={setP3}
+        multiline
+        rows={3}
+      />
       <div className="pt-2 border-t border-gray-100">
-        <p className="font-sans text-xs text-gray-400 mb-3 uppercase tracking-wider">CTA</p>
+        <p className="font-sans text-xs text-gray-400 mb-3 uppercase tracking-wider">
+          CTA
+        </p>
         <div className="grid grid-cols-2 gap-4">
           <Field label="CTA 제목" value={ctaTitle} onChange={setCtaTitle} />
-          <Field label="CTA 설명" value={ctaDesc} onChange={setCtaDesc} multiline rows={2} />
+          <Field
+            label="CTA 설명"
+            value={ctaDesc}
+            onChange={setCtaDesc}
+            multiline
+            rows={2}
+          />
         </div>
       </div>
     </SectionCard>
@@ -355,13 +379,19 @@ function JourneyPanel({
   saved: boolean;
   onSave: (u: Partial<AboutContent>) => void;
 }) {
-  const [steps, setSteps] = useState<JourneyStep[]>(content.journey_steps ?? []);
+  const [steps, setSteps] = useState<JourneyStep[]>(
+    content.journey_steps ?? [],
+  );
 
   useEffect(() => {
     setSteps(content.journey_steps ?? []);
   }, [content]);
 
-  const update = (idx: number, key: keyof JourneyStep, val: string | boolean) => {
+  const update = (
+    idx: number,
+    key: keyof JourneyStep,
+    val: string | boolean,
+  ) => {
     setSteps((prev) =>
       prev.map((s, i) => (i === idx ? { ...s, [key]: val } : s)),
     );
@@ -393,7 +423,8 @@ function JourneyPanel({
       onSave={() => onSave({ journey_steps: steps })}
     >
       <p className="font-sans text-xs text-gray-400">
-        감정 흐름 단계를 수정합니다. 노출 여부 체크 해제 시 홈페이지에서 숨겨집니다.
+        감정 흐름 단계를 수정합니다. 노출 여부 체크 해제 시 홈페이지에서
+        숨겨집니다.
       </p>
       <div className="space-y-3 mt-2">
         {steps.map((step, idx) => (
@@ -435,7 +466,9 @@ function JourneyPanel({
                     type="checkbox"
                     id={`visible-${idx}`}
                     checked={step.is_visible}
-                    onChange={(e) => update(idx, "is_visible", e.target.checked)}
+                    onChange={(e) =>
+                      update(idx, "is_visible", e.target.checked)
+                    }
                     className="w-3.5 h-3.5 accent-brand-black"
                   />
                   <label
@@ -498,14 +531,24 @@ function WeddingPanel({
   };
 
   const updateKeywords = (idx: number, raw: string) => {
-    update(idx, "keywords", raw.split(",").map((k) => k.trim()).filter(Boolean));
+    update(
+      idx,
+      "keywords",
+      raw
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean),
+    );
   };
 
   const updateRecommended = (idx: number, raw: string) => {
     update(
       idx,
       "recommended",
-      raw.split(",").map((k) => k.trim()).filter(Boolean),
+      raw
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean),
     );
   };
 
@@ -541,7 +584,8 @@ function WeddingPanel({
       onSave={() => onSave({ wedding_experiences: tracks })}
     >
       <p className="font-sans text-xs text-gray-400">
-        House Wedding / Garden Wedding / Studio Wedding 3가지 웨딩 경험을 관리합니다.
+        House Wedding / Garden Wedding / Studio Wedding 3가지 웨딩 경험을
+        관리합니다.
       </p>
       <div className="space-y-6 mt-2">
         {tracks.map((track, idx) => (
@@ -558,7 +602,9 @@ function WeddingPanel({
                   <input
                     type="checkbox"
                     checked={track.is_visible}
-                    onChange={(e) => update(idx, "is_visible", e.target.checked)}
+                    onChange={(e) =>
+                      update(idx, "is_visible", e.target.checked)
+                    }
                     className="w-3.5 h-3.5 accent-brand-black"
                   />
                   노출
@@ -695,8 +741,8 @@ function PhilosophyPanel({
   onSave: (u: Partial<AboutContent>) => void;
 }) {
   const [eyebrow, setEyebrow] = useState(content.values_eyebrow);
-  const [title, setTitle]     = useState(content.values_title);
-  const [items, setItems]     = useState<AboutValueItem[]>(content.brand_values);
+  const [title, setTitle] = useState(content.values_title);
+  const [items, setItems] = useState<AboutValueItem[]>(content.brand_values);
 
   useEffect(() => {
     setEyebrow(content.values_eyebrow);
@@ -734,7 +780,9 @@ function PhilosophyPanel({
     >
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block font-sans text-xs text-gray-500 mb-1.5">Eyebrow 텍스트</label>
+          <label className="block font-sans text-xs text-gray-500 mb-1.5">
+            Eyebrow 텍스트
+          </label>
           <input
             value={eyebrow}
             onChange={(e) => setEyebrow(e.target.value)}
@@ -742,7 +790,9 @@ function PhilosophyPanel({
           />
         </div>
         <div>
-          <label className="block font-sans text-xs text-gray-500 mb-1.5">섹션 제목</label>
+          <label className="block font-sans text-xs text-gray-500 mb-1.5">
+            섹션 제목
+          </label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -752,7 +802,10 @@ function PhilosophyPanel({
       </div>
       <div className="space-y-3 mt-2">
         {items.map((item, idx) => (
-          <div key={idx} className="flex gap-3 p-4 border border-gray-100 bg-gray-50">
+          <div
+            key={idx}
+            className="flex gap-3 p-4 border border-gray-100 bg-gray-50"
+          >
             <GripVertical size={14} className="text-gray-300 mt-2.5 shrink-0" />
             <div className="grid grid-cols-1 sm:grid-cols-[50px_1fr_3fr] gap-3 flex-1">
               <input
@@ -836,7 +889,10 @@ function HistoryPanel({
     >
       <div className="space-y-3">
         {items.map((item, idx) => (
-          <div key={idx} className="flex gap-3 p-4 border border-gray-100 bg-gray-50">
+          <div
+            key={idx}
+            className="flex gap-3 p-4 border border-gray-100 bg-gray-50"
+          >
             <GripVertical size={14} className="text-gray-300 mt-2.5 shrink-0" />
             <div className="grid grid-cols-1 sm:grid-cols-[80px_1fr_2fr] gap-3 flex-1">
               <input
@@ -890,9 +946,9 @@ function SeoPanel({
   saved: boolean;
   onSave: (u: Partial<AboutContent>) => void;
 }) {
-  const [seoTitle, setSeoTitle]       = useState(content.seo_title ?? "");
-  const [seoDesc, setSeoDesc]         = useState(content.seo_description ?? "");
-  const [seoOgImage, setSeoOgImage]   = useState(content.seo_og_image ?? "");
+  const [seoTitle, setSeoTitle] = useState(content.seo_title ?? "");
+  const [seoDesc, setSeoDesc] = useState(content.seo_description ?? "");
+  const [seoOgImage, setSeoOgImage] = useState(content.seo_og_image ?? "");
   const [seoKeywords, setSeoKeywords] = useState(content.seo_keywords ?? "");
 
   useEffect(() => {
@@ -926,9 +982,7 @@ function SeoPanel({
       <div>
         <label className="block font-sans text-xs text-gray-500 mb-1.5">
           Title{" "}
-          <span className="text-gray-400">
-            ({seoTitle.length}/60자 권장)
-          </span>
+          <span className="text-gray-400">({seoTitle.length}/60자 권장)</span>
         </label>
         <input
           value={seoTitle}
@@ -940,9 +994,7 @@ function SeoPanel({
       <div>
         <label className="block font-sans text-xs text-gray-500 mb-1.5">
           Description{" "}
-          <span className="text-gray-400">
-            ({seoDesc.length}/160자 권장)
-          </span>
+          <span className="text-gray-400">({seoDesc.length}/160자 권장)</span>
         </label>
         <textarea
           value={seoDesc}
