@@ -113,7 +113,7 @@ export default function Header() {
               <img
                 src="/images/thelitlogo_red_trans.png"
                 alt="The Lit"
-                className="h-10"
+                className="h-11"
               />
             </Link>
 
