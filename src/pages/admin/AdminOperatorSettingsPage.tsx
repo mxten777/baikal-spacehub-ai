@@ -149,18 +149,14 @@ export default function AdminOperatorSettingsPage() {
         </p>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center h-40">
-          <Loader2 size={24} className="animate-spin text-brand-muted" />
-        </div>
-      ) : (
-        <div className="space-y-8">
+      <div className="space-y-8">
           {GROUPS.map((group) => {
             const groupKeys = OPERATOR_KEYS.filter((k) => k.group === group);
             return (
               <div key={group}>
-                <h2 className="font-sans text-xs tracking-wider uppercase text-gray-500 mb-3">
+                <h2 className="font-sans text-xs tracking-wider uppercase text-gray-500 mb-3 flex items-center gap-2">
                   {group}
+                  {loading && <Loader2 size={10} className="animate-spin text-gray-300" />}
                 </h2>
                 <div className="bg-white border border-gray-200 divide-y divide-gray-100">
                   {groupKeys.map(({ key, label, placeholder }) => (
@@ -181,7 +177,6 @@ export default function AdminOperatorSettingsPage() {
             );
           })}
         </div>
-      )}
     </div>
   );
 }
