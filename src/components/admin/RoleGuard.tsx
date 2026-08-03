@@ -24,12 +24,12 @@ interface RoleGuardProps {
 export default function RoleGuard({
   permission,
   children,
-  redirectTo = "/admin",
+  redirectTo = "/admin/login",
 }: RoleGuardProps) {
-  const { loading, hasPermission, user, role } = useAuth();
+  const { loading, profileLoading, hasPermission } = useAuth();
 
-  // auth 로딩 중이거나 user는 있지만 profile(role) 아직 조회 중 → 대기
-  if (loading || (user && role === null)) return null;
+  // auth 또는 profile 조회 중 → 판단 보류
+  if (loading || profileLoading) return null;
 
   if (!hasPermission(permission)) {
     return <Navigate to={redirectTo} replace />;

@@ -11,14 +11,14 @@ interface LoginForm {
 }
 
 export default function AdminLoginPage() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const { register, handleSubmit } = useForm<LoginForm>();
 
-  // AuthContext.user가 설정되면 자동으로 리다이렉트 (race condition 없음)
-  if (user) return <Navigate to="/admin" replace />;
+  // user와 role이 모두 확인된 후에만 리다이렉트 (profile 없는 user → 무한루프 방지)
+  if (user && role !== null) return <Navigate to="/admin" replace />;
 
   const onSubmit = async ({ email, password }: LoginForm) => {
     setLoading(true);

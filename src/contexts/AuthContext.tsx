@@ -31,6 +31,8 @@ interface AuthContextValue {
   profile: Profile | null;
   role: AdminRole | null;
   loading: boolean;
+  /** profile 조회가 진행 중인 동안 true — role이 null이어도 아직 판단 불가 */
+  profileLoading: boolean;
   isSuperAdmin: boolean;
   isOperator: boolean;
   hasPermission: (permission: Permission) => boolean;
@@ -44,14 +46,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   const fetchProfile = useCallback(async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-    setProfile(data ?? null);
+    setProfileLoading(true);
+    try {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+      setProfile(data ?? null);
+    } catch {
+      setProfile(null);
+    } finally {
+      setProfileLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -133,6 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile,
     role,
     loading,
+    profileLoading,
     isSuperAdmin: checkSuperAdmin(role),
     isOperator: checkOperator(role),
     hasPermission: (permission: Permission) =>
