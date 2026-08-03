@@ -150,33 +150,35 @@ export default function AdminOperatorSettingsPage() {
       </div>
 
       <div className="space-y-8">
-          {GROUPS.map((group) => {
-            const groupKeys = OPERATOR_KEYS.filter((k) => k.group === group);
-            return (
-              <div key={group}>
-                <h2 className="font-sans text-xs tracking-wider uppercase text-gray-500 mb-3 flex items-center gap-2">
-                  {group}
-                  {loading && <Loader2 size={10} className="animate-spin text-gray-300" />}
-                </h2>
-                <div className="bg-white border border-gray-200 divide-y divide-gray-100">
-                  {groupKeys.map(({ key, label, placeholder }) => (
-                    <SettingRow
-                      key={key}
-                      settingKey={key}
-                      label={label}
-                      placeholder={placeholder}
-                      initialValue={getSettingValue(key)}
-                      saving={savingKey === key}
-                      saved={savedKey === key}
-                      error={errorKey === key}
-                      onSave={handleSave}
-                    />
-                  ))}
-                </div>
+        {GROUPS.map((group) => {
+          const groupKeys = OPERATOR_KEYS.filter((k) => k.group === group);
+          return (
+            <div key={group}>
+              <h2 className="font-sans text-xs tracking-wider uppercase text-gray-500 mb-3 flex items-center gap-2">
+                {group}
+                {loading && (
+                  <Loader2 size={10} className="animate-spin text-gray-300" />
+                )}
+              </h2>
+              <div className="bg-white border border-gray-200 divide-y divide-gray-100">
+                {groupKeys.map(({ key, label, placeholder }) => (
+                  <SettingRow
+                    key={key}
+                    settingKey={key}
+                    label={label}
+                    placeholder={placeholder}
+                    initialValue={getSettingValue(key)}
+                    saving={savingKey === key}
+                    saved={savedKey === key}
+                    error={errorKey === key}
+                    onSave={handleSave}
+                  />
+                ))}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -228,8 +230,8 @@ function SettingRow({
             error
               ? "bg-red-600 text-white"
               : saved
-              ? "bg-green-600 text-white"
-              : "bg-brand-black text-white hover:bg-brand-muted"
+                ? "bg-green-600 text-white"
+                : "bg-brand-black text-white hover:bg-brand-muted"
           }`}
         >
           {saving ? (

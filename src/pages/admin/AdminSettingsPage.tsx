@@ -153,7 +153,9 @@ export default function AdminSettingsPage() {
           <h1 className="font-display text-2xl font-light text-brand-black">
             시스템 설정
           </h1>
-          {loading && <Loader2 size={14} className="animate-spin text-gray-300" />}
+          {loading && (
+            <Loader2 size={14} className="animate-spin text-gray-300" />
+          )}
         </div>
         <p className="font-sans text-sm text-gray-500 mt-1">
           공급자 전용 — SEO·분석 도구·도메인 등 시스템 전역 설정을 관리합니다.
@@ -165,81 +167,81 @@ export default function AdminSettingsPage() {
       </div>
 
       <div className="space-y-8">
-          {/* System settings */}
-          <div className="bg-white border border-gray-200 divide-y divide-gray-100">
-            {SYSTEM_KEYS.map(({ key, label, placeholder }) => {
-              const currentValue = getSettingValue(key);
-              return (
-                <SettingRow
-                  key={key}
-                  settingKey={key}
-                  label={label}
-                  placeholder={placeholder}
-                  initialValue={currentValue}
-                  saving={savingKey === key}
-                  saved={savedKey === key}
-                  onSave={handleSave}
-                />
-              );
-            })}
-          </div>
+        {/* System settings */}
+        <div className="bg-white border border-gray-200 divide-y divide-gray-100">
+          {SYSTEM_KEYS.map(({ key, label, placeholder }) => {
+            const currentValue = getSettingValue(key);
+            return (
+              <SettingRow
+                key={key}
+                settingKey={key}
+                label={label}
+                placeholder={placeholder}
+                initialValue={currentValue}
+                saving={savingKey === key}
+                saved={savedKey === key}
+                onSave={handleSave}
+              />
+            );
+          })}
+        </div>
 
-          {/* Custom settings */}
-          {customSettings.length > 0 && (
-            <div>
-              <h2 className="font-sans text-xs tracking-wider uppercase text-gray-500 mb-3">
-                커스텀 설정
-              </h2>
-              <div className="bg-white border border-gray-200 divide-y divide-gray-100">
-                {customSettings.map((setting) => (
-                  <SettingRow
-                    key={setting.key}
-                    settingKey={setting.key}
-                    label={setting.key}
-                    placeholder=""
-                    initialValue={setting.value}
-                    saving={savingKey === setting.key}
-                    saved={savedKey === setting.key}
-                    onSave={handleSave}
-                    onDelete={() => handleDelete(setting)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Add custom */}
+        {/* Custom settings */}
+        {customSettings.length > 0 && (
           <div>
             <h2 className="font-sans text-xs tracking-wider uppercase text-gray-500 mb-3">
-              커스텀 설정 추가
+              커스텀 설정
             </h2>
-            <div className="bg-white border border-gray-200 p-5 flex flex-col sm:flex-row gap-3">
-              <input
-                value={customKey}
-                onChange={(e) => setCustomKey(e.target.value)}
-                placeholder="키 (예: footer_note)"
-                className="flex-1 border border-gray-200 px-3 py-2 text-sm font-mono focus:outline-none focus:border-brand-black"
-              />
-              <input
-                value={customValue}
-                onChange={(e) => setCustomValue(e.target.value)}
-                placeholder="값"
-                className="flex-[2] border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
-              />
-              <button
-                onClick={handleAddCustom}
-                disabled={!customKey.trim() || addingCustom}
-                className="flex items-center gap-2 px-5 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50"
-              >
-                {addingCustom ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : (
-                  <Plus size={14} />
-                )}
-                추가
-              </button>
+            <div className="bg-white border border-gray-200 divide-y divide-gray-100">
+              {customSettings.map((setting) => (
+                <SettingRow
+                  key={setting.key}
+                  settingKey={setting.key}
+                  label={setting.key}
+                  placeholder=""
+                  initialValue={setting.value}
+                  saving={savingKey === setting.key}
+                  saved={savedKey === setting.key}
+                  onSave={handleSave}
+                  onDelete={() => handleDelete(setting)}
+                />
+              ))}
             </div>
           </div>
+        )}
+
+        {/* Add custom */}
+        <div>
+          <h2 className="font-sans text-xs tracking-wider uppercase text-gray-500 mb-3">
+            커스텀 설정 추가
+          </h2>
+          <div className="bg-white border border-gray-200 p-5 flex flex-col sm:flex-row gap-3">
+            <input
+              value={customKey}
+              onChange={(e) => setCustomKey(e.target.value)}
+              placeholder="키 (예: footer_note)"
+              className="flex-1 border border-gray-200 px-3 py-2 text-sm font-mono focus:outline-none focus:border-brand-black"
+            />
+            <input
+              value={customValue}
+              onChange={(e) => setCustomValue(e.target.value)}
+              placeholder="값"
+              className="flex-[2] border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+            />
+            <button
+              onClick={handleAddCustom}
+              disabled={!customKey.trim() || addingCustom}
+              className="flex items-center gap-2 px-5 py-2 bg-brand-black text-white text-sm font-sans hover:bg-brand-muted transition-colors disabled:opacity-50"
+            >
+              {addingCustom ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Plus size={14} />
+              )}
+              추가
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

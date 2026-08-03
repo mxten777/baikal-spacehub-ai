@@ -183,7 +183,10 @@ export default function AdminUsersPage() {
               const isSaved = savedId === profile.id;
 
               return (
-                <li key={profile.id} className="px-4 py-4 flex items-center gap-4 flex-wrap sm:flex-nowrap">
+                <li
+                  key={profile.id}
+                  className="px-4 py-4 flex items-center gap-4 flex-wrap sm:flex-nowrap"
+                >
                   {/* Avatar & info */}
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
@@ -196,7 +199,9 @@ export default function AdminUsersPage() {
                       >
                         {profile.email}
                         {isCurrentUser && (
-                          <span className="ml-2 text-xs text-gray-400">(나)</span>
+                          <span className="ml-2 text-xs text-gray-400">
+                            (나)
+                          </span>
                         )}
                       </p>
                       {profile.full_name && (
@@ -267,7 +272,9 @@ export default function AdminUsersPage() {
               >
                 {opt.label}
               </span>
-              <span className="font-sans text-xs text-gray-500">{opt.desc}</span>
+              <span className="font-sans text-xs text-gray-500">
+                {opt.desc}
+              </span>
             </li>
           ))}
         </ul>
