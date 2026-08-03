@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Navigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
-import type { Session } from "@supabase/supabase-js";
+import { useAuth } from "../../hooks/useAuth";
 
 interface LoginForm {
   email: string;
@@ -11,62 +11,28 @@ interface LoginForm {
 }
 
 export default function AdminLoginPage() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [session, setSession] = useState<Session | null>(null);
-  const navigate = useNavigate();
 
   const { register, handleSubmit } = useForm<LoginForm>();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, session) => {
-      setSession(session);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (session) return <Navigate to="/admin" replace />;
+  // AuthContext.user가 설정되면 자동으로 리다이렉트 (race condition 없음)
+  if (user) return <Navigate to="/admin" replace />;
 
   const onSubmit = async ({ email, password }: LoginForm) => {
     setLoading(true);
     setError("");
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    setLoading(false);
     if (error) {
       setError("이메일 또는 비밀번호가 올바르지 않습니다.");
-      setLoading(false);
-      return;
     }
-
-    // If signIn returns a session immediately, navigate right away.
-    if (data?.session) {
-      navigate("/admin");
-      setLoading(false);
-      return;
-    }
-
-    // Otherwise wait for onAuthStateChange to provide the session (avoids race where session isn't available yet).
-    try {
-      await new Promise<void>((resolve) => {
-        const { data: sub } = supabase.auth.onAuthStateChange(
-          (_event, session) => {
-            if (session) {
-              sub.subscription.unsubscribe();
-              resolve();
-            }
-          },
-        );
-      });
-      navigate("/admin");
-    } catch {
-      setError("로그인 처리 중 오류가 발생했습니다. 다시 시도하세요.");
-    }
-    setLoading(false);
+    // navigate 불필요 — signInWithPassword 성공 시 AuthContext.user가 설정되고
+    // 위의 if (user) 조건이 트리거되어 /admin으로 자동 이동
   };
 
   return (

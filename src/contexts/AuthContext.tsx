@@ -57,9 +57,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
+    // Supabase cold start 대응: 8초 이내에 getSession()이 응답하지 않으면 loading 강제 해제
+    const loadingTimeout = setTimeout(() => {
+      if (mounted) setLoading(false);
+    }, 8000);
+
     async function initAuth() {
       try {
         const { data, error } = await supabase.auth.getSession();
+        clearTimeout(loadingTimeout);
         if (!mounted) return;
 
         if (error) {
@@ -81,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
         }
       } catch {
+        clearTimeout(loadingTimeout);
         if (!mounted) return;
         setUser(null);
         setProfile(null);
@@ -114,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       mounted = false;
+      clearTimeout(loadingTimeout);
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
