@@ -153,6 +153,7 @@ export default function AdminSettingsPage() {
           <h1 className="font-display text-2xl font-light text-brand-black">
             시스템 설정
           </h1>
+          {loading && <Loader2 size={14} className="animate-spin text-gray-300" />}
         </div>
         <p className="font-sans text-sm text-gray-500 mt-1">
           공급자 전용 — SEO·분석 도구·도메인 등 시스템 전역 설정을 관리합니다.
@@ -163,12 +164,7 @@ export default function AdminSettingsPage() {
         </p>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center h-40">
-          <Loader2 size={24} className="animate-spin text-brand-muted" />
-        </div>
-      ) : (
-        <div className="space-y-8">
+      <div className="space-y-8">
           {/* System settings */}
           <div className="bg-white border border-gray-200 divide-y divide-gray-100">
             {SYSTEM_KEYS.map(({ key, label, placeholder }) => {
@@ -244,8 +240,7 @@ export default function AdminSettingsPage() {
               </button>
             </div>
           </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

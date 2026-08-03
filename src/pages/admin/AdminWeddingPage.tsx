@@ -376,8 +376,10 @@ export default function AdminWeddingPage() {
             </div>
 
             {photosLoading ? (
-              <div className="flex items-center justify-center py-24 text-brand-muted">
-                <Loader2 size={24} className="animate-spin" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+                {Array.from({ length: 12 }, (_, i) => (
+                  <div key={i} className="aspect-square bg-gray-100 animate-pulse" />
+                ))}
               </div>
             ) : photosError ? (
               <AdminQueryError message={(photosError as Error).message} />
@@ -425,8 +427,12 @@ export default function AdminWeddingPage() {
         {activeTab === "inquiries" && (
           <>
             {inquiriesLoading ? (
-              <div className="flex items-center justify-center py-24 text-brand-muted">
-                <Loader2 size={24} className="animate-spin" />
+              <div className="bg-white border border-gray-200 overflow-hidden">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <div key={i} className="px-6 py-4 border-b border-gray-100">
+                    <div className="h-3 bg-gray-100 animate-pulse rounded w-3/4" />
+                  </div>
+                ))}
               </div>
             ) : inquiriesError ? (
               <AdminQueryError message="웨딩 문의를 불러오지 못했습니다." />

@@ -158,9 +158,19 @@ export default function AdminUsersPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 size={20} className="animate-spin text-gray-400" />
-          </div>
+          <ul className="divide-y divide-gray-100">
+            {Array.from({ length: 3 }, (_, i) => (
+              <li key={i} className="px-4 py-4 flex items-center gap-4">
+                <div className="w-8 h-8 rounded-full bg-gray-100 animate-pulse shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 bg-gray-100 animate-pulse rounded w-48" />
+                  <div className="h-2 bg-gray-100 animate-pulse rounded w-32" />
+                </div>
+                <div className="h-6 w-16 bg-gray-100 animate-pulse rounded shrink-0" />
+                <div className="h-8 w-28 bg-gray-100 animate-pulse rounded shrink-0" />
+              </li>
+            ))}
+          </ul>
         ) : profiles.length === 0 ? (
           <div className="py-12 text-center font-sans text-sm text-gray-400">
             등록된 사용자가 없습니다.
