@@ -1,12 +1,26 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Star, ImageOff, FolderKanban, Loader2, X, Mail, Phone, Clock, ChevronDown } from "lucide-react";
+import {
+  Star,
+  ImageOff,
+  FolderKanban,
+  X,
+  Mail,
+  Phone,
+  Clock,
+  ChevronDown,
+} from "lucide-react";
 import {
   getAdminPhotosByCategory,
   updatePhotoRecord,
 } from "../../services/photoRepository";
-import type { PhotoRecord, ProjectStage, Inquiry, InquiryStatus } from "../../types";
+import type {
+  PhotoRecord,
+  ProjectStage,
+  Inquiry,
+  InquiryStatus,
+} from "../../types";
 import { useInquiries } from "../../hooks/useData";
 import { inquiriesService } from "../../services/inquiries";
 import PhotoDetailPanel from "../../components/admin/photo-projects/PhotoDetailPanel";
@@ -169,24 +183,34 @@ function WeddingInquiryModal({
       <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="font-display text-lg font-light">{inquiry.subject}</h2>
+            <h2 className="font-display text-lg font-light">
+              {inquiry.subject}
+            </h2>
             <span
               className={`inline-block mt-1 px-2 py-0.5 text-[10px] font-sans tracking-widest uppercase ${STATUS_COLORS[inquiry.status] ?? "bg-gray-100"}`}
             >
               {STATUS_LABELS[inquiry.status] ?? inquiry.status}
             </span>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-brand-black">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-brand-black"
+          >
             <X size={20} />
           </button>
         </div>
         <div className="p-6 space-y-5">
           <div className="bg-gray-50 p-4 space-y-2">
-            <p className="font-sans text-sm font-medium text-gray-700">{inquiry.name}</p>
+            <p className="font-sans text-sm font-medium text-gray-700">
+              {inquiry.name}
+            </p>
             {inquiry.email && (
               <div className="flex items-center gap-2 text-sm font-sans text-gray-600">
                 <Mail size={14} className="text-gray-400" />
-                <a href={`mailto:${inquiry.email}`} className="hover:text-brand-black">
+                <a
+                  href={`mailto:${inquiry.email}`}
+                  className="hover:text-brand-black"
+                >
                   {inquiry.email}
                 </a>
               </div>
@@ -203,13 +227,17 @@ function WeddingInquiryModal({
             </div>
           </div>
           <div>
-            <p className="text-xs font-sans text-gray-500 tracking-wider uppercase mb-2">메시지</p>
+            <p className="text-xs font-sans text-gray-500 tracking-wider uppercase mb-2">
+              메시지
+            </p>
             <p className="text-sm font-sans text-gray-700 whitespace-pre-wrap leading-relaxed">
               {inquiry.message}
             </p>
           </div>
           <div>
-            <p className="text-xs font-sans text-gray-500 tracking-wider uppercase mb-2">상태 변경</p>
+            <p className="text-xs font-sans text-gray-500 tracking-wider uppercase mb-2">
+              상태 변경
+            </p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(STATUS_LABELS).map(([val, label]) => (
                 <button
@@ -339,7 +367,9 @@ export default function AdminWeddingPage() {
             }`}
           >
             웨딩 문의
-            <span className="ml-1.5 text-xs opacity-50">({inquiries.length})</span>
+            <span className="ml-1.5 text-xs opacity-50">
+              ({inquiries.length})
+            </span>
           </button>
         </div>
 
@@ -357,7 +387,8 @@ export default function AdminWeddingPage() {
                 const count =
                   tab.value === "all"
                     ? photos.length
-                    : photos.filter((p) => p.project_stage === tab.value).length;
+                    : photos.filter((p) => p.project_stage === tab.value)
+                        .length;
                 return (
                   <button
                     key={tab.value}
@@ -378,7 +409,10 @@ export default function AdminWeddingPage() {
             {photosLoading ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
                 {Array.from({ length: 12 }, (_, i) => (
-                  <div key={i} className="aspect-square bg-gray-100 animate-pulse" />
+                  <div
+                    key={i}
+                    className="aspect-square bg-gray-100 animate-pulse"
+                  />
                 ))}
               </div>
             ) : photosError ? (
@@ -472,7 +506,9 @@ export default function AdminWeddingPage() {
                       >
                         <td className="px-6 py-4">
                           <span className="text-xs font-sans text-gray-600">
-                            {new Date(inq.created_at).toLocaleDateString("ko-KR")}
+                            {new Date(inq.created_at).toLocaleDateString(
+                              "ko-KR",
+                            )}
                           </span>
                         </td>
                         <td className="px-6 py-4">
@@ -498,7 +534,10 @@ export default function AdminWeddingPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <ChevronDown size={14} className="text-gray-400 -rotate-90" />
+                          <ChevronDown
+                            size={14}
+                            className="text-gray-400 -rotate-90"
+                          />
                         </td>
                       </tr>
                     ))}
