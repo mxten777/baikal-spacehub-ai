@@ -55,15 +55,20 @@ export default function AboutPage() {
     brand_intro_paragraph_1,
     brand_intro_paragraph_2,
     brand_intro_pillars,
+    seo_title,
+    seo_description,
+    seo_og_image,
+    seo_keywords,
   } = content;
 
   return (
     <>
       <SeoHead
-        title="Brand Story — THE LIT | 빛을 향해 걷는 이야기"
-        description="THE LIT를 만든 이유, 빛의 철학, 30m의 여정. 더릿 브랜드 스토리와 창립 철학을 소개합니다."
+        title={seo_title || "Brand Story — THE LIT | 빛을 향해 걷는 이야기"}
+        description={seo_description || "THE LIT를 만든 이유, 빛의 철학, 30m의 여정. 더릿 브랜드 스토리와 창립 철학을 소개합니다."}
         canonical={`${SITE_URL}/about`}
-        keywords="더릿 브랜드 스토리, 복합문화공간 철학, THE LIT 창립 이야기, 빛의 철학, Walk Into The Light"
+        keywords={seo_keywords || "더릿 브랜드 스토리, 복합문화공간 철학, THE LIT 창립 이야기, 빛의 철학, Walk Into The Light"}
+        image={seo_og_image || undefined}
         jsonLd={[
           localBusinessJsonLd(),
           breadcrumbJsonLd([
