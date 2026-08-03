@@ -31,7 +31,6 @@ const ReservationPage = lazy(() => import("./pages/ReservationPage"));
 const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminSpacesPage = lazy(() => import("./pages/admin/AdminSpacesPage"));
-const AdminProgramsPage = lazy(() => import("./pages/admin/AdminProgramsPage"));
 const AdminArchivePage = lazy(() => import("./pages/admin/AdminArchivePage"));
 const AdminBlogPage = lazy(() => import("./pages/admin/AdminBlogPage"));
 const AdminMediaPage = lazy(() => import("./pages/admin/AdminMediaPage"));
@@ -48,9 +47,7 @@ const AdminContentSourcesPage = lazy(
 const AdminExternalContentPage = lazy(
   () => import("./pages/admin/AdminExternalContentPage"),
 );
-const AdminExternalPage = lazy(
-  () => import("./pages/admin/AdminExternalPage"),
-);
+const AdminExternalPage = lazy(() => import("./pages/admin/AdminExternalPage"));
 const AdminReservationsPage = lazy(
   () => import("./pages/admin/AdminReservationsPage"),
 );
@@ -170,14 +167,6 @@ export default function App() {
                     element={
                       <RoleGuard permission="spaces">
                         <AdminSpacesPage />
-                      </RoleGuard>
-                    }
-                  />
-                  <Route
-                    path="programs"
-                    element={
-                      <RoleGuard permission="programs">
-                        <AdminProgramsPage />
                       </RoleGuard>
                     }
                   />

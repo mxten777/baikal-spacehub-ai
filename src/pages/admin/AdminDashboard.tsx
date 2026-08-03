@@ -1,5 +1,4 @@
 import { useSpaces } from "../../hooks/useData";
-import { usePrograms } from "../../hooks/useData";
 import { useArchive } from "../../hooks/useData";
 import { useInquiries } from "../../hooks/useData";
 import { useBlogPosts } from "../../hooks/useData";
@@ -69,7 +68,6 @@ function StatCard({
 
 export default function AdminDashboard() {
   const { data: spaces } = useSpaces();
-  const { data: programs } = usePrograms();
   const { data: archives } = useArchive();
   const { data: inquiries } = useInquiries({ status: "pending" });
   const { data: blogResult } = useBlogPosts({ limit: 1 });
@@ -114,22 +112,15 @@ export default function AdminDashboard() {
       color: "bg-blue-600",
     },
     {
-      icon: Calendar,
-      label: "프로그램",
-      value: programs?.length ?? 0,
-      href: "/admin/programs",
-      color: "bg-purple-600",
-    },
-    {
       icon: Archive,
-      label: "아카이브",
+      label: "History",
       value: archives?.length ?? 0,
       href: "/admin/archive",
       color: "bg-orange-500",
     },
     {
       icon: FileText,
-      label: "블로그",
+      label: "Stories",
       value: blogResult?.count ?? 0,
       href: "/admin/blog",
       color: "bg-green-600",
@@ -248,14 +239,23 @@ export default function AdminDashboard() {
             {[
               {
                 label: "Experience Journey",
-                ok: (brandContent?.journey_steps?.filter((s) => s.is_visible).length ?? 0) > 0,
-                count: brandContent?.journey_steps?.filter((s) => s.is_visible).length ?? 0,
+                ok:
+                  (brandContent?.journey_steps?.filter((s) => s.is_visible)
+                    .length ?? 0) > 0,
+                count:
+                  brandContent?.journey_steps?.filter((s) => s.is_visible)
+                    .length ?? 0,
                 unit: "단계",
               },
               {
                 label: "Wedding Experience",
-                ok: (brandContent?.wedding_experiences?.filter((w) => w.is_visible).length ?? 0) > 0,
-                count: brandContent?.wedding_experiences?.filter((w) => w.is_visible).length ?? 0,
+                ok:
+                  (brandContent?.wedding_experiences?.filter(
+                    (w) => w.is_visible,
+                  ).length ?? 0) > 0,
+                count:
+                  brandContent?.wedding_experiences?.filter((w) => w.is_visible)
+                    .length ?? 0,
                 unit: "트랙",
               },
               {
@@ -279,7 +279,9 @@ export default function AdminDashboard() {
               },
               {
                 label: "SEO",
-                ok: !!(brandContent?.seo_title && brandContent?.seo_description),
+                ok: !!(
+                  brandContent?.seo_title && brandContent?.seo_description
+                ),
                 count: null,
                 unit: null,
                 superAdminOnly: true,
@@ -297,15 +299,23 @@ export default function AdminDashboard() {
                       {item.label}
                     </span>
                     {item.ok ? (
-                      <CheckCircle size={12} className="text-green-500 shrink-0" />
+                      <CheckCircle
+                        size={12}
+                        className="text-green-500 shrink-0"
+                      />
                     ) : (
-                      <AlertCircle size={12} className="text-amber-400 shrink-0" />
+                      <AlertCircle
+                        size={12}
+                        className="text-amber-400 shrink-0"
+                      />
                     )}
                   </div>
                   {item.count !== null ? (
                     <p className="font-display text-xl font-light text-brand-black">
                       {item.count}
-                      <span className="font-sans text-xs text-gray-400 ml-1">{item.unit}</span>
+                      <span className="font-sans text-xs text-gray-400 ml-1">
+                        {item.unit}
+                      </span>
                     </p>
                   ) : (
                     <p className="font-sans text-xs text-gray-400">
@@ -339,17 +349,16 @@ export default function AdminDashboard() {
           <div className="space-y-3">
             {[
               {
-                label: "프로그램 추가",
-                href: "/admin/programs",
-                icon: Calendar,
-              },
-              {
-                label: "블로그 추가",
+                label: "Stories 추가",
                 href: "/admin/blog",
                 icon: FileText,
               },
               { label: "공간 추가", href: "/admin/spaces", icon: Image },
-              { label: "문의 관리", href: "/admin/inquiries", icon: MessageSquare },
+              {
+                label: "문의 관리",
+                href: "/admin/inquiries",
+                icon: MessageSquare,
+              },
               { label: "Brand CMS", href: "/admin/brand", icon: Sparkles },
               ...(isSuperAdmin
                 ? [
