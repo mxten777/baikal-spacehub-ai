@@ -26,10 +26,10 @@ export default function RoleGuard({
   children,
   redirectTo = "/admin",
 }: RoleGuardProps) {
-  const { loading, hasPermission } = useAuth();
+  const { loading, hasPermission, user, role } = useAuth();
 
-  // 프로필 로딩 중 — 빈 화면 유지 (레이아웃 깜빡임 방지)
-  if (loading) return null;
+  // auth 로딩 중이거나 user는 있지만 profile(role) 아직 조회 중 → 대기
+  if (loading || (user && role === null)) return null;
 
   if (!hasPermission(permission)) {
     return <Navigate to={redirectTo} replace />;
