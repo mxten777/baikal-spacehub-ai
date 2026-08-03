@@ -126,7 +126,7 @@ export default function ArchivePage() {
   return (
     <>
       <SeoHead
-        title="History — THE LIT | 더릿을 쉡운 이야기들"
+        title="History — THE LIT | 더릿을 채운 이야기들"
         description="더릿을 무대로 삼은 뮤직비디오·드라마·CF·브랜드 행사·웨딩의 모든 기록."
         canonical={`${SITE_URL}/archive`}
         keywords="더릿 촬영 이력, 뮤직비디오 촬영 장소, 드라마 촬영 장소, CF 촬영 서울, 브랜드 행사 이력"
@@ -142,7 +142,7 @@ export default function ArchivePage() {
           <AnimatedSection animation="fade-up">
             <p className="eyebrow text-white/40 mb-4">History</p>
             <h1 className="font-display text-display font-light text-white mb-6">
-              더릿을 쉡운 이야기들
+              더릿을 채운 이야기들
             </h1>
             <p className="font-sans text-base text-white/60 max-w-xl">
               2019년부터 더릿을 무대로 삼은 모든 순간의 기록입니다.
