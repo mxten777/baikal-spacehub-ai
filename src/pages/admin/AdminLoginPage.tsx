@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useForm } from "react-hook-form";
@@ -11,13 +11,24 @@ interface LoginForm {
 }
 
 export default function AdminLoginPage() {
-  const { user, role } = useAuth();
+  const { user, role, profileLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const { register, handleSubmit } = useForm<LoginForm>();
 
-  // user와 role이 모두 확인된 후에만 리다이렉트 (profile 없는 user → 무한루프 방지)
+  // 로그인 성공 후 프로필 조회 완료 시: role 없으면 로컬 로그아웃 + 에러 표시
+  useEffect(() => {
+    if (user && !profileLoading && role === null) {
+      supabase.auth.signOut({ scope: "local" })
+        .catch(() => {})
+        .finally(() => {
+          setLoading(false);
+          setError("관리자 권한이 없는 계정입니다. 담당자에게 문의하세요.");
+        });
+    }
+  }, [user, profileLoading, role]);
+
   if (user && role !== null) return <Navigate to="/admin" replace />;
 
   const onSubmit = async ({ email, password }: LoginForm) => {
