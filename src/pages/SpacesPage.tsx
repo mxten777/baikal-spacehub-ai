@@ -26,7 +26,7 @@ const FALLBACK_SPACES = [
     name_en: "Cafe",
     category: "cafe" as SpaceCategory,
     short_description:
-      "따뜻한 분위기의 문화 카페 공간. 소규모 모임, 낭독회, 소셜 이벤트에 적합합니다.",
+      "빛이 가장 따뜻하게 머무는 공간. 낭독회·소셜 나이트·팝업 마켓·브랜드 쇼룸.",
     capacity: 50,
     size_sqm: 85,
     is_available: true,
@@ -40,7 +40,7 @@ const FALLBACK_SPACES = [
     name_en: "Garden",
     category: "garden" as SpaceCategory,
     short_description:
-      "자연과 어우러진 야외 정원 공간. 웨딩, 파티, 야외 공연에 최적입니다.",
+      "어둠의 통로를 지나 처음 빛을 만나는 순간. 웨딩·가든 파티·야외 공연.",
     capacity: 120,
     size_sqm: 200,
     is_available: true,
@@ -54,7 +54,7 @@ const FALLBACK_SPACES = [
     name_en: "Studio",
     category: "studio" as SpaceCategory,
     short_description:
-      "전문 촬영 및 공연을 위한 화이트 스튜디오. 광고, 화보, 소규모 공연에 적합.",
+      "사이클로라마 너머 자연광이 쏟아지는 흰 공간. 뮤직비디오·화보·CF·공연.",
     capacity: 30,
     size_sqm: 65,
     is_available: true,
@@ -68,7 +68,7 @@ const FALLBACK_SPACES = [
     name_en: "Storage Hall",
     category: "storage" as SpaceCategory,
     short_description:
-      "대형 행사와 전시를 위한 다목적 홀. 오픈 플로어 플랜으로 자유로운 공간 활용 가능.",
+      "5.5m 천장의 완전히 열린 공간. 브랜드 이벤트·전시·컨퍼런스·갤라 디너.",
     capacity: 150,
     size_sqm: 280,
     is_available: true,
@@ -101,8 +101,8 @@ export default function SpacesPage() {
   return (
     <>
       <SeoHead
-        title="Spaces — The Lit"
-        description="더릿의 카페, 가든, 스튜디오, 스토리지를 대여하세요. 전시, 공연, 쳙영, 브랜드 행사에 최적화된 프리미엄 복합문화공간."
+        title="Spaces — THE LIT | 경험으로 만나는 다섯 개의 공간"
+        description="카페·정원·스튜디오·홀·루프탑. THE LIT의 다섯 공간은 각기 다른 경험을 선사합니다. 촬영·웨딩·브랜드 행사·소규모 모임에 최적."
         canonical={`${SITE_URL}/spaces`}
         keywords="공간 대여, 카페 대여, 스튜디오 대여, 가든 대여, 더릿 공간, 행사 공간 서울"
         jsonLd={breadcrumbJsonLd([

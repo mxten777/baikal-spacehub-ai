@@ -3,9 +3,9 @@ export const SITE_URL = "https://thelit.kr";
 export const SITE_NAME = "The Lit";
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og/og-default.jpg`;
 export const DEFAULT_DESCRIPTION =
-  "The Lit(더릿)은 서울의 프리미엄 복합문화공간입니다. 전시, 공연, 워크샵, 공간 대여가 한 곳에서 이루어집니다.";
+  "THE LIT — 어둠을 지나면 빛이 있습니다. 서울 골목 안, 30m의 경험 여정. 카페·정원·스튜디오·웨딩·브랜드 행사."
 export const DEFAULT_KEYWORDS =
-  "복합문화공간, 공간 대여, 전시, 공연, 워크샵, 문화 프로그램, The Lit, 더릿, 서울 문화 공간, 하남 문화 공간";
+  "더릿, The Lit, 복합문화공간, 공간 대여, 서울 스튜디오, 하남 웨딩, 촬영 공간, 브랜드 행사 장소, Walk Into The Light, 30m Passage";
 
 // ─── JSON-LD Generators ───────────────────────────────────────────────────────
 

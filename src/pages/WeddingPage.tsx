@@ -92,6 +92,47 @@ const VENUE_FALLBACK = [
   },
 ];
 
+// ─── 3-Track Wedding Experience ──────────────────────────────────────────────
+interface WeddingTrack {
+  number: string;
+  track: string;
+  keywords: string[];
+  title: string;
+  desc: string;
+  recommended: string[];
+  venue: string;
+}
+
+const WEDDING_TRACKS: WeddingTrack[] = [
+  {
+    number: "01",
+    track: "House Wedding",
+    keywords: ["Warm", "Intimate", "Private", "Home"],
+    title: "집 앞마당에서",
+    desc: "카페 본관과 잔디정원이 하나의 집처럼 연결됩니다. 가까운 사람들과 오래 기억할 수 있는 따뜻하고 프라이빗한 웨딩.",
+    recommended: ["소규모 웨딩", "가족 중심 예식", "하우스 파티형", "브런치 웨딩"],
+    venue: "카페 본관 + 잔디정원",
+  },
+  {
+    number: "02",
+    track: "Garden Wedding",
+    keywords: ["Nature", "Unplugged", "Pine Garden", "Ceremony"],
+    title: "100년 소나무 아래",
+    desc: "100년 소나무와 천연 잔디가 두 사람의 가장 자연스러운 순간을 감싸는 야외 웨딩.",
+    recommended: ["야외 예식", "자연 중심 웨딩", "계절감 있는 웨딩", "소규모 리셉션"],
+    venue: "100년 소나무 + 천연 잔디정원",
+  },
+  {
+    number: "03",
+    track: "Studio Wedding",
+    keywords: ["Industrial", "Editorial", "Modern", "Concept"],
+    title: "빛과 여백의 공간에서",
+    desc: "시멘트 블록과 빛, 여백만으로도 하나의 화보처럼 완성되는 도시적이고 감각적인 웨딩.",
+    recommended: ["콘셉트 웨딩", "애프터파티", "웨딩 촬영", "실내 예식"],
+    venue: "Storage 1 / Storage 2",
+  },
+];
+
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function WeddingPage() {
   const [galleryTab, setGalleryTab] = useState<GalleryTab>("all");
@@ -169,10 +210,10 @@ export default function WeddingPage() {
   return (
     <>
       <SeoHead
-        title="Wedding — The Lit"
-        description="THE LIT 웨딩. 서울 근교 자연 속 복합문화공간에서 완성되는 당신만의 웨딩. 가든, 홀, 스튜디오가 하나의 공간에 있습니다."
+        title="더릿 웨딩 — 하우스웨딩·가든웨딩·스튜디오웨딩 | THE LIT"
+        description="100년 소나무 정원의 야외웨딩부터 감각적인 스튜디오웨딩까지. 하남미사 프라이빗 웨딩 베뉴 THE LIT에서 두 사람만의 예식을 기획하세요."
         canonical={`${SITE_URL}/wedding`}
-        keywords="THE LIT 웨딩, 더릿 웨딩, 서울 웨딩홀, 야외 웨딩, 하남 웨딩, 복합문화공간 웨딩, 웨딩 대관"
+        keywords="더릿 웨딩, 하우스웨딩, 가든웨딩, 스튜디오웨딩, 하남미사 웨딩, 소규모 웨딩, 프라이빗 웨딩, 야외 웨딩, THE LIT 웨딩"
         jsonLd={breadcrumbJsonLd([
           { name: "Home", url: SITE_URL },
           { name: "Wedding", url: `${SITE_URL}/wedding` },
@@ -197,11 +238,11 @@ export default function WeddingPage() {
           <AnimatedSection animation="fade-up">
             <p className="eyebrow-light mb-5">THE LIT WEDDING</p>
             <h1 className="font-display text-hero font-light text-white mb-6 max-w-2xl">
-              빛이 머무는 곳,<br className="hidden sm:block" /> 당신의 하루
+              빛 속에서,<br className="hidden sm:block" /> 우리의 이야기를
             </h1>
             <p className="font-sans text-sm text-white/70 max-w-sm mb-10 leading-relaxed">
-              자연과 문화가 공존하는 공간에서<br />
-              세상에 하나뿐인 웨딩을 완성하세요.
+              정원, 소나무, 스튜디오.<br />
+              두 사람만의 장면을 만드는 웨딩.
             </p>
             <Link
               to="/contact?type=wedding"
@@ -221,24 +262,19 @@ export default function WeddingPage() {
             <AnimatedSection animation="fade-up">
               <p className="eyebrow mb-6">Wedding Story</p>
               <h2 className="font-display text-display font-light text-brand-black mb-8 leading-tight">
-                공간이 완성하는<br />웨딩의 이야기
+                틀에 박힌 웨딩이 아니라,<br />두 사람만의 장면을
               </h2>
             </AnimatedSection>
             <AnimatedSection animation="fade-up" delay={120}>
               <div className="space-y-6 font-sans text-sm text-brand-muted leading-relaxed">
                 <p>
-                  THE LIT는 단순한 웨딩홀이 아닙니다. 전시, 공연, 문화가 숨 쉬는
-                  복합문화공간이 웨딩의 무대가 될 때, 그 하루는 하나의 작품이
-                  됩니다.
+                  THE LIT는 단순한 웨딩홀이 아닙니다. 문화가 술 쉬는 복합공간이 웨딩의 무대가 될 때, 그 하루는 하나의 작품이 됩니다.
                 </p>
                 <p>
-                  가든의 자연 채광, 홀의 높은 천장, 스튜디오의 프로페셔널한
-                  조명이 한 장소에 공존합니다. 세레모니부터 리셉션, 사진 촬영까지
-                  모든 순간을 하나의 공간에서 이어갈 수 있습니다.
+                  House Wedding, Garden Wedding, Studio Wedding. 하나의 공간 안에서 세 가지 다른 이야기가 펼쳐집니다. 소나무 정원의 야외 예식, 스튜디오의 화보 같은 장면, 따뜻한 홈 파티 분위기까지.
                 </p>
                 <p>
-                  불필요한 것은 덜고, 본질적인 아름다움에 집중합니다. THE LIT의
-                  웨딩은 절제와 감각이 만나는 지점에 있습니다.
+                  불필요한 것은 덧고, 두 사람의 이야기에만 집중합니다. THE LIT의 웨딩은 절제와 감각이 만나는 지점에 있습니다.
                 </p>
               </div>
             </AnimatedSection>
@@ -246,7 +282,118 @@ export default function WeddingPage() {
         </div>
       </section>
 
-      {/* ── 3. Venue ─────────────────────────────────────────────────────────── */}
+      {/* ── 3. 3-Track Wedding Experience ──────────────────────────────────── */}
+      <section className="section-padding bg-brand-black">
+        <div className="container-wide">
+
+          <AnimatedSection animation="fade-up" className="mb-4">
+            <p className="eyebrow text-white/35 mb-4">THE LIT WEDDING</p>
+            <h2
+              className="font-display font-light text-white"
+              style={{
+                fontSize: "clamp(2rem, 4vw, 3.75rem)",
+                letterSpacing: "-0.03em",
+                lineHeight: "1.08",
+              }}
+            >
+              Your Story,
+              <br />
+              <em style={{ fontStyle: "normal", color: "#C8A97E" }}>
+                In Your Own Light.
+              </em>
+            </h2>
+          </AnimatedSection>
+
+          <AnimatedSection animation="fade-up" delay={80} className="mb-16 lg:mb-20">
+            <p className="font-sans text-sm text-white/40 leading-relaxed max-w-sm">
+              정원, 소나무, 스튜디오.
+              <br />
+              하나의 공간 안에서 서로 다른 분위기의 웨딩을 완성합니다.
+            </p>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/[0.08]">
+            {WEDDING_TRACKS.map((wt, i) => (
+              <AnimatedSection
+                key={wt.track}
+                animation="fade-up"
+                delay={100 + i * 80}
+              >
+                <div className="bg-brand-black p-8 lg:p-10 h-full flex flex-col">
+
+                  {/* Number + Track name */}
+                  <p className="font-sans text-[10px] font-medium tracking-[0.2em] uppercase text-white/30 mb-5">
+                    {wt.number} · {wt.track}
+                  </p>
+
+                  {/* Keywords */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {wt.keywords.map((kw) => (
+                      <span
+                        key={kw}
+                        className="font-sans text-[9px] font-medium tracking-widest uppercase text-white/30 border border-white/10 px-2.5 py-1"
+                      >
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Title */}
+                  <h3
+                    className="font-display text-2xl font-light text-white mb-4"
+                    style={{ letterSpacing: "-0.01em" }}
+                  >
+                    {wt.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="font-sans text-sm text-white/50 leading-relaxed mb-6 flex-1">
+                    {wt.desc}
+                  </p>
+
+                  {/* Recommended for */}
+                  <div className="mb-7">
+                    <p className="font-sans text-[9px] font-medium tracking-[0.2em] uppercase text-white/20 mb-3">
+                      Recommended for
+                    </p>
+                    <ul className="space-y-1.5">
+                      {wt.recommended.map((r) => (
+                        <li
+                          key={r}
+                          className="font-sans text-xs text-white/50 flex items-center gap-2.5"
+                        >
+                          <span
+                            className="w-3 h-px bg-brand-accent/40 shrink-0"
+                            aria-hidden="true"
+                          />
+                          {r}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Venue label */}
+                  <p className="font-sans text-[9px] font-medium tracking-[0.18em] uppercase text-brand-accent/50 mb-6">
+                    {wt.venue}
+                  </p>
+
+                  {/* CTA */}
+                  <Link
+                    to="/contact?type=wedding"
+                    className="btn-ghost-light self-start"
+                  >
+                    Explore {wt.track} <ArrowRight size={12} />
+                  </Link>
+
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ── 4. Venue ─────────────────────────────────────────────────────────── */}
       <section className="section-padding bg-brand-warm">
         <div className="container-wide">
           <AnimatedSection animation="fade-up">
@@ -527,11 +674,11 @@ export default function WeddingPage() {
           <AnimatedSection animation="fade-up">
             <p className="eyebrow-light mb-6">Wedding Consultation</p>
             <h2 className="font-display text-display font-light text-white mb-6">
-              당신의 웨딩을 함께 만들겠습니다
+              Plan Your Wedding
             </h2>
             <p className="font-sans text-sm text-white/60 max-w-md mx-auto mb-12 leading-relaxed">
-              공간, 인원, 날짜 등 어떤 질문이든 환영합니다.<br />
-              담당자가 직접 응답드립니다.
+              날짜, 인원, 스타일 어떤 질문이든 환영합니다.<br />
+              담당자가 직접 함께 기획해 드립니다.
             </p>
             <Link
               to="/contact?type=wedding"

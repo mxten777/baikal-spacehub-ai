@@ -10,12 +10,12 @@ interface MobileNavProps {
 }
 
 const NAV_ITEMS = [
-  { label: "About", href: "/about" },
+  { label: "Brand Story", href: "/about" },
   { label: "Spaces", href: "/spaces" },
   { label: "Wedding", href: "/wedding" },
-  { label: "Archive", href: "/archive" },
+  { label: "History", href: "/archive" },
   { label: "Media", href: "/media" },
-  { label: "Blog", href: "/blog" },
+  { label: "Stories", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 

@@ -49,15 +49,21 @@ export default function AboutPage() {
     brand_values,
     cta_title,
     cta_description,
+    brand_intro_eyebrow,
+    brand_intro_title_line1,
+    brand_intro_title_line2,
+    brand_intro_paragraph_1,
+    brand_intro_paragraph_2,
+    brand_intro_pillars,
   } = content;
 
   return (
     <>
       <SeoHead
-        title="About — The Lit"
-        description="더릿(The Lit)의 이야기, 철학, 그리고 비전을 소개합니다. 서울의 프리미엄 복합문화공간 플랫폼."
+        title="Brand Story — THE LIT | 빛을 향해 걷는 이야기"
+        description="THE LIT를 만든 이유, 빛의 철학, 30m의 여정. 더릿 브랜드 스토리와 창립 철학을 소개합니다."
         canonical={`${SITE_URL}/about`}
-        keywords="더릿 소개, 복합문화공간 철학, The Lit 비전, 더릿 스토리"
+        keywords="더릿 브랜드 스토리, 복합문화공간 철학, THE LIT 창립 이야기, 빛의 철학, Walk Into The Light"
         jsonLd={[
           localBusinessJsonLd(),
           breadcrumbJsonLd([
@@ -107,32 +113,17 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission statement */}
-      <section className="section-padding bg-brand-cream">
-        <div className="container-narrow text-center">
-          <AnimatedSection animation="fade-up">
-            <p className="eyebrow mb-6">Our Mission</p>
-            <blockquote className="font-display text-[clamp(1.5rem,3vw,2.5rem)] font-light text-brand-black leading-relaxed mb-8">
-              {mission_quote}
-            </blockquote>
-            <p className="font-sans text-base text-brand-muted leading-relaxed">
-              {mission_description}
-            </p>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* Story + Timeline */}
+      {/* 1. Brand Story — Why THE LIT */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            <AnimatedSection animation="slide-left">
-              <p className="eyebrow mb-4">{story_eyebrow}</p>
-              <h2 className="font-display text-headline font-light text-brand-black mb-6">
-                {story_title_line1}
-                <br />
-                {story_title_line2}
-              </h2>
+          <AnimatedSection animation="slide-left">
+            <p className="eyebrow mb-4">{story_eyebrow}</p>
+            <h2 className="font-display text-headline font-light text-brand-black mb-6">
+              {story_title_line1}
+              <br />
+              {story_title_line2}
+            </h2>
+            <div className="max-w-2xl">
               <p className="font-sans text-sm text-brand-muted leading-relaxed mb-4">
                 {story_paragraph_1}
               </p>
@@ -142,40 +133,12 @@ export default function AboutPage() {
               <p className="font-sans text-sm text-brand-muted leading-relaxed">
                 {story_paragraph_3}
               </p>
-            </AnimatedSection>
-
-            {/* Timeline */}
-            <AnimatedSection animation="slide-right" delay={100}>
-              <div className="space-y-0">
-                {timeline.map((item, i) => (
-                  <div key={item.year} className="flex gap-6 pb-10 relative">
-                    <div className="flex flex-col items-center">
-                      <div className="w-10 h-10 bg-brand-black flex items-center justify-center shrink-0 z-10">
-                        <span className="font-sans text-[10px] font-medium text-white tracking-wider">
-                          {item.year}
-                        </span>
-                      </div>
-                      {i < timeline.length - 1 && (
-                        <div className="w-px flex-1 mt-2 bg-brand-border" />
-                      )}
-                    </div>
-                    <div className="pt-2 pb-2">
-                      <h3 className="font-display text-lg font-light text-brand-black mb-1">
-                        {item.title}
-                      </h3>
-                      <p className="font-sans text-sm text-brand-muted leading-relaxed">
-                        {item.desc}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </AnimatedSection>
-          </div>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 
-      {/* Values */}
+      {/* 2. Light Philosophy — Dark / Passage / Light / Memory */}
       <section className="section-padding bg-brand-black">
         <div className="container-wide">
           <AnimatedSection animation="fade-up" className="text-center mb-16">
@@ -207,22 +170,124 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* 3. The Journey — 30m Passage */}
+      <section className="section-padding bg-brand-cream">
+        <div className="container-wide">
+          <AnimatedSection animation="fade-up" className="mb-12 lg:mb-16">
+            <div className="max-w-2xl">
+              <p className="eyebrow mb-4">{brand_intro_eyebrow}</p>
+              <h2
+                className="font-display font-light text-brand-black mb-5"
+                style={{
+                  fontSize: "clamp(2rem, 4vw, 3.75rem)",
+                  letterSpacing: "-0.03em",
+                  lineHeight: "1.08",
+                }}
+              >
+                {brand_intro_title_line1}
+                <br />
+                <em style={{ fontStyle: "normal", color: "#C8A97E" }}>
+                  {brand_intro_title_line2}
+                </em>
+              </h2>
+            </div>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+            <AnimatedSection animation="slide-left" delay={100}>
+              <p className="font-sans text-sm text-brand-muted leading-relaxed mb-5">
+                {brand_intro_paragraph_1}
+              </p>
+              <p className="font-sans text-sm text-brand-muted leading-relaxed">
+                {brand_intro_paragraph_2}
+              </p>
+            </AnimatedSection>
+
+            <AnimatedSection animation="slide-right" delay={150}>
+              <div className="flex flex-wrap gap-3">
+                {brand_intro_pillars.map((p) => (
+                  <div key={p.en} className="border border-brand-border px-5 py-3">
+                    <span className="font-sans text-[10px] font-medium tracking-[0.15em] uppercase text-brand-muted block">
+                      {p.en}
+                    </span>
+                    <span className="font-display text-xl font-light text-brand-black">
+                      {p.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Why We Built THE LIT — Founder Philosophy */}
+      <section className="section-padding bg-brand-white">
+        <div className="container-narrow text-center">
+          <AnimatedSection animation="fade-up">
+            <p className="eyebrow mb-6">Why We Built THE LIT</p>
+            <blockquote className="font-display text-[clamp(1.5rem,3vw,2.5rem)] font-light text-brand-black leading-relaxed mb-8">
+              {mission_quote}
+            </blockquote>
+            <p className="font-sans text-base text-brand-muted leading-relaxed">
+              {mission_description}
+            </p>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* 5. History — Timeline */}
+      <section className="section-padding bg-brand-cream">
+        <div className="container-wide">
+          <AnimatedSection animation="fade-up" className="mb-12 lg:mb-16">
+            <SectionHeader eyebrow="History" title="지나온 시간들" />
+          </AnimatedSection>
+
+          <AnimatedSection animation="fade-up" delay={100}>
+            <div className="max-w-lg space-y-0">
+              {timeline.map((item, i) => (
+                <div key={item.year} className="flex gap-6 pb-10 relative">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-brand-black flex items-center justify-center shrink-0 z-10">
+                      <span className="font-sans text-[10px] font-medium text-white tracking-wider">
+                        {item.year}
+                      </span>
+                    </div>
+                    {i < timeline.length - 1 && (
+                      <div className="w-px flex-1 mt-2 bg-brand-border" />
+                    )}
+                  </div>
+                  <div className="pt-2 pb-2">
+                    <h3 className="font-display text-lg font-light text-brand-black mb-1">
+                      {item.title}
+                    </h3>
+                    <p className="font-sans text-sm text-brand-muted leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="py-20 bg-brand-cream text-center">
+      <section className="py-20 bg-brand-black text-center">
         <div className="container-narrow">
           <AnimatedSection animation="fade-up">
-            <h2 className="font-display text-headline font-light text-brand-black mb-4">
+            <h2 className="font-display text-headline font-light text-white mb-4">
               {cta_title}
             </h2>
-            <p className="font-sans text-sm text-brand-muted mb-8">
+            <p className="font-sans text-sm text-white/50 mb-8">
               {cta_description}
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link to="/archive" className="btn-primary">
-                아카이브 보기 <ArrowRight size={16} />
+              <Link to="/contact" className="btn-outline-white">
+                Experience THE LIT <ArrowRight size={16} />
               </Link>
-              <Link to="/contact" className="btn-secondary">
-                문의하기
+              <Link to="/spaces" className="btn-ghost-light">
+                Explore Spaces
               </Link>
             </div>
           </AnimatedSection>

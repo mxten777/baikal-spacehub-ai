@@ -95,10 +95,10 @@ export default function BlogPage() {
   return (
     <>
       <SeoHead
-        title="Blog — The Lit"
-        description="문화 리븷, 행사 후기, 인터뷰, 공간 스토리 — 더릿의 다양한 콘텐츠를 만나보세요."
+        title="Stories — THE LIT | 빛 속에서 태어난 이야기들"
+        description="더릿을 거쳐간 사람들, 공간들, 그리고 순간들의 기록. Space Stories · Brand Journal · Interview · Culture Review."
         canonical={`${SITE_URL}/blog`}
-        keywords="더릿 블로그, 문화 리븷, 전시 리븷, 공간 스토리, 작가 인터뷰"
+        keywords="더릿 스토리즈, 에디토리얼, 공간 스토리, 인터뷰, 브랜드 저널"
         jsonLd={breadcrumbJsonLd([
           { name: "Home", url: SITE_URL },
           { name: "Blog", url: `${SITE_URL}/blog` },
@@ -109,9 +109,9 @@ export default function BlogPage() {
       <section className="pt-32 pb-16 bg-brand-cream">
         <div className="container-wide">
           <AnimatedSection animation="fade-up">
-            <p className="eyebrow mb-4">Blog</p>
+            <p className="eyebrow mb-4">Stories</p>
             <h1 className="font-display text-display font-light text-brand-black mb-6">
-              더릿의 이야기
+              빛 속에서 태어난 이야기들
             </h1>
           </AnimatedSection>
 

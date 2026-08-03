@@ -9,12 +9,12 @@ import MobileNav from "./MobileNav";
 import AnnouncementBar from "./AnnouncementBar";
 
 const NAV_ITEMS = [
-  { label: "About", href: "/about", hasMega: false },
+  { label: "Brand Story", href: "/about", hasMega: false },
   { label: "Spaces", href: "/spaces", hasMega: true },
   { label: "Wedding", href: "/wedding", hasMega: false },
-  { label: "Archive", href: "/archive", hasMega: true },
+  { label: "History", href: "/archive", hasMega: true },
   { label: "Media", href: "/media", hasMega: true },
-  { label: "Blog", href: "/blog", hasMega: false },
+  { label: "Stories", href: "/blog", hasMega: false },
   { label: "Contact", href: "/contact", hasMega: false },
 ];
 

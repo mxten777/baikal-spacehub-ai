@@ -126,10 +126,10 @@ export default function ArchivePage() {
   return (
     <>
       <SeoHead
-        title="Archive — The Lit"
-        description="더릿에서 열렸던 전시, 공연, 강연, 워크숏 등 모든 문화 행사의 기록 아카이브"
+        title="History — THE LIT | 더릿을 쉡운 이야기들"
+        description="더릿을 무대로 삼은 뮤직비디오·드라마·CF·브랜드 행사·웨딩의 모든 기록."
         canonical={`${SITE_URL}/archive`}
-        keywords="더릿 아카이브, 전시 기록, 공연 기록, The Lit 기록"
+        keywords="더릿 촬영 이력, 뮤직비디오 촬영 장소, 드라마 촬영 장소, CF 촬영 서울, 브랜드 행사 이력"
         jsonLd={breadcrumbJsonLd([
           { name: "Home", url: SITE_URL },
           { name: "Archive", url: `${SITE_URL}/archive` },
@@ -140,12 +140,12 @@ export default function ArchivePage() {
       <section className="pt-32 pb-16 bg-brand-black">
         <div className="container-wide">
           <AnimatedSection animation="fade-up">
-            <p className="eyebrow text-white/40 mb-4">Archive</p>
+            <p className="eyebrow text-white/40 mb-4">History</p>
             <h1 className="font-display text-display font-light text-white mb-6">
-              지나온 모든 순간
+              더릿을 쉡운 이야기들
             </h1>
             <p className="font-sans text-base text-white/60 max-w-xl">
-              더릿에서 펼쳐진 문화 행사들의 소중한 기록입니다.
+              2019년부터 더릿을 무대로 삼은 모든 순간의 기록입니다.
             </p>
           </AnimatedSection>
         </div>

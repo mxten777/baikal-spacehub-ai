@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import HeroSection from "../components/home/HeroSection";
+import ExperienceJourneySection from "../components/home/ExperienceJourneySection";
 import BrandIntroSection from "../components/home/BrandIntroSection";
 import SpacesPreviewSection from "../components/home/SpacesPreviewSection";
 import UpcomingProgramsSection from "../components/home/UpcomingProgramsSection";
@@ -22,14 +23,15 @@ export default function HomePage() {
   return (
     <>
       <SeoHead
-        title="The Lit — 복합문화공간 플랫폼"
-        description="더릿(The Lit)은 서울의 프리미엄 복합문화공간입니다. 전시, 공연, 강연, 워크숍, 촬영, 브랜드 행사를 위한 최적의 공간을 제공합니다."
+        title="THE LIT — Walk Into The Light | 서울 복합문화공간"
+        description="골목 끝, 빛을 향해 걸는 브랜드 경험 공간 THE LIT. 30m 여정으로 연결되는 카페·정원·스튜디오·홀·루프탑. 촬영·웨딩·브랜드 행사·전시·공연."
         canonical={SITE_URL}
-        keywords="복합문화공간, 공간 대여, 전시, 공연, 워크샵, 더릿, The Lit, 서울 문화 공간, 하남 복합문화공간"
+        keywords="더릿, The Lit, 복합문화공간, 공간 대여, 서울 스튜디오, 하남 웨딩, 촬영 공간, 브랜드 행사 장소, Walk Into The Light, 30m Passage"
         jsonLd={[organizationJsonLd(), websiteJsonLd()]}
       />
 
       <HeroSection />
+      <ExperienceJourneySection />
       <BrandIntroSection data={aboutContent ?? undefined} />
       <SpacesPreviewSection />
       <UpcomingProgramsSection />
