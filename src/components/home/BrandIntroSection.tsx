@@ -80,6 +80,7 @@ export default function BrandIntroSection({ data }: { data?: BrandIntroData }) {
                     src={imageUrl}
                     alt="The Lit 공간"
                     className="w-full aspect-[4/5] object-cover"
+                    loading="lazy"
                   />
                 ) : (
                   <div className="w-full aspect-[4/5] bg-brand-warm flex items-center justify-center">
