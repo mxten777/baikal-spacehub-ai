@@ -3,7 +3,6 @@ import { ArrowRight } from "lucide-react";
 import { useSpaces } from "../../hooks/useData";
 import AnimatedSection from "../common/AnimatedSection";
 import SectionHeader from "../common/SectionHeader";
-import LoadingSpinner from "../common/LoadingSpinner";
 
 const FALLBACK_SPACES = [
   {
@@ -45,7 +44,7 @@ const FALLBACK_SPACES = [
 ];
 
 export default function SpacesPreviewSection() {
-  const { data: spaces, isLoading } = useSpaces();
+  const { data: spaces } = useSpaces();
   const displaySpaces = (
     spaces && spaces.length > 0
       ? spaces
@@ -69,10 +68,7 @@ export default function SpacesPreviewSection() {
           </Link>
         </div>
 
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
             {displaySpaces.map((space, i) => (
               <AnimatedSection
                 key={space.id}
@@ -125,7 +121,6 @@ export default function SpacesPreviewSection() {
               </AnimatedSection>
             ))}
           </div>
-        )}
       </div>
     </section>
   );
