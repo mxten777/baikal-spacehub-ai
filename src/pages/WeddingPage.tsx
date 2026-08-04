@@ -13,7 +13,7 @@ import { isSupabaseConfigured } from "../lib/supabase";
 import AnimatedSection from "../components/common/AnimatedSection";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
-import heroFallback from "../assets/images/hero/211014_iksundada-더릿_15267-f.jpg";
+import heroFallback from "../assets/images/hero/211014_iksundada-더릿_15267-f.webp";
 
 // ─── Gallery tabs ────────────────────────────────────────────────────────────
 const GALLERY_TABS = [
