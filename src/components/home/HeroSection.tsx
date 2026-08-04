@@ -95,11 +95,16 @@ export default function HeroSection() {
   });
 
   const [current, setCurrent] = useState(0);
+  const [activatedCount, setActivatedCount] = useState(2);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startAuto = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
+      // Activate next-next slide on each transition so it's ready when needed
+      setActivatedCount((c) =>
+        Math.min(c + 1, displaySlidesRef.current.length),
+      );
       setCurrent((prev) => (prev + 1) % displaySlidesRef.current.length);
     }, 6000);
   };
@@ -115,25 +120,9 @@ export default function HeroSection() {
   // Blur placeholder → fade-in: track when first image finishes loading
   const [firstLoaded, setFirstLoaded] = useState(false);
 
-  // Preload only the next slide (not all at once) to avoid 28MB initial download
-  useEffect(() => {
-    if (displaySlides.length < 2) return;
-    const nextIdx = (current + 1) % displaySlides.length;
-    const next = displaySlides[nextIdx];
-    if (!next) return;
-    const url = withVersion(
-      getWebPSrc(next.desktop_image_url) ?? next.desktop_image_url,
-      next.updated_at,
-    );
-    if (!url) return;
-    const base = url.split('?')[0];
-    if (document.head.querySelector(`link[rel="preload"][href^="${base}"]`)) return;
-    const link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "image";
-    link.href = url;
-    document.head.appendChild(link);
-  }, [current, displaySlides]);
+  // Progressive slide loading: tracks how many slides have been activated.
+  // Starts at 2 (current=0 + next=1). Increments on each slide transition.
+  // A slide at index i gets src when i < activatedCount OR i === safeIdx.
 
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
   const safeIdx = Math.min(current, displaySlides.length - 1);
@@ -159,16 +148,20 @@ export default function HeroSection() {
     <section className="relative h-screen-safe min-h-[600px] overflow-hidden bg-brand-black">
       {/* Background slides — all rendered for instant preload, crossfade via opacity */}
       {displaySlides.map((s, i) => {
-        const desktopWebP = withVersion(
-          getWebPSrc(s.desktop_image_url),
-          s.updated_at,
-        );
-        const mobileWebP = withVersion(
-          getWebPSrc(s.mobile_image_url),
-          s.updated_at,
-        );
-        const deskUrl = withVersion(s.desktop_image_url, s.updated_at);
-        const mobUrl = withVersion(s.mobile_image_url, s.updated_at);
+        // Load src for slide i only when it's been activated (avoids downloading all slides upfront)
+        const shouldHaveSrc = i === safeIdx || i < activatedCount;
+        const desktopWebP = shouldHaveSrc
+          ? withVersion(getWebPSrc(s.desktop_image_url), s.updated_at)
+          : null;
+        const mobileWebP = shouldHaveSrc
+          ? withVersion(getWebPSrc(s.mobile_image_url), s.updated_at)
+          : null;
+        const deskUrl = shouldHaveSrc
+          ? withVersion(s.desktop_image_url, s.updated_at)
+          : null;
+        const mobUrl = shouldHaveSrc
+          ? withVersion(s.mobile_image_url, s.updated_at)
+          : null;
         return (
           <motion.div
             key={s.id}
@@ -190,8 +183,8 @@ export default function HeroSection() {
                   type="image/webp"
                 />
               )}
-              {s.mobile_image_url && (
-                <source media="(max-width: 767px)" srcSet={mobUrl || ""} />
+              {mobUrl && (
+                <source media="(max-width: 767px)" srcSet={mobUrl} />
               )}
               {/* Desktop: WebP first, then original via <img> fallback */}
               {desktopWebP && <source srcSet={desktopWebP} type="image/webp" />}
@@ -204,7 +197,7 @@ export default function HeroSection() {
                     ? `w-full h-full object-cover transition-opacity duration-700${firstLoaded ? "" : " opacity-0"}`
                     : "w-full h-full object-cover"
                 }
-                fetchPriority={i === 0 ? "high" : "low"}
+                fetchPriority={i === safeIdx ? "high" : "low"}
                 loading={i === 0 ? "eager" : undefined}
                 decoding={i === 0 ? "sync" : "async"}
                 ref={
