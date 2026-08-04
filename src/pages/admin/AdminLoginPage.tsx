@@ -20,7 +20,8 @@ export default function AdminLoginPage() {
   // 로그인 성공 후 프로필 조회 완료 시: role 없으면 로컬 로그아웃 + 에러 표시
   useEffect(() => {
     if (user && !profileLoading && role === null) {
-      supabase.auth.signOut({ scope: "local" })
+      supabase.auth
+        .signOut({ scope: "local" })
         .catch(() => {})
         .finally(() => {
           setLoading(false);

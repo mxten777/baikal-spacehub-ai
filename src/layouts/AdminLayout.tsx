@@ -358,11 +358,13 @@ export default function AdminLayout() {
         </header>
 
         <main className="p-4 sm:p-6 lg:p-8">
-          <Suspense fallback={
-            <div className="flex items-center justify-center h-64">
-              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center h-64">
+                <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+              </div>
+            }
+          >
             <Outlet />
           </Suspense>
         </main>

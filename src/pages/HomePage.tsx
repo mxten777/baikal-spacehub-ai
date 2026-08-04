@@ -3,7 +3,6 @@ import HeroSection from "../components/home/HeroSection";
 import ExperienceJourneySection from "../components/home/ExperienceJourneySection";
 import BrandIntroSection from "../components/home/BrandIntroSection";
 import SpacesPreviewSection from "../components/home/SpacesPreviewSection";
-import UpcomingProgramsSection from "../components/home/UpcomingProgramsSection";
 import ArchiveHighlightsSection from "../components/home/ArchiveHighlightsSection";
 import MediaFeedSection from "../components/home/MediaFeedSection";
 import CollaborationSection from "../components/home/CollaborationSection";
@@ -34,7 +33,6 @@ export default function HomePage() {
       <ExperienceJourneySection steps={aboutContent?.journey_steps} />
       <BrandIntroSection data={aboutContent ?? undefined} />
       <SpacesPreviewSection />
-      <UpcomingProgramsSection />
       <ArchiveHighlightsSection />
       <MediaFeedSection />
       <CollaborationSection />

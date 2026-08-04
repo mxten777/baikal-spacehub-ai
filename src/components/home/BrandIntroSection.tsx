@@ -71,7 +71,7 @@ export default function BrandIntroSection({ data }: { data?: BrandIntroData }) {
           {/* Right — program types + image */}
           <div>
             <AnimatedSection animation="fade-up" delay={150}>
-              <div className="relative pb-8 sm:pb-10">
+              <div className="relative sm:pb-10">
                 {d.brand_intro_image_url ? (
                   <img
                     src={d.brand_intro_image_url}
@@ -85,8 +85,8 @@ export default function BrandIntroSection({ data }: { data?: BrandIntroData }) {
                     </span>
                   </div>
                 )}
-                {/* Floating card — 모바일에서 이미지 하단 붙임, sm+에서 네거티브 오프셋 */}
-                <div className="absolute bottom-0 left-0 sm:-bottom-2 sm:-left-8 bg-brand-black py-6 px-7 sm:py-7 sm:px-8 max-w-[240px] sm:max-w-[260px]">
+                {/* sm+에서만 absolute 오버레이, 모바일은 이미지 아래 흐름 */}
+                <div className="sm:absolute sm:-bottom-2 sm:-left-8 bg-brand-black py-6 px-7 sm:py-7 sm:px-8 sm:max-w-[260px] mt-3 sm:mt-0">
                   <p className="font-sans text-[9px] tracking-[0.22em] uppercase text-white/30 mb-4">
                     What We Do
                   </p>
