@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { usePrograms, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
-import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { ProgramStatus } from "../types";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
