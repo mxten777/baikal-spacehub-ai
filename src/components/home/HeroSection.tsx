@@ -114,32 +114,26 @@ export default function HeroSection() {
 
   // Blur placeholder → fade-in: track when first image finishes loading
   const [firstLoaded, setFirstLoaded] = useState(false);
-  const preloadedRef = useRef(false);
 
-  // After first image loads: queue remaining slides for background preload
+  // Preload only the next slide (not all at once) to avoid 28MB initial download
   useEffect(() => {
-    if (!firstLoaded || preloadedRef.current) return;
-    preloadedRef.current = true;
-    displaySlides.slice(1).forEach((s) => {
-      // Use WebP URL when available — must match what <picture> actually requests
-      const desktop = withVersion(
-        getWebPSrc(s.desktop_image_url) ?? s.desktop_image_url,
-        s.updated_at,
-      );
-      const mobile = withVersion(
-        getWebPSrc(s.mobile_image_url) ?? s.mobile_image_url,
-        s.updated_at,
-      );
-      [desktop, mobile].forEach((url) => {
-        if (!url) return;
-        const link = document.createElement("link");
-        link.rel = "preload";
-        link.as = "image";
-        link.href = url;
-        document.head.appendChild(link);
-      });
-    });
-  }, [firstLoaded, displaySlides]);
+    if (displaySlides.length < 2) return;
+    const nextIdx = (current + 1) % displaySlides.length;
+    const next = displaySlides[nextIdx];
+    if (!next) return;
+    const url = withVersion(
+      getWebPSrc(next.desktop_image_url) ?? next.desktop_image_url,
+      next.updated_at,
+    );
+    if (!url) return;
+    const base = url.split('?')[0];
+    if (document.head.querySelector(`link[rel="preload"][href^="${base}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = url;
+    document.head.appendChild(link);
+  }, [current, displaySlides]);
 
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
   const safeIdx = Math.min(current, displaySlides.length - 1);
