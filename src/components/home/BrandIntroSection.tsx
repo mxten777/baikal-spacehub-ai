@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedSection from "../common/AnimatedSection";
+import { usePublicPhotos } from "../../hooks/useData";
 import type { BrandIntroPillar } from "../../types";
 
 interface BrandIntroData {
@@ -34,6 +35,8 @@ const DEFAULTS: BrandIntroData = {
 
 export default function BrandIntroSection({ data }: { data?: BrandIntroData }) {
   const d = data ?? DEFAULTS;
+  const { data: aboutPhotos } = usePublicPhotos("about");
+  const imageUrl = d.brand_intro_image_url || aboutPhotos?.[0]?.public_url || "";
   return (
     <section className="section-padding bg-brand-cream">
       <div className="container-wide">
@@ -72,9 +75,9 @@ export default function BrandIntroSection({ data }: { data?: BrandIntroData }) {
           <div>
             <AnimatedSection animation="fade-up" delay={150}>
               <div className="relative sm:pb-10">
-                {d.brand_intro_image_url ? (
+                {imageUrl ? (
                   <img
-                    src={d.brand_intro_image_url}
+                    src={imageUrl}
                     alt="The Lit 공간"
                     className="w-full aspect-[4/5] object-cover"
                   />

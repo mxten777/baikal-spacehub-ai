@@ -22,6 +22,7 @@ import {
   FolderKanban,
   Heart,
   Sparkles,
+  Info,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
@@ -61,6 +62,12 @@ const operatorNav: NavEntry[] = [
     href: "/admin/brand",
     icon: Sparkles,
     permission: "brand",
+  },
+  {
+    label: "About",
+    href: "/admin/about",
+    icon: Info,
+    permission: "about",
   },
   { type: "section", label: "콘텐츠" },
   { label: "공간", href: "/admin/spaces", icon: Image, permission: "spaces" },

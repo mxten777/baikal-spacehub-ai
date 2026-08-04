@@ -50,6 +50,7 @@ const OPERATOR_PERMISSIONS: Permission[] = [
   "photo_curator",
   "wedding_photos",
   "operator_settings",
+  "about",
   "brand",
 ];
 
