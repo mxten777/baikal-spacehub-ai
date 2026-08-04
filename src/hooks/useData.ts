@@ -32,6 +32,7 @@ export const useSpaces = (filters?: FilterOptions) =>
     queryFn: () => spacesService.getAll(filters),
     staleTime: 5 * 60 * 1000,
     enabled: isSupabaseConfigured,
+    placeholderData: () => [] as Space[],
   });
 
 export const useSpace = (slug: string) =>
@@ -49,6 +50,7 @@ export const usePrograms = (filters?: FilterOptions & { limit?: number }) =>
     queryFn: () => programsService.getAll(filters),
     staleTime: 2 * 60 * 1000,
     enabled: isSupabaseConfigured,
+    placeholderData: () => [] as Program[],
   });
 
 export const useUpcomingPrograms = (limit = 6) =>
@@ -57,6 +59,7 @@ export const useUpcomingPrograms = (limit = 6) =>
     queryFn: () => programsService.getUpcoming(limit),
     staleTime: 2 * 60 * 1000,
     enabled: isSupabaseConfigured,
+    placeholderData: () => [] as Program[],
   });
 
 export const useProgram = (slug: string) =>
@@ -73,6 +76,7 @@ export const useArchive = (filters?: FilterOptions & { limit?: number }) =>
     queryFn: () => archiveService.getAll(filters),
     staleTime: 10 * 60 * 1000,
     enabled: isSupabaseConfigured,
+    placeholderData: () => [] as ArchiveItem[],
   });
 
 export const useArchiveItem = (slug: string) =>
@@ -91,6 +95,7 @@ export const useBlogPosts = (
     queryFn: () => blogService.getPosts(filters),
     staleTime: 2 * 60 * 1000,
     enabled: isSupabaseConfigured,
+    placeholderData: () => ({ data: [] as BlogPost[], count: 0 }),
   });
 
 export const useBlogPost = (slug: string) =>
@@ -118,6 +123,7 @@ export const useMedia = (
     queryFn: () => mediaService.getAll(platform, limit),
     staleTime: 5 * 60 * 1000,
     enabled: isSupabaseConfigured,
+    placeholderData: () => [],
   });
 
 export const useFeaturedMedia = (limit = 6) =>
@@ -261,6 +267,7 @@ export const usePublicPhotos = (
     staleTime: 10 * 60 * 1000,
     enabled: isSupabaseConfigured,
     retry: 1,
+    placeholderData: () => [],
   });
 
 // ── Search ────────────────────────────────────────────────────
