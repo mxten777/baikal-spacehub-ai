@@ -43,7 +43,7 @@ const FALLBACK_EVENTS = [
 ];
 
 export default function EventsPage() {
-  const { data: programs, isLoading } = usePrograms({ category: "event" });
+  const { data: programs } = usePrograms({ category: "event" });
   const displayEvents =
     programs && programs.length > 0 ? programs : FALLBACK_EVENTS;
 
@@ -93,9 +93,7 @@ export default function EventsPage() {
       {/* Events list */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          {isLoading ? (
-            <LoadingSpinner />
-          ) : displayEvents.length === 0 ? (
+          {displayEvents.length === 0 ? (
             <AnimatedSection animation="fade-up">
               <p className="font-sans text-brand-muted text-center py-20">
                 현재 진행 예정인 이벤트가 없습니다.

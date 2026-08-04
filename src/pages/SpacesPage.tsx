@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Users, Maximize2 } from "lucide-react";
 import { useSpaces, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
-import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { SpaceCategory, Space } from "../types";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
@@ -79,7 +78,7 @@ const FALLBACK_SPACES = [
 
 export default function SpacesPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
-  const { data: spaces, isLoading } = useSpaces(
+  const { data: spaces } = useSpaces(
     activeCategory !== "all" ? { category: activeCategory } : undefined,
   );
   const displaySpaces = spaces && spaces.length > 0 ? spaces : FALLBACK_SPACES;
@@ -151,10 +150,7 @@ export default function SpacesPage() {
       {/* Spaces grid */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          {isLoading ? (
-            <LoadingSpinner />
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {displaySpaces.map((space, i) => (
                 <AnimatedSection
                   key={space.id}
@@ -264,7 +260,7 @@ export default function SpacesPage() {
                 </AnimatedSection>
               ))}
             </div>
-          )}
+
         </div>
       </section>
 

@@ -5,7 +5,6 @@ import { ko } from "date-fns/locale";
 import { useUpcomingPrograms } from "../../hooks/useData";
 import AnimatedSection from "../common/AnimatedSection";
 import SectionHeader from "../common/SectionHeader";
-import LoadingSpinner from "../common/LoadingSpinner";
 import type { ProgramCategory } from "../../types";
 
 const CATEGORY_LABELS: Record<ProgramCategory, string> = {
@@ -56,7 +55,7 @@ const FALLBACK_PROGRAMS = [
 ];
 
 export default function UpcomingProgramsSection() {
-  const { data: programs, isLoading } = useUpcomingPrograms(6);
+  const { data: programs } = useUpcomingPrograms(6);
   const displayPrograms = (
     programs && programs.length > 0 ? programs : FALLBACK_PROGRAMS
   ).slice(0, 3);
@@ -80,10 +79,7 @@ export default function UpcomingProgramsSection() {
           </Link>
         </div>
 
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10">
             {displayPrograms.map((program, i) => (
               <AnimatedSection
                 key={program.id}
@@ -175,7 +171,7 @@ export default function UpcomingProgramsSection() {
               </AnimatedSection>
             ))}
           </div>
-        )}
+
       </div>
     </section>
   );

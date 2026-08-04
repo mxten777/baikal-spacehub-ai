@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { usePrograms, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
-import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { ProgramStatus } from "../types";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
@@ -128,7 +127,7 @@ const FALLBACK_PROGRAMS = [
 
 export default function ProgramsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
-  const { data: programs, isLoading } = usePrograms(
+  const { data: programs } = usePrograms(
     activeCategory !== "all" ? { category: activeCategory } : undefined,
   );
   const displayPrograms =
@@ -206,11 +205,8 @@ export default function ProgramsPage() {
       {/* Programs list */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          {filtered.length === 0 && isLoading ? (
-            <LoadingSpinner />
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((program, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((program, i) => (
                 <AnimatedSection
                   key={program.id}
                   animation="fade-up"
@@ -291,7 +287,7 @@ export default function ProgramsPage() {
                 </AnimatedSection>
               ))}
             </div>
-          )}
+
         </div>
       </section>
     </>

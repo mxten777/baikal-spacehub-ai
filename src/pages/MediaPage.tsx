@@ -3,7 +3,6 @@ import { Helmet } from "react-helmet-async";
 import { Play, ExternalLink, ArrowUpRight } from "lucide-react";
 import { useMedia, useExternalContents, useSettings } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
-import LoadingSpinner from "../components/common/LoadingSpinner";
 import type { ContentPlatform } from "../types";
 
 const INSTAGRAM_FALLBACK = "https://instagram.com/thelit_official";
@@ -33,7 +32,7 @@ export default function MediaPage() {
   const isInstagram = activePlatform === "instagram";
 
   // external_contents가 주요 데이터 소스 (수집된 콘텐츠) — Instagram은 조회 불필요
-  const { data: externalItems = [], isLoading: externalLoading } =
+  const { data: externalItems = [] } =
     useExternalContents({
       platform:
         activePlatform === "all" || isInstagram ? undefined : activePlatform,
@@ -41,14 +40,12 @@ export default function MediaPage() {
     });
 
   // 기존 media_items도 병렬 조회 (하위 호환) — Instagram, RSS는 legacy DB에 없음
-  const { data: legacyMedia = [], isLoading: legacyLoading } = useMedia(
+  const { data: legacyMedia = [] } = useMedia(
     activePlatform === "all" || activePlatform === "rss" || isInstagram
       ? undefined
       : activePlatform,
     12,
   );
-
-  const isLoading = !isInstagram && (externalLoading || legacyLoading);
 
   // external_contents 우선, 없으면 legacy media_items로 fallback
   const items =
@@ -151,9 +148,7 @@ export default function MediaPage() {
       {!isInstagram && (
         <section className="section-padding bg-brand-white">
           <div className="container-wide">
-            {isLoading ? (
-              <LoadingSpinner />
-            ) : items.length === 0 ? (
+          {items.length === 0 ? (
               <div className="text-center py-24 text-brand-muted">
                 <p className="font-sans text-sm">
                   현재 표시할 콘텐츠가 없습니다.

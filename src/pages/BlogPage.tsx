@@ -5,7 +5,6 @@ import { ko } from "date-fns/locale";
 import { Search } from "lucide-react";
 import { useBlogPosts, useBlogCategories } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
-import LoadingSpinner from "../components/common/LoadingSpinner";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
@@ -82,7 +81,7 @@ const FALLBACK_POSTS = [
 export default function BlogPage() {
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState<string | undefined>();
-  const { data: result, isLoading } = useBlogPosts({
+  const { data: result } = useBlogPosts({
     search: search || undefined,
     category: activeCat,
     limit: 12,
@@ -160,10 +159,7 @@ export default function BlogPage() {
       {/* Posts */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          {isLoading ? (
-            <LoadingSpinner />
-          ) : (
-            <>
+          <>
               {/* Featured post */}
               {posts[0] && (
                 <AnimatedSection animation="fade-up" className="mb-8 sm:mb-12">
@@ -262,7 +258,6 @@ export default function BlogPage() {
                 ))}
               </div>
             </>
-          )}
         </div>
       </section>
     </>
