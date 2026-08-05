@@ -5,6 +5,7 @@ import {
   ALLOWED_TYPES,
   MAX_SIZE_MB,
   getExtension,
+  autoOrientImage,
 } from "../../services/photoStorage";
 import PhotoPickerModal from "./PhotoPickerModal";
 import type { ProjectCategory } from "../../types";
@@ -58,15 +59,15 @@ export default function ImageUploadField({
     const abort = new AbortController();
     const timeoutId = setTimeout(() => abort.abort(), 30_000);
     try {
-      // No async auth call — path uses UUID, access control handled by RLS
-      const ext = getExtension(file.type);
+      const oriented = await autoOrientImage(file);
+      const ext = getExtension(oriented.type);
       const path = `cms/${folder}/${crypto.randomUUID()}.${ext}`;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: uploadError } = await supabase.storage
         .from(BUCKET)
-        .upload(path, file, {
-          contentType: file.type,
+        .upload(path, oriented, {
+          contentType: oriented.type,
           upsert: false,
           signal: abort.signal,
         } as any);

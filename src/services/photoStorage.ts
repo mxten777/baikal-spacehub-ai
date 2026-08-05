@@ -4,6 +4,35 @@ import type { ProjectCategory, ProjectStage, PhotoRecord } from "../types";
 
 const BUCKET = "photos";
 
+/**
+ * Bake EXIF orientation into pixels before upload so the image is never sideways.
+ */
+export async function autoOrientImage(file: File): Promise<File> {
+  if (file.type !== "image/jpeg") return file;
+  try {
+    const bitmap = await createImageBitmap(file, {
+      imageOrientation: "from-image",
+    } as ImageBitmapOptions);
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    canvas.getContext("2d")!.drawImage(bitmap, 0, 0);
+    bitmap.close();
+    return await new Promise<File>((resolve, reject) =>
+      canvas.toBlob(
+        (blob) =>
+          blob
+            ? resolve(new File([blob], file.name, { type: "image/jpeg" }))
+            : reject(new Error("toBlob failed")),
+        "image/jpeg",
+        0.92,
+      ),
+    );
+  } catch {
+    return file;
+  }
+}
+
 export interface UploadResult {
   storagePath: string;
   publicUrl: string;
@@ -107,7 +136,8 @@ export interface UploadProjectPhotoParams {
 export async function uploadProjectPhoto(
   params: UploadProjectPhotoParams,
 ): Promise<PhotoRecord> {
-  const { projectId, projectSlug, category, stage, file, uploadedBy } = params;
+  const { projectId, projectSlug, category, stage, uploadedBy } = params;
+  const file = await autoOrientImage(params.file);
 
   if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error("JPG, PNG, WebP 형식만 가능합니다.");
@@ -159,9 +189,10 @@ export async function uploadProjectPhoto(
  * Path: photo-curator/{userId}/{YYYY}/{MM}/{UUID}.{ext}
  */
 export async function uploadPhoto(
-  file: File,
+  rawFile: File,
   userId: string,
 ): Promise<UploadResult> {
+  const file = await autoOrientImage(rawFile);
   const storagePath = buildStoragePath(userId, file.type);
 
   const { error } = await supabase.storage
