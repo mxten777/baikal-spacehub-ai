@@ -2,9 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-// AnimatePresence kept for content text transition below
 import { useActiveHeroSlides, usePublicPhotos } from "../../hooks/useData";
-import { HERO_FALLBACK_SLIDES } from "../../data/heroFallbackData";
 import type { HeroSlide } from "../../types";
 
 // ─── Image optimization helpers ───────────────────────────────────────────────
@@ -70,33 +68,63 @@ function HeroButton({
 export default function HeroSection() {
   const { data: heroData } = useActiveHeroSlides();
 
-  // project_category='main' + stage='web' 업로드 사진 — desktop_image_url 없는 슬라이드 자동 치환
+  // Local photos fill in slides that have no desktop_image_url
   const { data: mainPhotos } = usePublicPhotos("main");
 
-  const displaySlides: HeroSlide[] = useMemo(() => {
-    // Supabase 응답 전에도 fallback 슬라이드를 즉시 표시
-    // → 콜드 스타트 등으로 응답이 늦어도 Hero 애니메이션이 즉시 동작
-    // 실제 데이터가 도착하면 자동으로 교체됨
-    const base =
-      heroData && heroData.length > 0 ? heroData : HERO_FALLBACK_SLIDES;
-    if (!mainPhotos?.length) return base;
-    return base.map((slide, i) => ({
+  // Real data only — never uses fallback slides
+  const mergedSlides = useMemo<HeroSlide[]>(() => {
+    if (!heroData?.length) return [];
+    if (!mainPhotos?.length) return heroData;
+    return heroData.map((slide, i) => ({
       ...slide,
       desktop_image_url:
         slide.desktop_image_url ?? mainPhotos[i]?.public_url ?? null,
     }));
   }, [heroData, mainPhotos]);
 
-  // Always up-to-date ref — interval callback uses this to avoid stale closure
-  const displaySlidesRef = useRef(displaySlides);
-  // Update ref after every render so interval always reads current slides
-  useEffect(() => {
-    displaySlidesRef.current = displaySlides;
-  });
+  // displaySlides is set once after first image preload — never swapped
+  const [displaySlides, setDisplaySlides] = useState<HeroSlide[]>([]);
+  // Hero is revealed only after the first real image is decoded and ready to paint
+  const [heroReady, setHeroReady] = useState(false);
 
   const [current, setCurrent] = useState(0);
   const [activatedCount, setActivatedCount] = useState(2);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Always up-to-date ref — interval callback uses this to avoid stale closure
+  const displaySlidesRef = useRef(displaySlides);
+  useEffect(() => {
+    displaySlidesRef.current = displaySlides;
+  });
+
+  // Preload first hero image before revealing the section; avoids any visible swap
+  useEffect(() => {
+    if (!mergedSlides.length || heroReady) return;
+
+    const firstSlide = mergedSlides[0];
+    const rawUrl = firstSlide.desktop_image_url;
+
+    const activate = () => {
+      setDisplaySlides(mergedSlides);
+      setHeroReady(true);
+    };
+
+    if (!rawUrl) {
+      // No image URL — show brand background with content text only
+      activate();
+      return;
+    }
+
+    const preloadUrl = (withVersion(rawUrl, firstSlide.updated_at) ?? rawUrl) as string;
+    let cancelled = false;
+    const img = new window.Image();
+    img.src = preloadUrl;
+    img
+      .decode()
+      .then(() => { if (!cancelled) activate(); })
+      .catch(() => { if (!cancelled) activate(); });
+    return () => { cancelled = true; };
+  }, [mergedSlides, heroReady]);
 
   const startAuto = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -109,38 +137,27 @@ export default function HeroSection() {
     }, 6000);
   };
 
-  // Initial autoplay — runs once; interval reads ref which stays current
+  // Begin autoplay once hero is ready — interval reads ref which stays current
   useEffect(() => {
+    if (!heroReady) return;
     startAuto();
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
-
-  // Blur placeholder → fade-in: track when first image finishes loading
-  const [firstLoaded, setFirstLoaded] = useState(false);
-
-  // Progressive slide loading: tracks how many slides have been activated.
-  // Starts at 2 (current=0 + next=1). Increments on each slide transition.
-  // A slide at index i gets src when i < activatedCount OR i === safeIdx.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [heroReady]);
 
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
   const safeIdx = Math.min(current, displaySlides.length - 1);
-  const slide = displaySlides[safeIdx];
+  const slide = safeIdx >= 0 ? displaySlides[safeIdx] : null;
 
-  // 로딩 중: 정적 배경이미지 표시 (즉시 로드) — 검은화면 방지
-  if (!slide) {
+  // Brand background: stable dark canvas while hero data and first image are not yet ready
+  if (!heroReady || !slide) {
     return (
-      <section className="relative h-screen-safe min-h-[600px] overflow-hidden bg-brand-black">
-        <img
-          src="/images/hero/hero-1.jpg"
-          alt=""
-          aria-hidden="true"
-          className="w-full h-full object-cover"
-          fetchPriority="high"
-        />
-        <div className="absolute inset-0 bg-gradient-overlay-center" />
-      </section>
+      <section
+        className="relative h-screen-safe min-h-[600px] overflow-hidden bg-brand-black"
+        aria-label="THE LIT"
+      />
     );
   }
 
@@ -192,22 +209,10 @@ export default function HeroSection() {
                 src={deskUrl || ""}
                 alt=""
                 aria-hidden="true"
-                className={
-                  i === 0
-                    ? `w-full h-full object-cover transition-opacity duration-700${firstLoaded ? "" : " opacity-0"}`
-                    : "w-full h-full object-cover"
-                }
-                fetchPriority={i === safeIdx ? "high" : "low"}
+                className="w-full h-full object-cover"
+                fetchPriority={i === 0 ? "high" : "low"}
                 loading={i === 0 ? "eager" : undefined}
                 decoding={i === 0 ? "sync" : "async"}
-                ref={
-                  i === 0
-                    ? (el) => {
-                        if (el?.complete) setFirstLoaded(true);
-                      }
-                    : undefined
-                }
-                onLoad={i === 0 ? () => setFirstLoaded(true) : undefined}
               />
             </picture>
             <div className="absolute inset-0 bg-gradient-overlay-center" />
