@@ -18,6 +18,13 @@ function getWebPSrc(url: string | null | undefined): string | null {
   return null;
 }
 
+/** Returns /images/hero/NAME-mobile.webp for local hero images, null otherwise. */
+function getMobileWebPSrc(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const m = url.match(/^(\/images\/hero\/hero-\d+)\.(jpe?g|png|webp)$/i);
+  return m ? `${m[1]}-mobile.webp` : null;
+}
+
 /** Appends ?v=<updatedAt> (or &v=...) to bust browser cache on image replacement. */
 function withVersion(
   url: string | null | undefined,
@@ -115,7 +122,14 @@ export default function HeroSection() {
       return;
     }
 
-    const preloadUrl = (withVersion(rawUrl, firstSlide.updated_at) ?? rawUrl) as string;
+    // Preload the URL that <picture> will actually render to avoid a double download:
+    // — mobile browsers (<= 767px): prefer mobile WebP if available, else desktop WebP
+    // — desktop browsers: prefer desktop WebP (matches <source type="image/webp"> in <picture>)
+    const isMobile = window.innerWidth <= 767;
+    const preferredRaw = isMobile
+      ? (getMobileWebPSrc(rawUrl) ?? getWebPSrc(rawUrl) ?? rawUrl)
+      : (getWebPSrc(rawUrl) ?? rawUrl);
+    const preloadUrl = (withVersion(preferredRaw, firstSlide.updated_at) ?? preferredRaw) as string;
     let cancelled = false;
     const img = new window.Image();
     img.src = preloadUrl;
@@ -163,6 +177,13 @@ export default function HeroSection() {
 
   return (
     <section className="relative h-screen-safe min-h-[600px] overflow-hidden bg-brand-black">
+      {/* 250ms fade-in on first reveal — background transitions from brand-black naturally */}
+      <motion.div
+        className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+      >
       {/* Background slides — all rendered for instant preload, crossfade via opacity */}
       {displaySlides.map((s, i) => {
         // Load src for slide i only when it's been activated (avoids downloading all slides upfront)
@@ -172,6 +193,10 @@ export default function HeroSection() {
           : null;
         const mobileWebP = shouldHaveSrc
           ? withVersion(getWebPSrc(s.mobile_image_url), s.updated_at)
+          : null;
+        // Auto-generated mobile WebP for local /images/hero/ files
+        const mobileHeroWebP = shouldHaveSrc
+          ? withVersion(getMobileWebPSrc(s.desktop_image_url), s.updated_at)
           : null;
         const deskUrl = shouldHaveSrc
           ? withVersion(s.desktop_image_url, s.updated_at)
@@ -192,7 +217,7 @@ export default function HeroSection() {
             style={{ zIndex: i === safeIdx ? 1 : 0 }}
           >
             <picture>
-              {/* Mobile: WebP first, then original */}
+              {/* CMS-provided mobile image — highest priority on mobile */}
               {mobileWebP && (
                 <source
                   media="(max-width: 767px)"
@@ -202,6 +227,14 @@ export default function HeroSection() {
               )}
               {mobUrl && (
                 <source media="(max-width: 767px)" srcSet={mobUrl} />
+              )}
+              {/* Auto-generated 960px mobile WebP for local hero images */}
+              {mobileHeroWebP && (
+                <source
+                  media="(max-width: 767px)"
+                  srcSet={mobileHeroWebP}
+                  type="image/webp"
+                />
               )}
               {/* Desktop: WebP first, then original via <img> fallback */}
               {desktopWebP && <source srcSet={desktopWebP} type="image/webp" />}
@@ -219,6 +252,7 @@ export default function HeroSection() {
           </motion.div>
         );
       })}
+      </motion.div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-end h-full container-wide hero-content-pad">
