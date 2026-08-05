@@ -8,76 +8,6 @@ import AnimatedSection from "../components/common/AnimatedSection";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
-const FALLBACK_POSTS = [
-  {
-    id: "1",
-    slug: "contemporary-art-guide",
-    title: "현대미술 감상 가이드 — 처음 만나는 현대미술",
-    excerpt:
-      "현대미술이 어렵게 느껴진다면, 이 글부터 시작해보세요. 감상의 문을 여는 10가지 핵심 키워드를 소개합니다.",
-    cover_image_url: null,
-    published_at: "2026-02-15",
-    category: { name: "문화 리뷰", color: "#6366F1" },
-    tags: ["미술", "교육", "가이드"],
-    is_featured: true,
-  },
-  {
-    id: "2",
-    slug: "jazz-night-review",
-    title: "Jazz Night 2월 공연 후기",
-    excerpt:
-      "2월의 추운 밤, 더릿 카페를 가득 채운 재즈 선율. 그 감동적인 밤을 기록했습니다.",
-    cover_image_url: null,
-    published_at: "2026-02-10",
-    category: { name: "행사 후기", color: "#10B981" },
-    tags: ["재즈", "공연", "후기"],
-  },
-  {
-    id: "3",
-    slug: "space-story-studio",
-    title: "더릿 스튜디오의 탄생 이야기",
-    excerpt:
-      "낡은 창고가 어떻게 서울 최고의 스튜디오 공간으로 변신했을까요? 더릿 스튜디오의 비하인드 스토리.",
-    cover_image_url: null,
-    published_at: "2026-01-28",
-    category: { name: "공간 스토리", color: "#F59E0B" },
-    tags: ["스튜디오", "스토리"],
-  },
-  {
-    id: "4",
-    slug: "photographer-interview",
-    title: "인터뷰 — 사진작가 김민준의 봄 기억",
-    excerpt:
-      "봄 기억 사진전을 앞두고 김민준 작가를 만났습니다. 그의 카메라 속 봄 이야기를 들어보세요.",
-    cover_image_url: null,
-    published_at: "2026-01-20",
-    category: { name: "인터뷰", color: "#EC4899" },
-    tags: ["사진", "인터뷰", "작가"],
-  },
-  {
-    id: "5",
-    slug: "ceramics-workshop-story",
-    title: "도예 워크숍 — 흙으로 만든 시간",
-    excerpt:
-      "처음 흙을 만졌을 때의 감촉, 물레 위에서 형태를 잡아가는 설렘. 도예 워크숍 참가자들의 이야기.",
-    cover_image_url: null,
-    published_at: "2026-01-12",
-    category: { name: "행사 후기", color: "#10B981" },
-    tags: ["도예", "워크숍"],
-  },
-  {
-    id: "6",
-    slug: "culture-space-trend-2026",
-    title: "2026 문화공간 트렌드 분석",
-    excerpt:
-      "코로나 이후 달라진 문화공간의 역할과 2026년 주목해야 할 복합문화공간 트렌드를 분석합니다.",
-    cover_image_url: null,
-    published_at: "2026-01-05",
-    category: { name: "문화 리뷰", color: "#6366F1" },
-    tags: ["트렌드", "문화공간", "분석"],
-  },
-];
-
 export default function BlogPage() {
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState<string | undefined>();
@@ -88,8 +18,7 @@ export default function BlogPage() {
   });
   const { data: categories } = useBlogCategories();
 
-  const posts =
-    result?.data && result.data.length > 0 ? result.data : FALLBACK_POSTS;
+  const posts = result?.data ?? [];
 
   return (
     <>
@@ -159,7 +88,17 @@ export default function BlogPage() {
       {/* Posts */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-          <>
+          {posts.length === 0 ? (
+            <AnimatedSection animation="fade-up" className="py-24 text-center">
+              <p className="font-display text-xl font-light text-brand-black mb-3">
+                아직 등록된 스토리가 없습니다.
+              </p>
+              <p className="font-sans text-sm text-brand-muted">
+                관리자에서 첫 번째 스토리를 등록해 주세요.
+              </p>
+            </AnimatedSection>
+          ) : (
+            <>
               {/* Featured post */}
               {posts[0] && (
                 <AnimatedSection animation="fade-up" className="mb-8 sm:mb-12">
@@ -258,6 +197,7 @@ export default function BlogPage() {
                 ))}
               </div>
             </>
+          )}
         </div>
       </section>
     </>
