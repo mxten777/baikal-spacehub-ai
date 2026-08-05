@@ -97,7 +97,7 @@ export default function ContactPage() {
             : "더릿 복합문화공간 — 카카오체널, 전화, 이메일로 빠르게 연락하세요. 공간 대여 문의도 환영합니다."
         }
         canonical={`${SITE_URL}/contact`}
-        keywords="더릿 연락저, 더릿 문의, 공간 대여 문의, The Lit 연락"
+        keywords="더릿 연락처, 더릿 문의, 공간 대여 문의, The Lit 연락"
         jsonLd={[
           localBusinessJsonLd(),
           breadcrumbJsonLd([

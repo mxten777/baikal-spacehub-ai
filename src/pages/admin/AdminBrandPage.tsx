@@ -384,7 +384,9 @@ function JourneyPanel({
   );
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setSteps(content.journey_steps ?? []);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [content]);
 
   const update = (
@@ -517,7 +519,9 @@ function WeddingPanel({
   );
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setTracks(content.wedding_experiences ?? []);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [content]);
 
   const update = <K extends keyof WeddingExperience>(
@@ -952,10 +956,12 @@ function SeoPanel({
   const [seoKeywords, setSeoKeywords] = useState(content.seo_keywords ?? "");
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setSeoTitle(content.seo_title ?? "");
     setSeoDesc(content.seo_description ?? "");
     setSeoOgImage(content.seo_og_image ?? "");
     setSeoKeywords(content.seo_keywords ?? "");
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [content]);
 
   return (

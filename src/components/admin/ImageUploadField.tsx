@@ -63,13 +63,13 @@ export default function ImageUploadField({
       const ext = getExtension(oriented.type);
       const path = `cms/${folder}/${crypto.randomUUID()}.${ext}`;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: uploadError } = await supabase.storage
         .from(BUCKET)
         .upload(path, oriented, {
           contentType: oriented.type,
           upsert: false,
           signal: abort.signal,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
       if (uploadError) throw uploadError;

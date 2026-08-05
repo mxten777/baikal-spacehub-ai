@@ -1,7 +1,8 @@
 // ─── SEO Constants ────────────────────────────────────────────────────────────
 export const SITE_URL = "https://thelit.kr";
 export const SITE_NAME = "The Lit";
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og/og-default.jpg`;
+// hero-1.jpg 임시 사용 — 전용 OG 이미지(1200×630) 제작 후 교체
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/hero/hero-1.jpg`;
 export const DEFAULT_DESCRIPTION =
   "THE LIT — 어둠을 지나면 빛이 있습니다. 서울 골목 안, 30m의 경험 여정. 카페·정원·스튜디오·웨딩·브랜드 행사."
 export const DEFAULT_KEYWORDS =

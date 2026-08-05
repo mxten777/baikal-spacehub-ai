@@ -170,11 +170,13 @@ export default function PhotoDetailPanel({
 
   // Reset when photo changes
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setTitle(photo.title ?? "");
     setDescription(photo.description ?? "");
     setTags(photo.tags ?? []);
     setNote(photo.note ?? "");
     setSpaceCategory(photo.space_category ?? "unclassified");
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [photo.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Dirty check
