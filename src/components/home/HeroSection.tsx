@@ -129,15 +129,24 @@ export default function HeroSection() {
     const preferredRaw = isMobile
       ? (getMobileWebPSrc(rawUrl) ?? getWebPSrc(rawUrl) ?? rawUrl)
       : (getWebPSrc(rawUrl) ?? rawUrl);
-    const preloadUrl = (withVersion(preferredRaw, firstSlide.updated_at) ?? preferredRaw) as string;
+    const preloadUrl = (withVersion(preferredRaw, firstSlide.updated_at) ??
+      preferredRaw) as string;
     let cancelled = false;
     const img = new window.Image();
     img.src = preloadUrl;
     img
       .decode()
-      .then(() => { if (!cancelled) activate(); })
-      .catch(() => { if (!cancelled) activate(); });
-    return () => { cancelled = true; };
+      .then(() => {
+        if (!cancelled) {
+          activate();
+        }
+      })
+      .catch(() => {
+        if (!cancelled) activate();
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [mergedSlides, heroReady]);
 
   const startAuto = () => {
@@ -158,7 +167,6 @@ export default function HeroSection() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [heroReady]);
 
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
@@ -184,74 +192,76 @@ export default function HeroSection() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
       >
-      {/* Background slides — all rendered for instant preload, crossfade via opacity */}
-      {displaySlides.map((s, i) => {
-        // Load src for slide i only when it's been activated (avoids downloading all slides upfront)
-        const shouldHaveSrc = i === safeIdx || i < activatedCount;
-        const desktopWebP = shouldHaveSrc
-          ? withVersion(getWebPSrc(s.desktop_image_url), s.updated_at)
-          : null;
-        const mobileWebP = shouldHaveSrc
-          ? withVersion(getWebPSrc(s.mobile_image_url), s.updated_at)
-          : null;
-        // Auto-generated mobile WebP for local /images/hero/ files
-        const mobileHeroWebP = shouldHaveSrc
-          ? withVersion(getMobileWebPSrc(s.desktop_image_url), s.updated_at)
-          : null;
-        const deskUrl = shouldHaveSrc
-          ? withVersion(s.desktop_image_url, s.updated_at)
-          : null;
-        const mobUrl = shouldHaveSrc
-          ? withVersion(s.mobile_image_url, s.updated_at)
-          : null;
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute inset-0"
-            initial={false}
-            animate={{
-              opacity: i === safeIdx ? 1 : 0,
-              scale: i === safeIdx ? 1 : 1.04,
-            }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            style={{ zIndex: i === safeIdx ? 1 : 0 }}
-          >
-            <picture>
-              {/* CMS-provided mobile image — highest priority on mobile */}
-              {mobileWebP && (
-                <source
-                  media="(max-width: 767px)"
-                  srcSet={mobileWebP}
-                  type="image/webp"
+        {/* Background slides — all rendered for instant preload, crossfade via opacity */}
+        {displaySlides.map((s, i) => {
+          // Load src for slide i only when it's been activated (avoids downloading all slides upfront)
+          const shouldHaveSrc = i === safeIdx || i < activatedCount;
+          const desktopWebP = shouldHaveSrc
+            ? withVersion(getWebPSrc(s.desktop_image_url), s.updated_at)
+            : null;
+          const mobileWebP = shouldHaveSrc
+            ? withVersion(getWebPSrc(s.mobile_image_url), s.updated_at)
+            : null;
+          // Auto-generated mobile WebP for local /images/hero/ files
+          const mobileHeroWebP = shouldHaveSrc
+            ? withVersion(getMobileWebPSrc(s.desktop_image_url), s.updated_at)
+            : null;
+          const deskUrl = shouldHaveSrc
+            ? withVersion(s.desktop_image_url, s.updated_at)
+            : null;
+          const mobUrl = shouldHaveSrc
+            ? withVersion(s.mobile_image_url, s.updated_at)
+            : null;
+          return (
+            <motion.div
+              key={s.id}
+              className="absolute inset-0"
+              initial={false}
+              animate={{
+                opacity: i === safeIdx ? 1 : 0,
+                scale: i === safeIdx ? 1 : 1.04,
+              }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              style={{ zIndex: i === safeIdx ? 1 : 0 }}
+            >
+              <picture>
+                {/* CMS-provided mobile image — highest priority on mobile */}
+                {mobileWebP && (
+                  <source
+                    media="(max-width: 767px)"
+                    srcSet={mobileWebP}
+                    type="image/webp"
+                  />
+                )}
+                {mobUrl && (
+                  <source media="(max-width: 767px)" srcSet={mobUrl} />
+                )}
+                {/* Auto-generated 960px mobile WebP for local hero images */}
+                {mobileHeroWebP && (
+                  <source
+                    media="(max-width: 767px)"
+                    srcSet={mobileHeroWebP}
+                    type="image/webp"
+                  />
+                )}
+                {/* Desktop: WebP first, then original via <img> fallback */}
+                {desktopWebP && (
+                  <source srcSet={desktopWebP} type="image/webp" />
+                )}
+                <img
+                  src={deskUrl ?? undefined}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-full h-full object-cover"
+                  fetchPriority={i === 0 ? "high" : "low"}
+                  loading={i === 0 ? "eager" : undefined}
+                  decoding={i === 0 ? "sync" : "async"}
                 />
-              )}
-              {mobUrl && (
-                <source media="(max-width: 767px)" srcSet={mobUrl} />
-              )}
-              {/* Auto-generated 960px mobile WebP for local hero images */}
-              {mobileHeroWebP && (
-                <source
-                  media="(max-width: 767px)"
-                  srcSet={mobileHeroWebP}
-                  type="image/webp"
-                />
-              )}
-              {/* Desktop: WebP first, then original via <img> fallback */}
-              {desktopWebP && <source srcSet={desktopWebP} type="image/webp" />}
-              <img
-                src={deskUrl || ""}
-                alt=""
-                aria-hidden="true"
-                className="w-full h-full object-cover"
-                fetchPriority={i === 0 ? "high" : "low"}
-                loading={i === 0 ? "eager" : undefined}
-                decoding={i === 0 ? "sync" : "async"}
-              />
-            </picture>
-            <div className="absolute inset-0 bg-gradient-overlay-center" />
-          </motion.div>
-        );
-      })}
+              </picture>
+              <div className="absolute inset-0 bg-gradient-overlay-center" />
+            </motion.div>
+          );
+        })}
       </motion.div>
 
       {/* Content */}
