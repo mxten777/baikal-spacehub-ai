@@ -26,25 +26,39 @@ function redCircleSvg(size) {
   );
 }
 
-/** ICO 컨테이너에 PNG 데이터를 감싸는 최소 ICO 포맷 (PNG-in-ICO, Win Vista+/모든 현대 브라우저 지원) */
-function pngToIco(pngBuffer, size) {
+/**
+ * PNG-in-ICO 멀티 레이어 포맷 (Win Vista+/모든 현대 브라우저 지원)
+ * entries: [{ pngBuffer, size }] — 각 레이어 PNG는 Alpha Channel 보존 상태여야 함
+ */
+function pngToIcoMulti(entries) {
   const HEADER_SIZE = 6;
   const ENTRY_SIZE = 16;
-  const dataOffset = HEADER_SIZE + ENTRY_SIZE;
-  const buf = Buffer.alloc(dataOffset + pngBuffer.length);
+  const count = entries.length;
+  let dataOffset = HEADER_SIZE + ENTRY_SIZE * count;
 
-  buf.writeUInt16LE(0, 0);
-  buf.writeUInt16LE(1, 2);                          // type: 1 = ICO
-  buf.writeUInt16LE(1, 4);                          // image count: 1
-  buf.writeUInt8(size >= 256 ? 0 : size, 6);
-  buf.writeUInt8(size >= 256 ? 0 : size, 7);
-  buf.writeUInt8(0, 8);
-  buf.writeUInt8(0, 9);
-  buf.writeUInt16LE(1, 10);
-  buf.writeUInt16LE(32, 12);
-  buf.writeUInt32LE(pngBuffer.length, 14);
-  buf.writeUInt32LE(dataOffset, 18);
-  pngBuffer.copy(buf, dataOffset);
+  // 전체 버퍼 크기 = 헤더 + 디렉토리 엔트리들 + 모든 PNG 데이터
+  const totalSize = dataOffset + entries.reduce((sum, e) => sum + e.pngBuffer.length, 0);
+  const buf = Buffer.alloc(totalSize);
+
+  buf.writeUInt16LE(0, 0);         // reserved
+  buf.writeUInt16LE(1, 2);         // type: 1 = ICO
+  buf.writeUInt16LE(count, 4);     // image count
+
+  entries.forEach(({ pngBuffer, size }, i) => {
+    const entryOffset = HEADER_SIZE + ENTRY_SIZE * i;
+    buf.writeUInt8(size >= 256 ? 0 : size, entryOffset);      // width (0 = 256)
+    buf.writeUInt8(size >= 256 ? 0 : size, entryOffset + 1);  // height
+    buf.writeUInt8(0, entryOffset + 2);    // color count
+    buf.writeUInt8(0, entryOffset + 3);    // reserved
+    buf.writeUInt16LE(1, entryOffset + 4); // color planes
+    buf.writeUInt16LE(32, entryOffset + 6);// bit count (32 = RGBA)
+    buf.writeUInt32LE(pngBuffer.length, entryOffset + 8);  // data size
+    buf.writeUInt32LE(dataOffset, entryOffset + 12);       // data offset
+
+    pngBuffer.copy(buf, dataOffset);
+    dataOffset += pngBuffer.length;
+  });
+
   return buf;
 }
 
@@ -89,18 +103,24 @@ async function makeBrandIcon(size, filename, paddingRatio = 0.14) {
 }
 
 async function main() {
-  // favicon.ico — 32×32 PNG-in-ICO
-  const icoLogoSize = Math.round(32 * (1 - 0.14 * 2));
-  const icoLogo = await sharp(LOGO_SRC)
-    .resize(icoLogoSize, icoLogoSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .png()
-    .toBuffer();
-  const icoPng = await sharp(redCircleSvg(32))
-    .composite([{ input: icoLogo, gravity: 'centre' }])
-    .png()
-    .toBuffer();
-  writeFileSync(join(OUT, 'favicon.ico'), pngToIco(icoPng, 32));
-  console.log('✓ favicon.ico');
+  // favicon.ico — 16×16 / 32×32 / 48×48 멀티 레이어 PNG-in-ICO
+  // Sharp는 SVG→PNG 변환 시 기본적으로 Alpha 채널을 유지하므로
+  // ensureAlpha()를 명시하여 채널 누락을 방지
+  const icoEntries = await Promise.all([16, 32, 48].map(async (size) => {
+    const logoSize = Math.round(size * (1 - 0.14 * 2));
+    const logoPng = await sharp(LOGO_SRC)
+      .resize(logoSize, logoSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer();
+    const pngBuffer = await sharp(redCircleSvg(size))
+      .ensureAlpha()                                        // Alpha 채널 보존 명시
+      .composite([{ input: logoPng, gravity: 'centre' }])
+      .png({ compressionLevel: 9 })
+      .toBuffer();
+    return { pngBuffer, size };
+  }));
+  writeFileSync(join(OUT, 'favicon.ico'), pngToIcoMulti(icoEntries));
+  console.log('✓ favicon.ico (16x16 + 32x32 + 48x48, alpha preserved)');
 
   await makeBrandIcon(48,  'favicon-48x48.png',          0.14);
   await makeBrandIcon(96,  'favicon-96x96.png',          0.12);
