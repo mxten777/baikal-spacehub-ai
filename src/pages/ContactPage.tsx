@@ -171,9 +171,7 @@ export default function ContactPage() {
                       />
                     </div>
                     <div>
-                      <label className="form-label">
-                        연락처
-                      </label>
+                      <label className="form-label">연락처</label>
                       <input
                         type="tel"
                         value={wForm.phone}
@@ -187,9 +185,7 @@ export default function ContactPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="form-label">
-                        이메일
-                      </label>
+                      <label className="form-label">이메일</label>
                       <input
                         type="email"
                         value={wForm.email}
@@ -201,9 +197,7 @@ export default function ContactPage() {
                       />
                     </div>
                     <div>
-                      <label className="form-label">
-                        희망 날짜
-                      </label>
+                      <label className="form-label">희망 날짜</label>
                       <input
                         type="date"
                         value={wForm.preferred_date}

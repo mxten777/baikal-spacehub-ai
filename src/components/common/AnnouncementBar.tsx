@@ -19,11 +19,18 @@ export default function AnnouncementBar() {
           <span className="text-[11px] text-stone-600 leading-tight whitespace-nowrap">
             공간 대여 · 웨딩 · 브랜드 행사 · 촬영 문의 환영합니다
           </span>
-          <span className="text-stone-300 shrink-0" aria-hidden="true">·</span>
+          <span className="text-stone-300 shrink-0" aria-hidden="true">
+            ·
+          </span>
           <span className="text-[10px] font-medium tracking-[0.1em] uppercase text-stone-500 whitespace-nowrap">
             THE LIT — Inquiries & Reservations Welcome
           </span>
-          <span className="text-stone-300 shrink-0 hidden xl:inline" aria-hidden="true">·</span>
+          <span
+            className="text-stone-300 shrink-0 hidden xl:inline"
+            aria-hidden="true"
+          >
+            ·
+          </span>
           <span className="hidden xl:inline text-[10.5px] text-stone-500 truncate">
             전화 1661-0288 · 화~일 11:00–21:00
           </span>

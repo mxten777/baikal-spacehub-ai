@@ -4,7 +4,7 @@ export const SITE_NAME = "The Lit";
 // hero-1.jpg 임시 사용 — 전용 OG 이미지(1200×630) 제작 후 교체
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/hero/hero-1.jpg`;
 export const DEFAULT_DESCRIPTION =
-  "THE LIT — 어둠을 지나면 빛이 있습니다. 서울 골목 안, 30m의 경험 여정. 카페·정원·스튜디오·웨딩·브랜드 행사."
+  "THE LIT — 어둠을 지나면 빛이 있습니다. 서울 골목 안, 30m의 경험 여정. 카페·정원·스튜디오·웨딩·브랜드 행사.";
 export const DEFAULT_KEYWORDS =
   "더릿, The Lit, 복합문화공간, 공간 대여, 서울 스튜디오, 하남 웨딩, 촬영 공간, 브랜드 행사 장소, Walk Into The Light, 30m Passage";
 

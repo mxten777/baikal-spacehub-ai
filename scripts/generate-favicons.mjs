@@ -1,17 +1,25 @@
 /**
  * generate-favicons.mjs
- * public/images/thelitlogo_red_trans.png → favicon 파일 세트 생성
+ * THE LIT 별(✦) 심볼 SVG → favicon 파일 세트 생성
  * 실행: node scripts/generate-favicons.mjs
+ *
+ * favicon.svg 는 이 스크립트가 덮어쓰지 않음 (public/favicon.svg 가 소스 역할).
+ * PNG/ICO 생성에는 sharp의 SVG 래스터라이즈 기능 사용 (librsvg 필요).
  */
 
 import sharp from 'sharp';
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SRC = join(__dirname, '../public/images/thelitlogo_red_trans.png');
 const OUT = join(__dirname, '../public');
+
+// PNG 래스터화용 SVG — 투명 배경, 브랜드 레드 #FF050C (라이트모드 고정)
+const STAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <path d="M16,2 Q17.4,14.6 30,16 Q17.4,17.4 16,30 Q14.6,17.4 2,16 Q14.6,14.6 16,2Z" fill="#FF050C"/>
+</svg>`;
+const SRC = Buffer.from(STAR_SVG);
 
 /** ICO 컨테이너에 PNG 데이터를 감싸는 최소 ICO 포맷 (PNG-in-ICO, Win Vista+/모든 현대 브라우저 지원) */
 function pngToIco(pngBuffer, size) {
@@ -39,7 +47,7 @@ function pngToIco(pngBuffer, size) {
 async function makePng(size, filename, paddingRatio = 0.1) {
   const pad = Math.round(size * paddingRatio);
   const logoSize = size - pad * 2;
-  await sharp(SRC)
+  await sharp(SRC, { density: Math.round((size / 32) * 72) })
     .resize(logoSize, logoSize, {
       fit: 'contain',
       background: { r: 255, g: 255, b: 255, alpha: 0 },
@@ -56,7 +64,7 @@ async function makePng(size, filename, paddingRatio = 0.1) {
 
 async function main() {
   // favicon.ico — 32×32 PNG-in-ICO
-  const icoSrc = await sharp(SRC)
+  const icoSrc = await sharp(SRC, { density: 72 })
     .resize(28, 28, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
     .extend({ top: 2, bottom: 2, left: 2, right: 2, background: { r: 255, g: 255, b: 255, alpha: 255 } })
     .flatten({ background: '#ffffff' })
@@ -71,21 +79,8 @@ async function main() {
   await makePng(192, 'android-chrome-192x192.png', 0.08);
   await makePng(512, 'android-chrome-512x512.png', 0.08);
 
-  // favicon.svg — 공식 로고 PNG를 base64로 내장한 SVG (브라우저 탭 & PWA 고해상도)
-  const svgPng = await sharp(SRC)
-    .resize(168, 168, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
-    .extend({ top: 12, bottom: 12, left: 12, right: 12, background: { r: 255, g: 255, b: 255, alpha: 255 } })
-    .flatten({ background: '#ffffff' })
-    .png()
-    .toBuffer();
-  const b64 = svgPng.toString('base64');
-  const svg = [
-    '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 192 192">',
-    `  <image width="192" height="192" href="data:image/png;base64,${b64}"/>`,
-    '</svg>',
-  ].join('\n');
-  writeFileSync(join(OUT, 'favicon.svg'), svg);
-  console.log('✓ favicon.svg');
+  // favicon.svg — public/favicon.svg 를 그대로 유지 (순수 벡터, 덮어쓰지 않음)
+  console.log('✓ favicon.svg (스크립트가 덮어쓰지 않음 — public/favicon.svg 직접 관리)');
 
   console.log('\n모든 favicon 파일 생성 완료.');
 }
