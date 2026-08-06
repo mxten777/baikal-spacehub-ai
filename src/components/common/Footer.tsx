@@ -54,11 +54,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand column */}
           <div className="lg:col-span-4">
-            <Link
-              to="/"
-              className="font-display text-[28px] font-light tracking-[0.15em] uppercase text-white block mb-4"
-            >
-              The Lit
+            <Link to="/" aria-label="The Lit — 홈" className="inline-block mb-5">
+              <img
+                src="/images/thelitlogo_red_trans.png"
+                alt="The Lit"
+                className="w-[240px] max-w-[240px] h-auto"
+              />
             </Link>
             <p className="font-sans text-sm text-white/50 leading-relaxed max-w-xs mb-8">
               복합문화공간 더릿 — 전시, 공연, 강연, 워크숍, 촬영, 브랜드 행사 등

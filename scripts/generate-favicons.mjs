@@ -58,16 +58,30 @@ async function makeBrandIconBuffer(size, paddingRatio = 0.14) {
     .png()
     .toBuffer();
 
+  // 투명 캔버스 + 빨간 원 + 검정 로고 (모서리 alpha 0 유지)
   return sharp(redCircleSvg(size))
     .composite([{ input: logoPng, gravity: 'centre' }])
     .png()
     .toBuffer();
 }
 
-/**
- * 빨간 원 배경 + 검정 THE LIT 로고 합성 PNG 생성
- * paddingRatio: 아이콘 크기 대비 여백 비율
- */
+/** 투명 모서리 → 빨간색으로 채운 solid 버전 (Apple Touch Icon 전용) */
+async function makeBrandIconSolid(size, filename, paddingRatio = 0.14) {
+  const pad = Math.round(size * paddingRatio);
+  const logoSize = size - pad * 2;
+  const logoPng = await sharp(LOGO_SRC)
+    .resize(logoSize, logoSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png()
+    .toBuffer();
+  await sharp(redCircleSvg(size))
+    .composite([{ input: logoPng, gravity: 'centre' }])
+    .flatten({ background: BRAND_RED })  // iOS는 투명 불지원 — 전체 빨간 배경
+    .png()
+    .toFile(join(OUT, filename));
+  console.log(`✓ ${filename} (solid)`);
+}
+
+/** 투명 모서리 빨간 원 PNG 생성 */
 async function makeBrandIcon(size, filename, paddingRatio = 0.14) {
   const buf = await makeBrandIconBuffer(size, paddingRatio);
   await sharp(buf).toFile(join(OUT, filename));
@@ -90,7 +104,7 @@ async function main() {
 
   await makeBrandIcon(48,  'favicon-48x48.png',          0.14);
   await makeBrandIcon(96,  'favicon-96x96.png',          0.12);
-  await makeBrandIcon(180, 'apple-touch-icon.png',       0.10);
+  await makeBrandIconSolid(180, 'apple-touch-icon.png',  0.10);  // iOS 전용: solid 배경
   await makeBrandIcon(192, 'android-chrome-192x192.png', 0.10);
   await makeBrandIcon(512, 'android-chrome-512x512.png', 0.10);
 
