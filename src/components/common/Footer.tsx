@@ -56,7 +56,7 @@ export default function Footer() {
           <div className="lg:col-span-4">
             <Link
               to="/"
-              className="font-display text-2xl font-light tracking-[0.15em] uppercase text-white block mb-4"
+              className="font-display text-[28px] font-light tracking-[0.15em] uppercase text-white block mb-4"
             >
               The Lit
             </Link>
