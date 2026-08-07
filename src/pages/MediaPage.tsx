@@ -6,7 +6,7 @@ import AnimatedSection from "../components/common/AnimatedSection";
 import type { ContentPlatform } from "../types";
 
 const INSTAGRAM_FALLBACK = "https://instagram.com/thelit_official";
-const YOUTUBE_FALLBACK = "https://youtube.com/@thelit";
+const YOUTUBE_FALLBACK = "https://youtube.com/@TheLIT_official";
 
 const PLATFORMS: Array<{ value: "all" | ContentPlatform; label: string }> = [
   { value: "all", label: "전체" },
@@ -35,12 +35,11 @@ export default function MediaPage() {
   const isYoutube = activePlatform === "youtube";
 
   // external_contents가 주요 데이터 소스 (수집된 콘텐츠) — Instagram은 조회 불필요
-  const { data: externalItems = [] } =
-    useExternalContents({
-      platform:
-        activePlatform === "all" || isInstagram ? undefined : activePlatform,
-      limit: 24,
-    });
+  const { data: externalItems = [] } = useExternalContents({
+    platform:
+      activePlatform === "all" || isInstagram ? undefined : activePlatform,
+    limit: 24,
+  });
 
   // 기존 media_items도 병렬 조회 (하위 호환) — Instagram, RSS는 legacy DB에 없음
   const { data: legacyMedia = [] } = useMedia(
@@ -170,7 +169,7 @@ export default function MediaPage() {
       {!isInstagram && (
         <section className="section-padding bg-brand-white">
           <div className="container-wide">
-          {items.length === 0 ? (
+            {items.length === 0 ? (
               <div className="text-center py-24 text-brand-muted">
                 <p className="font-sans text-sm">
                   현재 표시할 콘텐츠가 없습니다.

@@ -52,7 +52,7 @@ const OPERATOR_KEYS = [
   {
     key: "youtube_url",
     label: "YouTube URL",
-    placeholder: "https://youtube.com/@thelit",
+    placeholder: "https://youtube.com/@TheLIT_official",
     group: "SNS",
   },
   {

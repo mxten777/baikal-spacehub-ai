@@ -39,7 +39,7 @@ export default function Footer() {
     settings?.instagram_url,
     "instagram.com/thelit_official",
   );
-  const youtubeUrl = ensureHttps(settings?.youtube_url, "youtube.com/@thelit");
+  const youtubeUrl = ensureHttps(settings?.youtube_url, "youtube.com/@TheLIT_official");
   const xUrl = ensureHttps(settings?.x_url, "x.com/thelit");
   const address = settings?.address || "경기도 하남시 \ubbf8사동 468";
   const phone = settings?.contact_phone || "1661-0288";
