@@ -6,6 +6,7 @@ import AnimatedSection from "../components/common/AnimatedSection";
 import type { ContentPlatform } from "../types";
 
 const INSTAGRAM_FALLBACK = "https://instagram.com/thelit_official";
+const YOUTUBE_FALLBACK = "https://youtube.com/@thelit";
 
 const PLATFORMS: Array<{ value: "all" | ContentPlatform; label: string }> = [
   { value: "all", label: "전체" },
@@ -28,8 +29,10 @@ export default function MediaPage() {
   );
   const { data: settings } = useSettings();
   const instagramUrl = settings?.instagram_url || INSTAGRAM_FALLBACK;
+  const youtubeUrl = settings?.youtube_url || YOUTUBE_FALLBACK;
 
   const isInstagram = activePlatform === "instagram";
+  const isYoutube = activePlatform === "youtube";
 
   // external_contents가 주요 데이터 소스 (수집된 콘텐츠) — Instagram은 조회 불필요
   const { data: externalItems = [] } =
@@ -139,6 +142,25 @@ export default function MediaPage() {
               className="flex items-center gap-1.5 font-sans text-xs font-medium tracking-widest uppercase text-brand-black hover:text-brand-accent transition-colors"
             >
               @thelit_official <ArrowUpRight size={11} />
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* YouTube channel link banner */}
+      {isYoutube && youtubeUrl && (
+        <div className="border-b border-brand-border bg-brand-cream">
+          <div className="container-wide py-3 flex items-center justify-between">
+            <span className="font-sans text-xs text-brand-muted">
+              YouTube 영상은 공식 채널에서 확인하세요
+            </span>
+            <a
+              href={youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 font-sans text-xs font-medium tracking-widest uppercase text-brand-black hover:text-brand-accent transition-colors"
+            >
+              YouTube Official <ArrowUpRight size={11} />
             </a>
           </div>
         </div>
