@@ -52,6 +52,7 @@ const OPERATOR_PERMISSIONS: Permission[] = [
   "operator_settings",
   "about",
   "brand",
+  "external_content",
 ];
 
 const VIEWER_PERMISSIONS: Permission[] = ["dashboard"];

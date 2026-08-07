@@ -110,6 +110,13 @@ const operatorNav: NavEntry[] = [
     icon: CalendarCheck,
     permission: "reservations",
   },
+  { type: "section", label: "외부 콘텐츠" },
+  {
+    label: "외부 콘텐츠",
+    href: "/admin/external-content",
+    icon: Globe2,
+    permission: "external_content",
+  },
   { type: "section", label: "운영" },
   {
     label: "운영 정보",
@@ -142,10 +149,10 @@ const superAdminNav: NavEntry[] = [
     icon: Settings,
     permission: "system_settings",
   },
-  { type: "section", label: "외부 콘텐츠" },
+  { type: "section", label: "콘텐츠 소스" },
   {
-    label: "외부 콘텐츠 관리",
-    href: "/admin/external",
+    label: "콘텐츠 소스",
+    href: "/admin/content-sources",
     icon: Globe2,
     permission: "content_sources",
   },
