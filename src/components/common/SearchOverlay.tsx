@@ -89,7 +89,7 @@ function buildSections(results: SearchResults): CategorySection[] {
         id: a.id,
         title: a.title,
         sub: a.description ?? "",
-        href: `/archive`,
+        href: `/archive/${a.slug}`,
       })),
     });
   }
