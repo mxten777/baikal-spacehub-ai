@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useActiveHeroSlides, usePublicPhotos } from "../../hooks/useData";
+import { HERO_FALLBACK_SLIDES } from "../../data/heroFallbackData";
 import type { HeroSlide } from "../../types";
 
 // ─── Image optimization helpers ───────────────────────────────────────────────
@@ -78,11 +79,11 @@ export default function HeroSection() {
   // Local photos fill in slides that have no desktop_image_url
   const { data: mainPhotos } = usePublicPhotos("main");
 
-  // Real data only — never uses fallback slides
+  // Use fallback immediately while Supabase loads; swap to real data on arrival
   const mergedSlides = useMemo<HeroSlide[]>(() => {
-    if (!heroData?.length) return [];
-    if (!mainPhotos?.length) return heroData;
-    return heroData.map((slide, i) => ({
+    const base = heroData?.length ? heroData : HERO_FALLBACK_SLIDES;
+    if (!mainPhotos?.length) return base;
+    return base.map((slide, i) => ({
       ...slide,
       desktop_image_url:
         slide.desktop_image_url ?? mainPhotos[i]?.public_url ?? null,
@@ -103,6 +104,13 @@ export default function HeroSection() {
   useEffect(() => {
     displaySlidesRef.current = displaySlides;
   });
+
+  // Swap to real Supabase data once it arrives (no-op if hero was already real)
+  useEffect(() => {
+    if (heroReady && heroData?.length) {
+      setDisplaySlides(mergedSlides);
+    }
+  }, [heroReady, heroData, mergedSlides]);
 
   // Preload first hero image before revealing the section; avoids any visible swap
   useEffect(() => {
