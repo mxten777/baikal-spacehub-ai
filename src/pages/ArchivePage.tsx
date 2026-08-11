@@ -79,19 +79,22 @@ type ImageTile = {
 export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeSubcategory, setActiveSubcategory] = useState("all");
-  const [ytModal, setYtModal] = useState<{ id: string; isShorts: boolean } | null>(null);
+  const [ytModal, setYtModal] = useState<{ id: string; isShorts: boolean; coverUrl?: string } | null>(null);
+  const [ytPlaying, setYtPlaying] = useState(false);
   const playerRef = useRef<YT.Player | null>(null);
   const playerContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!ytModal) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModal(null); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setYtModal(null); setYtPlaying(false); }
+    };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [ytModal]);
 
   useEffect(() => {
-    if (!ytModal) return;
+    if (!ytModal || !ytPlaying) return;
     let cancelled = false;
     loadYouTubeAPI().then(() => {
       if (cancelled || !playerContainerRef.current) return;
@@ -109,7 +112,7 @@ export default function ArchivePage() {
           },
           onStateChange: (event) => {
             if (event.data === YTApi.PlayerState.ENDED) {
-              event.target.stopVideo();
+              setYtPlaying(false);
             }
           },
         },
@@ -123,7 +126,7 @@ export default function ArchivePage() {
         playerRef.current = null;
       }
     };
-  }, [ytModal]);
+  }, [ytModal, ytPlaying]);
 
   const { data: archives } = useArchive();
   const { data: archivePhotos } = usePublicPhotos("archive");
@@ -388,7 +391,8 @@ export default function ArchivePage() {
                         onClick={() => {
                           const ytId = youtubeService.extractVideoId(tile.videoUrl!);
                           if (ytId) {
-                            setYtModal({ id: ytId, isShorts: tile.videoUrl!.includes('/shorts/') });
+                            setYtModal({ id: ytId, isShorts: tile.videoUrl!.includes('/shorts/'), coverUrl: tile.url });
+                            setYtPlaying(true);
                           } else {
                             window.open(tile.videoUrl!, "_blank", "noopener,noreferrer");
                           }
@@ -415,7 +419,7 @@ export default function ArchivePage() {
       {ytModal && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 sm:p-6"
-          onClick={() => setYtModal(null)}
+          onClick={() => { setYtModal(null); setYtPlaying(false); }}
         >
           {ytModal.isShorts ? (
             <div
@@ -424,14 +428,28 @@ export default function ArchivePage() {
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                onClick={() => setYtModal(null)}
+                onClick={() => { setYtModal(null); setYtPlaying(false); }}
                 className="mb-2 text-white/70 hover:text-white transition-colors"
                 aria-label="닫기"
               >
                 <X size={28} />
               </button>
               <div className="w-full aspect-[9/16]">
-                <div ref={playerContainerRef} className="w-full h-full" />
+                {ytPlaying ? (
+                  <div ref={playerContainerRef} className="w-full h-full" />
+                ) : (
+                  <button
+                    onClick={() => setYtPlaying(true)}
+                    className="w-full h-full relative flex items-center justify-center group bg-brand-black"
+                  >
+                    {ytModal.coverUrl && (
+                      <img src={ytModal.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                    )}
+                    <div className="relative z-10 w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/80 transition-colors">
+                      <Play size={22} className="text-white ml-1" fill="currentColor" />
+                    </div>
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -440,14 +458,28 @@ export default function ArchivePage() {
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                onClick={() => setYtModal(null)}
+                onClick={() => { setYtModal(null); setYtPlaying(false); }}
                 className="mb-2 text-white/70 hover:text-white transition-colors"
                 aria-label="닫기"
               >
                 <X size={28} />
               </button>
               <div className="w-full aspect-video">
-                <div ref={playerContainerRef} className="w-full h-full" />
+                {ytPlaying ? (
+                  <div ref={playerContainerRef} className="w-full h-full" />
+                ) : (
+                  <button
+                    onClick={() => setYtPlaying(true)}
+                    className="w-full h-full relative flex items-center justify-center group bg-brand-black"
+                  >
+                    {ytModal.coverUrl && (
+                      <img src={ytModal.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                    )}
+                    <div className="relative z-10 w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/80 transition-colors">
+                      <Play size={22} className="text-white ml-1" fill="currentColor" />
+                    </div>
+                  </button>
+                )}
               </div>
             </div>
           )}
