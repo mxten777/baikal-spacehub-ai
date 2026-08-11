@@ -110,23 +110,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       // INITIAL_SESSION은 initAuth()가 이미 처리 — 중복 profiles 조회 방지
       if (event === "INITIAL_SESSION") return;
       if (!mounted) return;
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      try {
-        if (currentUser) {
-          await fetchProfile(currentUser.id);
-        } else {
-          setProfile(null);
-        }
-      } catch {
+      // Auth Lock 해제 후 DB 조회 실행 — await 제거로 콜백 즉시 반환
+      if (currentUser) {
+        fetchProfile(currentUser.id).catch(() => {
+          if (mounted) setProfile(null);
+        });
+      } else {
         setProfile(null);
-      } finally {
-        if (mounted) setLoading(false);
       }
+      if (mounted) setLoading(false);
     });
 
     return () => {
