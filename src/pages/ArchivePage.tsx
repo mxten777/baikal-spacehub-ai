@@ -79,14 +79,14 @@ type ImageTile = {
 export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeSubcategory, setActiveSubcategory] = useState("all");
-  const [ytModalVideoId, setYtModalVideoId] = useState<string | null>(null);
+  const [ytModal, setYtModal] = useState<{ id: string; isShorts: boolean } | null>(null);
 
   useEffect(() => {
-    if (!ytModalVideoId) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModalVideoId(null); };
+    if (!ytModal) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModal(null); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [ytModalVideoId]);
+  }, [ytModal]);
 
   const { data: archives } = useArchive();
   const { data: archivePhotos } = usePublicPhotos("archive");
@@ -351,7 +351,7 @@ export default function ArchivePage() {
                         onClick={() => {
                           const ytId = youtubeService.extractVideoId(tile.videoUrl!);
                           if (ytId) {
-                            setYtModalVideoId(ytId);
+                            setYtModal({ id: ytId, isShorts: tile.videoUrl!.includes('/shorts/') });
                           } else {
                             window.open(tile.videoUrl!, "_blank", "noopener,noreferrer");
                           }
@@ -375,30 +375,57 @@ export default function ArchivePage() {
         </div>
       </section>
 
-      {ytModalVideoId && (
+      {ytModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setYtModalVideoId(null)}
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 sm:p-6"
+          onClick={() => setYtModal(null)}
         >
-          <button
-            onClick={() => setYtModalVideoId(null)}
-            className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors z-10"
-            aria-label="닫기"
-          >
-            <X size={28} />
-          </button>
-          <div
-            className="w-full max-w-4xl aspect-video"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <iframe
-              src={`https://www.youtube.com/embed/${ytModalVideoId}?autoplay=1`}
-              className="w-full h-full"
-              allow="autoplay; encrypted-media; fullscreen"
-              allowFullScreen
-              title="YouTube video"
-            />
-          </div>
+          {ytModal.isShorts ? (
+            <div
+              className="flex flex-col items-end"
+              style={{ width: 'min(44vh, 86vw)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setYtModal(null)}
+                className="mb-2 text-white/70 hover:text-white transition-colors"
+                aria-label="닫기"
+              >
+                <X size={28} />
+              </button>
+              <div className="w-full aspect-[9/16]">
+                <iframe
+                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1`}
+                  className="w-full h-full"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  title="YouTube video"
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              className="flex flex-col items-end w-full max-w-4xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setYtModal(null)}
+                className="mb-2 text-white/70 hover:text-white transition-colors"
+                aria-label="닫기"
+              >
+                <X size={28} />
+              </button>
+              <div className="w-full aspect-video">
+                <iframe
+                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1`}
+                  className="w-full h-full"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  title="YouTube video"
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>

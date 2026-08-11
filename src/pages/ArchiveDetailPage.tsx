@@ -20,14 +20,14 @@ const CATEGORY_LABELS: Record<string, string> = {
 export default function ArchiveDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [ytModalVideoId, setYtModalVideoId] = useState<string | null>(null);
+  const [ytModal, setYtModal] = useState<{ id: string; isShorts: boolean } | null>(null);
 
   useEffect(() => {
-    if (!ytModalVideoId) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModalVideoId(null); };
+    if (!ytModal) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModal(null); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [ytModalVideoId]);
+  }, [ytModal]);
 
   const { data: item, isLoading } = useQuery({
     queryKey: ["archive", slug],
@@ -149,7 +149,7 @@ export default function ArchiveDetailPage() {
             <AnimatedSection animation="fade-up">
               {youtubeService.extractVideoId(item.video_url) ? (
                 <button
-                  onClick={() => setYtModalVideoId(youtubeService.extractVideoId(item.video_url!))}
+                  onClick={() => setYtModal({ id: youtubeService.extractVideoId(item.video_url!)!, isShorts: item.video_url!.includes('/shorts/') })}
                   className="inline-flex items-center gap-3 px-8 py-4 bg-brand-black text-white font-sans text-sm tracking-widest uppercase hover:bg-brand-charcoal transition-colors cursor-pointer"
                 >
                   <Play size={16} fill="currentColor" />
@@ -261,30 +261,57 @@ export default function ArchiveDetailPage() {
         </div>
       )}
 
-      {ytModalVideoId && (
+      {ytModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setYtModalVideoId(null)}
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 sm:p-6"
+          onClick={() => setYtModal(null)}
         >
-          <button
-            onClick={() => setYtModalVideoId(null)}
-            className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors z-10"
-            aria-label="닫기"
-          >
-            <X size={28} />
-          </button>
-          <div
-            className="w-full max-w-4xl aspect-video"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <iframe
-              src={`https://www.youtube.com/embed/${ytModalVideoId}?autoplay=1`}
-              className="w-full h-full"
-              allow="autoplay; encrypted-media; fullscreen"
-              allowFullScreen
-              title="YouTube video"
-            />
-          </div>
+          {ytModal.isShorts ? (
+            <div
+              className="flex flex-col items-end"
+              style={{ width: 'min(44vh, 86vw)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setYtModal(null)}
+                className="mb-2 text-white/70 hover:text-white transition-colors"
+                aria-label="닫기"
+              >
+                <X size={28} />
+              </button>
+              <div className="w-full aspect-[9/16]">
+                <iframe
+                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1`}
+                  className="w-full h-full"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  title="YouTube video"
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              className="flex flex-col items-end w-full max-w-4xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setYtModal(null)}
+                className="mb-2 text-white/70 hover:text-white transition-colors"
+                aria-label="닫기"
+              >
+                <X size={28} />
+              </button>
+              <div className="w-full aspect-video">
+                <iframe
+                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1`}
+                  className="w-full h-full"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  title="YouTube video"
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>
