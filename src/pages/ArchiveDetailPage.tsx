@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { archiveService } from "../services/archive";
@@ -7,7 +7,7 @@ import LoadingSpinner from "../components/common/LoadingSpinner";
 import { X, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, DEFAULT_OG_IMAGE, breadcrumbJsonLd } from "../lib/seo";
-import { youtubeService } from "../services/media";
+import { youtubeService, loadYouTubeAPI } from "../services/media";
 
 const CATEGORY_LABELS: Record<string, string> = {
   exhibition: "전시",
@@ -21,12 +21,49 @@ export default function ArchiveDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [ytModal, setYtModal] = useState<{ id: string; isShorts: boolean } | null>(null);
+  const playerRef = useRef<YT.Player | null>(null);
+  const playerContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!ytModal) return;
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModal(null); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
+  }, [ytModal]);
+
+  useEffect(() => {
+    if (!ytModal) return;
+    let cancelled = false;
+    loadYouTubeAPI().then(() => {
+      if (cancelled || !playerContainerRef.current) return;
+      const YTApi = window.YT!;
+      const target = document.createElement('div');
+      playerContainerRef.current.appendChild(target);
+      const p = new YTApi.Player(target, {
+        videoId: ytModal.id,
+        width: '100%',
+        height: '100%',
+        playerVars: { autoplay: 1, rel: 0, playsinline: 1 },
+        events: {
+          onReady: (event) => {
+            event.target.getIframe().setAttribute('allow', 'autoplay; encrypted-media; fullscreen');
+          },
+          onStateChange: (event) => {
+            if (event.data === YTApi.PlayerState.ENDED) {
+              event.target.stopVideo();
+            }
+          },
+        },
+      });
+      playerRef.current = p;
+    });
+    return () => {
+      cancelled = true;
+      if (playerRef.current) {
+        try { playerRef.current.destroy(); } catch { /* ignore */ }
+        playerRef.current = null;
+      }
+    };
   }, [ytModal]);
 
   const { data: item, isLoading } = useQuery({
@@ -280,13 +317,7 @@ export default function ArchiveDetailPage() {
                 <X size={28} />
               </button>
               <div className="w-full aspect-[9/16]">
-                <iframe
-                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1&rel=0&playsinline=1`}
-                  className="w-full h-full"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  title="YouTube video"
-                />
+                <div ref={playerContainerRef} className="w-full h-full" />
               </div>
             </div>
           ) : (
@@ -302,13 +333,7 @@ export default function ArchiveDetailPage() {
                 <X size={28} />
               </button>
               <div className="w-full aspect-video">
-                <iframe
-                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1&rel=0&playsinline=1`}
-                  className="w-full h-full"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  title="YouTube video"
-                />
+                <div ref={playerContainerRef} className="w-full h-full" />
               </div>
             </div>
           )}

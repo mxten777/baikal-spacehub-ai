@@ -61,3 +61,25 @@ export const youtubeService = {
     return null
   },
 }
+
+// Singleton loader — inserts the IFrame API script once per page
+let _ytApiReady: Promise<void> | null = null;
+
+export function loadYouTubeAPI(): Promise<void> {
+  if (window.YT?.Player) return Promise.resolve();
+  if (_ytApiReady) return _ytApiReady;
+  _ytApiReady = new Promise<void>((resolve) => {
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      prev?.();
+      resolve();
+    };
+    if (!document.getElementById('yt-iframe-api')) {
+      const tag = document.createElement('script');
+      tag.id = 'yt-iframe-api';
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    }
+  });
+  return _ytApiReady;
+}

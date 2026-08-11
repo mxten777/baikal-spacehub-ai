@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Play, X } from "lucide-react";
 import { useArchive, usePublicPhotos } from "../hooks/useData";
-import { youtubeService } from "../services/media";
+import { youtubeService, loadYouTubeAPI } from "../services/media";
 import AnimatedSection from "../components/common/AnimatedSection";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
@@ -80,12 +80,49 @@ export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeSubcategory, setActiveSubcategory] = useState("all");
   const [ytModal, setYtModal] = useState<{ id: string; isShorts: boolean } | null>(null);
+  const playerRef = useRef<YT.Player | null>(null);
+  const playerContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!ytModal) return;
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModal(null); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
+  }, [ytModal]);
+
+  useEffect(() => {
+    if (!ytModal) return;
+    let cancelled = false;
+    loadYouTubeAPI().then(() => {
+      if (cancelled || !playerContainerRef.current) return;
+      const YTApi = window.YT!;
+      const target = document.createElement('div');
+      playerContainerRef.current.appendChild(target);
+      const p = new YTApi.Player(target, {
+        videoId: ytModal.id,
+        width: '100%',
+        height: '100%',
+        playerVars: { autoplay: 1, rel: 0, playsinline: 1 },
+        events: {
+          onReady: (event) => {
+            event.target.getIframe().setAttribute('allow', 'autoplay; encrypted-media; fullscreen');
+          },
+          onStateChange: (event) => {
+            if (event.data === YTApi.PlayerState.ENDED) {
+              event.target.stopVideo();
+            }
+          },
+        },
+      });
+      playerRef.current = p;
+    });
+    return () => {
+      cancelled = true;
+      if (playerRef.current) {
+        try { playerRef.current.destroy(); } catch { /* ignore */ }
+        playerRef.current = null;
+      }
+    };
   }, [ytModal]);
 
   const { data: archives } = useArchive();
@@ -394,13 +431,7 @@ export default function ArchivePage() {
                 <X size={28} />
               </button>
               <div className="w-full aspect-[9/16]">
-                <iframe
-                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1&rel=0&playsinline=1`}
-                  className="w-full h-full"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  title="YouTube video"
-                />
+                <div ref={playerContainerRef} className="w-full h-full" />
               </div>
             </div>
           ) : (
@@ -416,13 +447,7 @@ export default function ArchivePage() {
                 <X size={28} />
               </button>
               <div className="w-full aspect-video">
-                <iframe
-                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1&rel=0&playsinline=1`}
-                  className="w-full h-full"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  title="YouTube video"
-                />
+                <div ref={playerContainerRef} className="w-full h-full" />
               </div>
             </div>
           )}
