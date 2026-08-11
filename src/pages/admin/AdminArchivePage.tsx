@@ -287,19 +287,16 @@ function ArchiveItemForm({
                 type="text"
                 list="archive-categories"
                 {...register("category")}
-                placeholder="예: Wedding, Performance..."
+                placeholder="예: K-POP, Drama, 기업행사..."
                 className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
               />
               <datalist id="archive-categories">
-                <option value="Wedding" />
-                <option value="Performance" />
-                <option value="Space" />
-                <option value="Media" />
-                <option value="전시" />
-                <option value="공연" />
-                <option value="강연" />
-                <option value="워크숍" />
-                <option value="이벤트" />
+                <option value="K-POP" />
+                <option value="Drama" />
+                <option value="매거진" />
+                <option value="기업행사" />
+                <option value="패션쇼" />
+                <option value="전시회" />
               </datalist>
               {errors.category && (
                 <p className="text-red-500 text-xs mt-1">

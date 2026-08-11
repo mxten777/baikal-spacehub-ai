@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight, Users, Maximize2 } from "lucide-react";
 import { useSpaces, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
@@ -9,10 +9,10 @@ import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 
 const CATEGORY_LABELS: Record<SpaceCategory | "all", string> = {
   all: "전체",
-  cafe: "카페",
-  garden: "가든",
-  studio: "스튜디오",
-  storage: "스토리지",
+  cafe: "Cafe",
+  garden: "Garden",
+  studio: "Studio",
+  storage: "Storage",
   hall: "홀",
   other: "기타",
 };
@@ -77,7 +77,10 @@ const FALLBACK_SPACES = [
 ];
 
 export default function SpacesPage() {
-  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [searchParams] = useSearchParams();
+  const [activeCategory, setActiveCategory] = useState<string>(
+    searchParams.get("category") ?? "all",
+  );
   const { data: spaces } = useSpaces(
     activeCategory !== "all" ? { category: activeCategory } : undefined,
   );
@@ -151,116 +154,115 @@ export default function SpacesPage() {
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {displaySpaces.map((space, i) => (
-                <AnimatedSection
-                  key={space.id}
-                  animation="fade-up"
-                  delay={i * 80}
-                >
-                  <Link to={`/spaces/${space.slug}`} className="group block">
-                    <div className="relative overflow-hidden aspect-[16/9]">
-                      {/* 실사진: 업로드된 경우 표시 */}
-                      {space.cover_image_url ? (
-                        <img
-                          src={space.cover_image_url}
-                          alt={space.name}
-                          aria-hidden="true"
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-brand-warm flex items-center justify-center">
-                          <span className="font-display text-brand-muted/30 tracking-widest text-sm uppercase">
-                            이미지 준비 중
-                          </span>
-                        </div>
-                      )}
-                      {/* 업로드 사진: 로드 완료 후 fade in */}
-                      {spacePhotoMap[space.category] && (
-                        <img
-                          src={spacePhotoMap[space.category]}
-                          alt={space.name}
-                          className="absolute inset-0 w-full h-full object-cover opacity-0 transition-[opacity,transform] duration-700 group-hover:scale-105"
-                          onLoad={(e) =>
-                            (
-                              e.currentTarget as HTMLImageElement
-                            ).classList.remove("opacity-0")
-                          }
-                          loading="lazy"
-                        />
-                      )}
-                      {!space.is_available && (
-                        <div className="absolute top-4 right-4 z-10 bg-black/80 text-white text-xs px-3 py-1 font-sans tracking-wider">
-                          예약 불가
-                        </div>
-                      )}
-                    </div>
-                    {/* 추가 이미지 썸네일 */}
-                    {((space as Space).images?.length ?? 0) > 0 && (
-                      <div className="flex gap-0.5 mt-0.5">
-                        {(space as Space)
-                          .images!.slice(0, 4)
-                          .map((imgUrl: string, i: number) => (
-                            <div
-                              key={i}
-                              className="flex-1 overflow-hidden"
-                              style={{ height: "52px" }}
-                            >
-                              <img
-                                src={imgUrl}
-                                alt=""
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                loading="lazy"
-                              />
-                            </div>
-                          ))}
+            {displaySpaces.map((space, i) => (
+              <AnimatedSection
+                key={space.id}
+                animation="fade-up"
+                delay={i * 80}
+              >
+                <Link to={`/spaces/${space.slug}`} className="group block">
+                  <div className="relative overflow-hidden aspect-[16/9]">
+                    {/* 실사진: 업로드된 경우 표시 */}
+                    {space.cover_image_url ? (
+                      <img
+                        src={space.cover_image_url}
+                        alt={space.name}
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-brand-warm flex items-center justify-center">
+                        <span className="font-display text-brand-muted/30 tracking-widest text-sm uppercase">
+                          이미지 준비 중
+                        </span>
                       </div>
                     )}
-                    <div className="pt-7 pb-2">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-brand-subtle mb-1.5">
-                            {space.name_en}
-                          </p>
-                          <h2
-                            className="font-display text-[1.75rem] font-light text-brand-black"
-                            style={{ letterSpacing: "-0.02em" }}
+                    {/* 업로드 사진: 로드 완료 후 fade in */}
+                    {spacePhotoMap[space.category] && (
+                      <img
+                        src={spacePhotoMap[space.category]}
+                        alt={space.name}
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-[opacity,transform] duration-700 group-hover:scale-105"
+                        onLoad={(e) =>
+                          (
+                            e.currentTarget as HTMLImageElement
+                          ).classList.remove("opacity-0")
+                        }
+                        loading="lazy"
+                      />
+                    )}
+                    {!space.is_available && (
+                      <div className="absolute top-4 right-4 z-10 bg-black/80 text-white text-xs px-3 py-1 font-sans tracking-wider">
+                        예약 불가
+                      </div>
+                    )}
+                  </div>
+                  {/* 추가 이미지 썸네일 */}
+                  {((space as Space).images?.length ?? 0) > 0 && (
+                    <div className="flex gap-0.5 mt-0.5">
+                      {(space as Space)
+                        .images!.slice(0, 4)
+                        .map((imgUrl: string, i: number) => (
+                          <div
+                            key={i}
+                            className="flex-1 overflow-hidden"
+                            style={{ height: "52px" }}
                           >
-                            {space.name}
-                          </h2>
-                        </div>
-                        <div className="flex items-center gap-4 text-[12px] text-brand-subtle mt-1">
-                          <span className="flex items-center gap-1.5">
-                            <Users size={12} /> {space.capacity}명
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <Maximize2 size={12} /> {space.size_sqm}㎡
-                          </span>
-                        </div>
-                      </div>
-                      <p className="font-sans text-[14px] text-brand-muted mb-5 leading-relaxed">
-                        {space.short_description}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mb-5">
-                        {(space.features ?? []).slice(0, 4).map((f) => (
-                          <span key={f} className="tag-outline">
-                            {f}
-                          </span>
+                            <img
+                              src={imgUrl}
+                              alt=""
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          </div>
                         ))}
+                    </div>
+                  )}
+                  <div className="pt-7 pb-2">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-brand-subtle mb-1.5">
+                          {space.name_en}
+                        </p>
+                        <h2
+                          className="font-display text-[1.75rem] font-light text-brand-black"
+                          style={{ letterSpacing: "-0.02em" }}
+                        >
+                          {space.name}
+                        </h2>
                       </div>
-                      <div className="flex items-center gap-2 font-sans text-[11px] tracking-[0.16em] uppercase text-brand-black group-hover:text-brand-accent transition-colors duration-300">
-                        공간 상세 보기{" "}
-                        <ArrowRight
-                          size={13}
-                          className="group-hover:translate-x-1 transition-transform duration-300"
-                        />
+                      <div className="flex items-center gap-4 text-[12px] text-brand-subtle mt-1">
+                        <span className="flex items-center gap-1.5">
+                          <Users size={12} /> {space.capacity}명
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Maximize2 size={12} /> {space.size_sqm}㎡
+                        </span>
                       </div>
                     </div>
-                  </Link>
-                </AnimatedSection>
-              ))}
-            </div>
-
+                    <p className="font-sans text-[14px] text-brand-muted mb-5 leading-relaxed">
+                      {space.short_description}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {(space.features ?? []).slice(0, 4).map((f) => (
+                        <span key={f} className="tag-outline">
+                          {f}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 font-sans text-[11px] tracking-[0.16em] uppercase text-brand-black group-hover:text-brand-accent transition-colors duration-300">
+                      공간 상세 보기{" "}
+                      <ArrowRight
+                        size={13}
+                        className="group-hover:translate-x-1 transition-transform duration-300"
+                      />
+                    </div>
+                  </div>
+                </Link>
+              </AnimatedSection>
+            ))}
+          </div>
         </div>
       </section>
 

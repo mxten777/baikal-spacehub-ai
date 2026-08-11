@@ -13,9 +13,8 @@ const NAV_ITEMS = [
   { label: "Brand Story", href: "/about" },
   { label: "Spaces", href: "/spaces" },
   { label: "Wedding", href: "/wedding" },
-  { label: "History", href: "/archive" },
+  { label: "Archive", href: "/archive" },
   { label: "Media", href: "/media" },
-  { label: "Stories", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { useSpaces, usePublicPhotos } from "../../hooks/useData";
+import { usePublicPhotos } from "../../hooks/useData";
 import { useMemo } from "react";
 
 interface MegaMenuProps {
@@ -12,34 +12,34 @@ interface MegaMenuProps {
 
 // ─── Static data ────────────────────────────────────────────────────────────
 
-const SPACES = [
+const SPACE_CATEGORIES = [
   {
-    label: "Main Studio",
-    ko: "메인 스튜디오",
-    desc: "공연 · 강연 · 촬영",
-    cap: "80명",
-    href: "/spaces",
+    label: "Cafe",
+    ko: "카페",
+    category: "cafe",
+    desc: "소모임 · 팝업 · 브랜드 쇼룸",
+    href: "/spaces?category=cafe",
   },
   {
-    label: "Open Hall",
-    ko: "오픈 홀",
-    desc: "전시 · 대형 이벤트",
-    cap: "150명",
-    href: "/spaces",
+    label: "Garden",
+    ko: "가든",
+    category: "garden",
+    desc: "야외 행사 · 파티 · 웨딩",
+    href: "/spaces?category=garden",
   },
   {
-    label: "Cafe Space",
-    ko: "카페 공간",
-    desc: "소모임 · 팝업",
-    cap: "30명",
-    href: "/spaces",
+    label: "Studio",
+    ko: "스튜디오",
+    category: "studio",
+    desc: "촬영 · 공연 · 강연",
+    href: "/spaces?category=studio",
   },
   {
-    label: "Garden Yard",
-    ko: "가든 야드",
-    desc: "야외 행사 · 파티",
-    cap: "50명",
-    href: "/spaces",
+    label: "Storage",
+    ko: "스토리지",
+    category: "storage",
+    desc: "전시 · 컨퍼런스 · 갈라디너",
+    href: "/spaces?category=storage",
   },
 ];
 
@@ -71,10 +71,10 @@ const MEDIA_CHANNELS = [
     external: true,
   },
   {
-    label: "Naver Blog",
-    desc: "프로그램 후기 · 공간 소개",
-    href: "https://blog.naver.com/thelit_culture",
-    external: true,
+    label: "Blog 콘텐츠",
+    desc: "블로그 최신 콘텐츠",
+    href: "/media",
+    external: false,
   },
   {
     label: "Latest",
@@ -121,7 +121,6 @@ export default function MegaMenu({
   onMegaEnter,
   onMegaLeave,
 }: MegaMenuProps) {
-  const { data: spacesData } = useSpaces();
   const { data: spacePhotos } = usePublicPhotos("space");
   const { data: programPhotos } = usePublicPhotos(null, { limit: 20 });
 
@@ -155,23 +154,6 @@ export default function MegaMenu({
     Lecture: "program",
   };
 
-  // DB 데이터를 메뉴 카드 형식으로 변환, 없으면 정적 SPACES 사용
-  const menuSpaces =
-    spacesData && spacesData.length > 0
-      ? spacesData.slice(0, 4).map((s) => ({
-          label: s.name_en || s.name,
-          ko: s.name,
-          desc: s.description?.slice(0, 30) ?? "",
-          cap: s.capacity ? `${s.capacity}명` : "",
-          href: `/spaces/${s.slug}`,
-          fallbackImg: s.cover_image_url || undefined,
-          uploadedImg: spacePhotoMap[s.category] as string | undefined,
-        }))
-      : SPACES.map((s) => ({
-          ...s,
-          fallbackImg: undefined as string | undefined,
-          uploadedImg: undefined as string | undefined,
-        }));
   return (
     <AnimatePresence>
       {activeItem && (
@@ -206,20 +188,13 @@ export default function MegaMenu({
                   animate="show"
                   className="grid grid-cols-5 gap-6 lg:gap-8"
                 >
-                  {menuSpaces.map((s) => (
+                  {SPACE_CATEGORIES.map((s) => (
                     <motion.div key={s.label} variants={child}>
                       <Link to={s.href} className="group block">
                         <div className="aspect-[4/3] overflow-hidden bg-brand-warm mb-3 relative">
-                          {s.uploadedImg ? (
+                          {spacePhotoMap[s.category] ? (
                             <img
-                              src={s.uploadedImg}
-                              alt={s.ko}
-                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                              loading="lazy"
-                            />
-                          ) : s.fallbackImg ? (
-                            <img
-                              src={s.fallbackImg}
+                              src={spacePhotoMap[s.category]}
                               alt={s.ko}
                               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                               loading="lazy"
@@ -227,7 +202,7 @@ export default function MegaMenu({
                           ) : (
                             <div className="absolute inset-0 flex items-center justify-center">
                               <span className="font-display text-brand-muted/30 tracking-widest text-xs uppercase">
-                                이미지 준비 중
+                                {s.label}
                               </span>
                             </div>
                           )}
@@ -239,7 +214,7 @@ export default function MegaMenu({
                           {s.label}
                         </p>
                         <p className="font-sans text-[10px] text-brand-subtle mt-1">
-                          최대 {s.cap}
+                          {s.ko}
                         </p>
                       </Link>
                     </motion.div>

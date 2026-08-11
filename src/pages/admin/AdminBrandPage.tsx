@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { aboutService, DEFAULT_ABOUT } from "../../services/about";
 import { useAuth } from "../../hooks/useAuth";
 import type {
@@ -37,7 +38,12 @@ const TABS: { key: BrandTab; label: string; superAdminOnly?: boolean }[] = [
 
 export default function AdminBrandPage() {
   const { isSuperAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState<BrandTab>("story");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<BrandTab>(() => {
+    const t = searchParams.get("tab") as BrandTab | null;
+    const valid: BrandTab[] = ["story", "journey", "wedding", "philosophy", "history", "seo"];
+    return t && valid.includes(t) ? t : "story";
+  });
   const [content, setContent] = useState<AboutContent>({
     id: "",
     updated_at: new Date().toISOString(),
@@ -96,7 +102,7 @@ export default function AdminBrandPage() {
           </p>
         )}
         <p className="font-sans text-sm text-gray-500 mt-1">
-          브랜드 스토리, 경험 여정, 웨딩, 철학, 히스토리를 관리합니다.
+          브랜드 핵심 콘텐츠의 원본 관리 위치입니다. Story · Philosophy · History는 이 페이지에서만 수정합니다.
         </p>
       </div>
 
@@ -305,7 +311,7 @@ function StorySectionPanel({
   return (
     <SectionCard
       title="Brand Story"
-      subtitle="About 페이지 — Our Story 섹션"
+      subtitle="원본 관리 위치 — About 페이지 렌더링"
       saving={saving}
       saved={saved}
       onSave={() =>

@@ -10,57 +10,57 @@ import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
 const FALLBACK = [
   {
     id: "1",
-    slug: "winter-exhibition-2025",
-    title: "겨울 빛 — 설치 전시",
-    category: "전시",
+    slug: "kpop-shoot-2025",
+    title: "K-POP 아티스트 촬영",
+    category: "K-POP",
     date: "2025-12",
     cover_image_url: "",
-    description: "겨울의 고요와 빛의 대화",
+    description: "더릿을 배경으로 한 K-POP 뮤직비디오",
   },
   {
     id: "2",
-    slug: "autumn-concert-2025",
-    title: "가을 콘서트 2025",
-    category: "공연",
+    slug: "drama-shoot-2025",
+    title: "드라마 촬영 현장",
+    category: "Drama",
     date: "2025-10",
     cover_image_url: "",
-    description: "가을밤을 수놓는 라이브 음악",
+    description: "더릿을 배경으로 한 드라마 촬영",
   },
   {
     id: "3",
-    slug: "brand-event-samsung",
-    title: "삼성 브랜드 런칭",
-    category: "이벤트",
+    slug: "magazine-shoot-2025",
+    title: "패션 매거진 화보",
+    category: "매거진",
     date: "2025-09",
     cover_image_url: "",
-    description: "프리미엄 제품 런칭 이벤트",
+    description: "프리미엄 패션 매거진 촬영",
   },
   {
     id: "4",
-    slug: "photo-workshop-2025",
-    title: "필름 사진 워크숍",
-    category: "워크숍",
+    slug: "corporate-event-2025",
+    title: "기업 신제품 런칭",
+    category: "기업행사",
     date: "2025-08",
     cover_image_url: "",
-    description: "아날로그 사진의 매력을 발견하다",
+    description: "브랜드 런칭 및 기업 행사",
   },
   {
     id: "5",
-    slug: "summer-art-fair",
-    title: "여름 아트페어",
-    category: "전시",
+    slug: "fashion-show-2025",
+    title: "패션쇼 2025 S/S",
+    category: "패션쇼",
     date: "2025-07",
     cover_image_url: "",
-    description: "신진 작가들의 다양한 작품 전시",
+    description: "더릿 홀에서 열린 패션쇼",
   },
   {
     id: "6",
-    slug: "talk-show-june",
-    title: "문화 토크쇼 시즌 1",
-    category: "강연",
+    slug: "exhibition-2025",
+    title: "아트 전시회",
+    category: "전시회",
     date: "2025-06",
     cover_image_url: "",
-    description: "문화 전문가들과 나누는 깊은 대화",
+    description: "현대미술 작가들의 전시",
   },
 ];
 
@@ -239,7 +239,7 @@ export default function ArchivePage() {
   return (
     <>
       <SeoHead
-        title="History — THE LIT | 더릿을 채운 이야기들"
+        title="Archive — THE LIT | 더릿을 채운 이야기들"
         description="더릿을 무대로 삼은 뮤직비디오·드라마·CF·브랜드 행사·웨딩의 모든 기록."
         canonical={`${SITE_URL}/archive`}
         keywords="더릿 촬영 이력, 뮤직비디오 촬영 장소, 드라마 촬영 장소, CF 촬영 서울, 브랜드 행사 이력"
@@ -253,7 +253,7 @@ export default function ArchivePage() {
       <section className="pt-32 pb-16 bg-brand-black">
         <div className="container-wide">
           <AnimatedSection animation="fade-up">
-            <p className="eyebrow text-white/40 mb-4">History</p>
+            <p className="eyebrow text-white/40 mb-4">Archive</p>
             <h1 className="font-display text-display font-light text-white mb-6">
               더릿을 채운 이야기들
             </h1>

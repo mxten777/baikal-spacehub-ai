@@ -10,6 +10,7 @@ import {
   Phone,
   Clock,
   ChevronDown,
+  ArrowRight,
 } from "lucide-react";
 import {
   getAdminPhotosByCategory,
@@ -265,7 +266,7 @@ function WeddingInquiryModal({
 
 export default function AdminWeddingPage() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"photos" | "inquiries">("photos");
+  const [activeTab, setActiveTab] = useState<"photos" | "inquiries" | "content">("content");
   const [stage, setStage] = useState<ProjectStage | "all">("all");
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoRecord | null>(null);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
@@ -370,6 +371,16 @@ export default function AdminWeddingPage() {
             <span className="ml-1.5 text-xs opacity-50">
               ({inquiries.length})
             </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("content")}
+            className={`px-5 py-2.5 text-sm font-sans tracking-wide transition-colors border-b-2 -mb-px ${
+              activeTab === "content"
+                ? "border-brand-black text-brand-black"
+                : "border-transparent text-brand-muted hover:text-brand-black"
+            }`}
+          >
+            콘텐츠 관리
           </button>
         </div>
 
@@ -546,6 +557,125 @@ export default function AdminWeddingPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* ── Content tab ──────────────────────────────────────────────────────── */}
+        {activeTab === "content" && (
+          <div className="space-y-3">
+            <p className="font-sans text-xs text-brand-muted mb-5">
+              웨딩 페이지 각 섹션의 관리 위치를 안내합니다.
+            </p>
+
+            <div className="bg-white border border-brand-border divide-y divide-brand-border">
+              {/* 3-Track Wedding Experience — Brand CMS */}
+              <div className="flex items-start justify-between px-5 py-4 gap-4">
+                <div className="min-w-0">
+                  <p className="font-sans text-sm font-medium text-brand-black">
+                    3-Track Wedding Experience
+                  </p>
+                  <p className="font-sans text-xs text-brand-muted mt-0.5">
+                    House Wedding · Garden Wedding · Studio Wedding 트랙 문구, 키워드, CTA 버튼
+                  </p>
+                </div>
+                <Link
+                  to="/admin/brand?tab=wedding"
+                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans bg-brand-black text-white hover:bg-brand-muted transition-colors whitespace-nowrap"
+                >
+                  Brand CMS <ArrowRight size={12} />
+                </Link>
+              </div>
+
+              {/* Wedding gallery photos */}
+              <div className="flex items-start justify-between px-5 py-4 gap-4">
+                <div className="min-w-0">
+                  <p className="font-sans text-sm font-medium text-brand-black">
+                    웨딩 갤러리 · 대표 사진
+                  </p>
+                  <p className="font-sans text-xs text-brand-muted mt-0.5">
+                    갤러리 사진 업로드 및 대표 사진 지정
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab("photos")}
+                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
+                >
+                  사진 관리 <ArrowRight size={12} />
+                </button>
+              </div>
+
+              {/* Real Weddings from archive */}
+              <div className="flex items-start justify-between px-5 py-4 gap-4">
+                <div className="min-w-0">
+                  <p className="font-sans text-sm font-medium text-brand-black">
+                    실제 웨딩 사례 (Real Weddings)
+                  </p>
+                  <p className="font-sans text-xs text-brand-muted mt-0.5">
+                    Archive에서 "wedding" 검색 결과가 자동 표시됩니다.
+                  </p>
+                </div>
+                <Link
+                  to="/admin/archive"
+                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
+                >
+                  Archive 관리 <ArrowRight size={12} />
+                </Link>
+              </div>
+
+              {/* Journal posts */}
+              <div className="flex items-start justify-between px-5 py-4 gap-4">
+                <div className="min-w-0">
+                  <p className="font-sans text-sm font-medium text-brand-black">
+                    웨딩 저널 (Journal)
+                  </p>
+                  <p className="font-sans text-xs text-brand-muted mt-0.5">
+                    Stories에서 "wedding" 태그 게시물이 자동 표시됩니다.
+                  </p>
+                </div>
+                <Link
+                  to="/admin/blog"
+                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
+                >
+                  Stories 관리 <ArrowRight size={12} />
+                </Link>
+              </div>
+
+              {/* Inquiries */}
+              <div className="flex items-start justify-between px-5 py-4 gap-4">
+                <div className="min-w-0">
+                  <p className="font-sans text-sm font-medium text-brand-black">
+                    웨딩 상담 문의
+                  </p>
+                  <p className="font-sans text-xs text-brand-muted mt-0.5">
+                    웨딩 상담 신청 내역 및 처리 상태 관리
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab("inquiries")}
+                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
+                >
+                  문의 관리 <ArrowRight size={12} />
+                </button>
+              </div>
+            </div>
+
+            {/* Hardcoded sections notice */}
+            <div className="p-4 bg-gray-50 border border-gray-200">
+              <p className="font-sans text-[11px] font-medium text-gray-500 tracking-widest uppercase mb-2">
+                현재 코드에 고정된 항목 (직접 수정 필요)
+              </p>
+              <ul className="space-y-1 font-sans text-xs text-gray-500">
+                <li>• Wedding Story 소개 문구 — 페이지 2번 섹션 제목 및 본문 3단락</li>
+                <li>• Hero 카피 — 메인 타이틀, 서브 문구</li>
+                <li>• FAQ — 6개 질문/답변 항목</li>
+              </ul>
+              <p className="font-sans text-[11px] text-gray-400 mt-2">
+                코드 위치:{" "}
+                <code className="bg-gray-100 px-1 py-0.5 rounded-sm">
+                  src/pages/WeddingPage.tsx
+                </code>
+              </p>
+            </div>
+          </div>
         )}
       </div>
 

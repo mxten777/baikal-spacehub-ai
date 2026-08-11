@@ -13,7 +13,7 @@ const PLATFORMS: Array<{ value: "all" | ContentPlatform; label: string }> = [
   { value: "youtube", label: "YouTube" },
   { value: "instagram", label: "Instagram" },
   { value: "x", label: "X (Twitter)" },
-  { value: "rss", label: "Blog RSS" },
+  { value: "rss", label: "Blog 콘텐츠" },
 ];
 
 const PLATFORM_BADGE: Record<string, { label: string; cls: string }> = {
@@ -76,7 +76,7 @@ export default function MediaPage() {
         <title>Media — The Lit</title>
         <meta
           name="description"
-          content="더릿의 YouTube, Instagram, X, 블로그 RSS에서 실시간으로 업데이트됩니다."
+          content="더릿의 YouTube, Instagram, X, Blog 콘텐츠에서 실시간으로 업데이트됩니다."
         />
         <meta property="og:title" content="Media — The Lit" />
         <meta
@@ -95,7 +95,7 @@ export default function MediaPage() {
             </h1>
             <p className="font-sans text-base text-brand-muted max-w-xl">
               더릿이 활동하는 공간에서 문화와 예술을 위한 콘텐츠를 소개합니다.
-              YouTube, Instagram, X, 블로그 RSS의 각 채널에서 실시간으로
+              YouTube, Instagram, X, Blog 콘텐츠의 각 채널에서 실시간으로
               업데이트됩니다.
             </p>
           </AnimatedSection>

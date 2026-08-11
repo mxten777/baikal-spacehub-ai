@@ -12,9 +12,8 @@ const NAV_ITEMS = [
   { label: "Brand Story", href: "/about", hasMega: false },
   { label: "Spaces", href: "/spaces", hasMega: true },
   { label: "Wedding", href: "/wedding", hasMega: false },
-  { label: "History", href: "/archive", hasMega: true },
+  { label: "Archive", href: "/archive", hasMega: true },
   { label: "Media", href: "/media", hasMega: true },
-  { label: "Stories", href: "/blog", hasMega: false },
   { label: "Contact", href: "/contact", hasMega: false },
 ];
 

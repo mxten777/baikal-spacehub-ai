@@ -72,7 +72,7 @@ const operatorNav: NavEntry[] = [
   { type: "section", label: "콘텐츠" },
   { label: "공간", href: "/admin/spaces", icon: Image, permission: "spaces" },
   {
-    label: "Stories",
+    label: "Blog",
     href: "/admin/blog",
     icon: FileText,
     permission: "blog",
