@@ -281,7 +281,7 @@ export default function ArchiveDetailPage() {
               </button>
               <div className="w-full aspect-[9/16]">
                 <iframe
-                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1`}
+                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1&rel=0&playsinline=1`}
                   className="w-full h-full"
                   allow="autoplay; encrypted-media; fullscreen"
                   allowFullScreen
@@ -303,7 +303,7 @@ export default function ArchiveDetailPage() {
               </button>
               <div className="w-full aspect-video">
                 <iframe
-                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1`}
+                  src={`https://www.youtube.com/embed/${ytModal.id}?autoplay=1&rel=0&playsinline=1`}
                   className="w-full h-full"
                   allow="autoplay; encrypted-media; fullscreen"
                   allowFullScreen
