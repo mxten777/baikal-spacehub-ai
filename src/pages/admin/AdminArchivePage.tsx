@@ -27,6 +27,9 @@ const archiveSchema = z.object({
   publish_status: z
     .enum(["draft", "published", "archived"])
     .default("published"),
+  media_type: z.enum(["photo", "video"]).default("photo"),
+  subcategory: z.string().optional(),
+  video_url: z.string().nullable().optional(),
 });
 
 type ArchiveFormData = z.infer<typeof archiveSchema>;
@@ -95,6 +98,9 @@ function ArchiveItemForm({
             | "draft"
             | "published"
             | "archived",
+          media_type: (initialData.media_type ?? "photo") as "photo" | "video",
+          subcategory: initialData.subcategory ?? "",
+          video_url: initialData.video_url ?? null,
         }
       : {
           title: "",
@@ -106,10 +112,14 @@ function ArchiveItemForm({
           images: [],
           is_featured: false,
           publish_status: "published" as const,
+          media_type: "photo" as const,
+          subcategory: "",
+          video_url: null,
         },
   });
   const coverImageUrl = watch("cover_image_url");
   const galleryImages = watch("images") ?? [];
+  const mediaType = watch("media_type");
 
   const onSubmit = async (data: ArchiveFormData) => {
     setSaving(true);
@@ -179,6 +189,31 @@ function ArchiveItemForm({
           )}
           className="p-6 space-y-4"
         >
+          <div>
+            <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-2">
+              콘텐츠 유형 *
+            </label>
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="photo"
+                  {...register("media_type")}
+                  className="w-4 h-4 accent-brand-black"
+                />
+                <span className="text-sm font-sans text-gray-700">사진</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="video"
+                  {...register("media_type")}
+                  className="w-4 h-4 accent-brand-black"
+                />
+                <span className="text-sm font-sans text-gray-700">동영상</span>
+              </label>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
@@ -212,19 +247,26 @@ function ArchiveItemForm({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
-                카테고리 *
+                대분류 *
               </label>
-              <select
+              <input
+                type="text"
+                list="archive-categories"
                 {...register("category")}
+                placeholder="예: Wedding, Performance..."
                 className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
-              >
-                <option value="">선택...</option>
-                <option value="전시">전시</option>
-                <option value="공연">공연</option>
-                <option value="강연">강연</option>
-                <option value="워크숍">워크숍</option>
-                <option value="이벤트">이벤트</option>
-              </select>
+              />
+              <datalist id="archive-categories">
+                <option value="Wedding" />
+                <option value="Performance" />
+                <option value="Space" />
+                <option value="Media" />
+                <option value="전시" />
+                <option value="공연" />
+                <option value="강연" />
+                <option value="워크숍" />
+                <option value="이벤트" />
+              </datalist>
               {errors.category && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.category.message}
@@ -244,6 +286,26 @@ function ArchiveItemForm({
           </div>
           <div>
             <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+              중분류
+            </label>
+            <input
+              type="text"
+              list="archive-subcategories"
+              {...register("subcategory")}
+              placeholder="예: Ceremony, Showcase, Interior..."
+              className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+            />
+            <datalist id="archive-subcategories">
+              <option value="Ceremony" />
+              <option value="Reception" />
+              <option value="Concert" />
+              <option value="Showcase" />
+              <option value="Interior" />
+              <option value="Shooting" />
+            </datalist>
+          </div>
+          <div>
+            <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
               설명
             </label>
             <textarea
@@ -252,6 +314,7 @@ function ArchiveItemForm({
               className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none"
             />
           </div>
+          {mediaType === "photo" && (
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block text-xs text-gray-600 tracking-wider uppercase">
@@ -313,7 +376,24 @@ function ArchiveItemForm({
                 defaultCategory="archive"
               />
             )}
-          </div>{" "}
+          </div>
+          )}
+          {mediaType === "video" && (
+            <div>
+              <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
+                영상 링크
+              </label>
+              <input
+                type="text"
+                {...register("video_url")}
+                placeholder="https://youtube.com/watch?v=..."
+                className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                YouTube, Instagram Reels 또는 기타 외부 영상 URL
+              </p>
+            </div>
+          )}
           <ImageUploadField
             label="대표 이미지 (cover)"
             value={coverImageUrl}

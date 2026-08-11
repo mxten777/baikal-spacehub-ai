@@ -1,18 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { Play } from "lucide-react";
 import { useArchive, usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
-
-const CATEGORIES = [
-  { value: "all", label: "전체" },
-  { value: "전시", label: "전시" },
-  { value: "공연", label: "공연" },
-  { value: "강연", label: "강연" },
-  { value: "워크숍", label: "워크숍" },
-  { value: "이벤트", label: "이벤트" },
-];
 
 const FALLBACK = [
   {
@@ -71,56 +63,127 @@ const FALLBACK = [
   },
 ];
 
-// 아카이브 항목의 모든 이미지를 개별 타일로 펼친 타입
 type ImageTile = {
   url: string;
   slug: string;
   title: string;
   category: string;
+  subcategory?: string | null;
   date?: string | null;
   isCover: boolean;
+  isVideo: boolean;
+  videoUrl?: string | null;
 };
 
 export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [activeSubcategory, setActiveSubcategory] = useState("all");
   const { data: archives } = useArchive();
   const { data: archivePhotos } = usePublicPhotos("archive");
   const items = archives && archives.length > 0 ? archives : FALLBACK;
-  const filtered =
-    activeCategory === "all"
-      ? items
-      : items.filter((a) => a.category === activeCategory);
 
-  // 각 archive item의 images[] + cover를 개별 타일로 펼침
+  // 데이터에서 대분류 추출
+  const categories = useMemo(() => {
+    const cats = [...new Set(items.map((i) => i.category).filter(Boolean))];
+    return (cats as string[]).sort();
+  }, [items]);
+
+  // 선택된 대분류의 중분류 추출
+  const subcategories = useMemo(() => {
+    if (activeCategory === "all") return [];
+    const subs = [
+      ...new Set(
+        items
+          .filter((i) => i.category === activeCategory)
+          .map(
+            (i) =>
+              (i as unknown as { subcategory?: string | null }).subcategory,
+          )
+          .filter((s): s is string => !!s),
+      ),
+    ];
+    return subs.sort();
+  }, [items, activeCategory]);
+
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    setActiveSubcategory("all");
+  };
+
+  const filtered = items.filter((item) => {
+    if (activeCategory !== "all" && item.category !== activeCategory)
+      return false;
+    if (activeSubcategory !== "all") {
+      const sub = (item as unknown as { subcategory?: string | null })
+        .subcategory;
+      if (sub !== activeSubcategory) return false;
+    }
+    return true;
+  });
+
   const pool = archivePhotos ?? [];
-  const tiles: ImageTile[] = filtered.flatMap((item, idx) => {
-    const allUrls: string[] = [];
+  const tiles: ImageTile[] = filtered.flatMap((item, idx): ImageTile[] => {
+    const meta = item as unknown as {
+      media_type?: string;
+      subcategory?: string | null;
+      video_url?: string | null;
+    };
 
-    // cover image
+    // 동영상: 타일 1개
+    if (meta.media_type === "video") {
+      return [
+        {
+          url: item.cover_image_url || "",
+          slug: item.slug,
+          title: item.title,
+          category: item.category,
+          subcategory: meta.subcategory,
+          date: item.date,
+          isCover: true,
+          isVideo: true,
+          videoUrl: meta.video_url,
+        },
+      ];
+    }
+
+    // 사진: 이미지 타일 펼치기
+    const allUrls: string[] = [];
     const cover =
       item.cover_image_url ||
       (pool.length > 0 ? pool[idx % pool.length]?.public_url : undefined) ||
       "";
     if (cover) allUrls.push(cover);
-
-    // gallery images (중복 제거)
     const galleryImages = (item as { images?: string[] }).images;
     if (galleryImages) {
       galleryImages.forEach((u: string) => {
         if (u && !allUrls.includes(u)) allUrls.push(u);
       });
     }
-
     return allUrls.length > 0
       ? allUrls.map((url, i) => ({
           url,
           slug: item.slug,
           title: item.title,
           category: item.category,
+          subcategory: meta.subcategory,
           date: item.date,
           isCover: i === 0,
+          isVideo: false,
+          videoUrl: null,
         }))
-      : [{ url: "", slug: item.slug, title: item.title, category: item.category, date: item.date, isCover: true }];
+      : [
+          {
+            url: "",
+            slug: item.slug,
+            title: item.title,
+            category: item.category,
+            subcategory: meta.subcategory,
+            date: item.date,
+            isCover: true,
+            isVideo: false,
+            videoUrl: null,
+          },
+        ];
   });
 
   return (
@@ -153,22 +216,64 @@ export default function ArchivePage() {
 
       {/* Filter */}
       <div className="sticky top-16 lg:top-20 z-20 bg-brand-black/95 backdrop-blur border-b border-white/10">
-        <div className="container-wide py-4 flex items-center gap-2 overflow-x-auto no-scrollbar">
-          {CATEGORIES.map((cat) => (
+        {/* 대분류 필터 */}
+        <div className="container-wide py-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <button
+            onClick={() => handleCategoryChange("all")}
+            className={`shrink-0 px-5 py-2 font-sans text-xs font-medium tracking-widest uppercase transition-all duration-200
+              ${
+                activeCategory === "all"
+                  ? "bg-white text-brand-black"
+                  : "text-white/50 hover:text-white"
+              }`}
+          >
+            전체
+          </button>
+          {categories.map((cat) => (
             <button
-              key={cat.value}
-              onClick={() => setActiveCategory(cat.value)}
+              key={cat}
+              onClick={() => handleCategoryChange(cat)}
               className={`shrink-0 px-5 py-2 font-sans text-xs font-medium tracking-widest uppercase transition-all duration-200
                 ${
-                  activeCategory === cat.value
+                  activeCategory === cat
                     ? "bg-white text-brand-black"
                     : "text-white/50 hover:text-white"
                 }`}
             >
-              {cat.label}
+              {cat}
             </button>
           ))}
         </div>
+        {/* 중분류 필터 (선택된 대분류의 중분류가 있을 때만 표시) */}
+        {subcategories.length > 0 && (
+          <div className="container-wide pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-t border-white/10">
+            <button
+              onClick={() => setActiveSubcategory("all")}
+              className={`shrink-0 px-4 py-1.5 font-sans text-[10px] font-medium tracking-widest uppercase transition-all duration-200
+                ${
+                  activeSubcategory === "all"
+                    ? "bg-white/20 text-white"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+            >
+              전체
+            </button>
+            {subcategories.map((sub) => (
+              <button
+                key={sub}
+                onClick={() => setActiveSubcategory(sub)}
+                className={`shrink-0 px-4 py-1.5 font-sans text-[10px] font-medium tracking-widest uppercase transition-all duration-200
+                  ${
+                    activeSubcategory === sub
+                      ? "bg-white/20 text-white"
+                      : "text-white/40 hover:text-white/70"
+                  }`}
+              >
+                {sub}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Grid */}
@@ -178,6 +283,52 @@ export default function ArchivePage() {
               {tiles.map((tile, i) => {
                 // 7타일 반복 패턴: 0번·4번은 tall(2행), 나머지는 normal(1행)
                 const isTall = i % 7 === 0 || i % 7 === 4;
+                const tileInner = (
+                  <>
+                    {tile.url ? (
+                      <img
+                        src={tile.url}
+                        alt={tile.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-end p-5 bg-brand-warm" />
+                    )}
+                    {tile.isVideo && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/60 transition-colors">
+                          <Play
+                            size={22}
+                            className="text-white ml-1"
+                            fill="currentColor"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                    {tile.isCover && (
+                      <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                        <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
+                          {tile.date?.substring(0, 7)} · {tile.category}
+                        </p>
+                        <h3 className="font-display text-lg font-light text-white">
+                          {tile.title}
+                        </h3>
+                      </div>
+                    )}
+                    {/* Always shown title overlay (mobile, cover only) */}
+                    {tile.isCover && (
+                      <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
+                        <div className="bg-black/60 backdrop-blur-sm p-3">
+                          <h3 className="font-display text-base font-light text-white">
+                            {tile.title}
+                          </h3>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
                 return (
                   <AnimatedSection
                     key={`${tile.slug}-${i}`}
@@ -185,46 +336,23 @@ export default function ArchivePage() {
                     delay={i * 40}
                     className={isTall ? "row-span-2" : ""}
                   >
-                    <Link
-                      to={`/archive/${tile.slug}`}
-                      className="group block relative overflow-hidden h-full bg-brand-warm"
-                    >
-                      {tile.url ? (
-                        <img
-                          src={tile.url}
-                          alt={tile.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-end p-5 bg-brand-warm" />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                      {tile.isCover && (
-                        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                          <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
-                            {tile.date?.substring(0, 7)} ·{" "}
-                            {
-                              CATEGORIES.find((c) => c.value === tile.category)
-                                ?.label
-                            }
-                          </p>
-                          <h3 className="font-display text-lg font-light text-white">
-                            {tile.title}
-                          </h3>
-                        </div>
-                      )}
-                      {/* Always shown title overlay (mobile, cover only) */}
-                      {tile.isCover && (
-                        <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
-                          <div className="bg-black/60 backdrop-blur-sm p-3">
-                            <h3 className="font-display text-base font-light text-white">
-                              {tile.title}
-                            </h3>
-                          </div>
-                        </div>
-                      )}
-                    </Link>
+                    {tile.isVideo && tile.videoUrl ? (
+                      <a
+                        href={tile.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group block relative overflow-hidden h-full bg-brand-warm"
+                      >
+                        {tileInner}
+                      </a>
+                    ) : (
+                      <Link
+                        to={`/archive/${tile.slug}`}
+                        className="group block relative overflow-hidden h-full bg-brand-warm"
+                      >
+                        {tileInner}
+                      </Link>
+                    )}
                   </AnimatedSection>
                 );
               })}

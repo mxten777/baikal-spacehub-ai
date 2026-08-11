@@ -31,11 +31,15 @@ interface YouTubePlaylistItem {
   }
 }
 
-// 채널의 최신 업로드 플레이리스트 ID 조회
+// 채널의 최신 업로드 플레이리스트 ID 조회 (채널 ID 또는 @handle 모두 지원)
 async function getUploadsPlaylistId(channelId: string, apiKey: string): Promise<string | null> {
   const url = new URL('https://www.googleapis.com/youtube/v3/channels')
   url.searchParams.set('part', 'contentDetails')
-  url.searchParams.set('id', channelId)
+  if (channelId.startsWith('@')) {
+    url.searchParams.set('forHandle', channelId)
+  } else {
+    url.searchParams.set('id', channelId)
+  }
   url.searchParams.set('key', apiKey)
 
   const res = await fetch(url.toString())

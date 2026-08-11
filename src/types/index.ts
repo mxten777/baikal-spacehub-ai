@@ -139,10 +139,12 @@ export interface ArchiveItem {
   description?: string | null;
   content?: string | null;
   category: string;
+  subcategory?: string | null;
+  media_type?: 'photo' | 'video';
   date?: ISODateString | null;
   cover_image_url?: string | null;
   images?: string[];
-  video_url?: string;
+  video_url?: string | null;
   story?: string;
   tags?: string[];
   program_id?: UUID;

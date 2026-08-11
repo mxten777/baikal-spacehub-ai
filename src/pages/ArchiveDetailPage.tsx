@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { archiveService } from "../services/archive";
 import AnimatedSection from "../components/common/AnimatedSection";
 import LoadingSpinner from "../components/common/LoadingSpinner";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, DEFAULT_OG_IMAGE, breadcrumbJsonLd } from "../lib/seo";
 
@@ -89,6 +89,7 @@ export default function ArchiveDetailPage() {
             <p className="font-sans text-[10px] tracking-widest uppercase text-white/50 mb-2">
               {item.date?.substring(0, 7)} ·{" "}
               {CATEGORY_LABELS[item.category] ?? item.category}
+              {item.subcategory ? ` · ${item.subcategory}` : ""}
             </p>
             <h1 className="font-display text-4xl lg:text-5xl font-light text-white">
               {item.title}
@@ -104,6 +105,7 @@ export default function ArchiveDetailPage() {
             <p className="font-sans text-[10px] tracking-widest uppercase text-white/50 mb-2">
               {item.date?.substring(0, 7)} ·{" "}
               {CATEGORY_LABELS[item.category] ?? item.category}
+              {item.subcategory ? ` · ${item.subcategory}` : ""}
             </p>
             <h1 className="font-display text-4xl lg:text-5xl font-light text-white">
               {item.title}
@@ -130,6 +132,50 @@ export default function ArchiveDetailPage() {
           </AnimatedSection>
         </div>
       </section>
+
+      {/* 동영상 보기 버튼 */}
+      {item.media_type === "video" && item.video_url && (
+        <section className="pb-16 bg-brand-white">
+          <div className="container-wide max-w-3xl">
+            <AnimatedSection animation="fade-up">
+              <a
+                href={item.video_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-brand-black text-white font-sans text-sm tracking-widest uppercase hover:bg-brand-charcoal transition-colors"
+              >
+                <Play size={16} fill="currentColor" />
+                영상 보기
+              </a>
+              <p className="mt-3 text-xs text-brand-muted font-sans">
+                외부 플랫폼에서 재생됩니다.
+              </p>
+            </AnimatedSection>
+          </div>
+        </section>
+      )}
+
+      {/* 동영상 보기 버튼 */}
+      {item.media_type === "video" && item.video_url && (
+        <section className="pb-16 bg-brand-white">
+          <div className="container-wide max-w-3xl">
+            <AnimatedSection animation="fade-up">
+              <a
+                href={item.video_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-brand-black text-white font-sans text-sm tracking-widest uppercase hover:bg-brand-charcoal transition-colors"
+              >
+                <Play size={16} fill="currentColor" />
+                영상 보기
+              </a>
+              <p className="mt-3 text-xs text-brand-muted font-sans">
+                외부 플랫폼에서 재생됩니다.
+              </p>
+            </AnimatedSection>
+          </div>
+        </section>
+      )}
 
       {/* Gallery grid */}
       {allImages.length > 1 && (

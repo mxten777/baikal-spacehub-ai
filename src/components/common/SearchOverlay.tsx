@@ -231,7 +231,9 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                 /* Loading */
                 <div className="flex items-center gap-3 text-white/30">
                   <Loader2 size={15} className="animate-spin shrink-0" />
-                  <span className="font-sans text-sm tracking-wide">검색 중...</span>
+                  <span className="font-sans text-sm tracking-wide">
+                    검색 중...
+                  </span>
                 </div>
               ) : !hasResults ? (
                 /* No results */

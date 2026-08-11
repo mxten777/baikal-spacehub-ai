@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { contentSourcesService } from "../../services/contentSources";
 import { runFetchForSource } from "../../services/fetchers/aggregator";
 import type { ContentSource, ContentPlatform } from "../../types";
+import { supabase } from "../../lib/supabase";
 import { format } from "date-fns";
 import AdminQueryError from "../../components/admin/AdminQueryError";
 
@@ -99,12 +100,36 @@ function SourceForm({
   const onSubmit = async (data: SourceFormData) => {
     setSaving(true);
     try {
+      let channelId = data.channel_id || null;
+
+      // @handle 입력 시 1회 Channels API 호출로 UC... Channel ID로 변환
+      if (data.platform === "youtube" && channelId?.startsWith("@")) {
+        const { data: setting } = await supabase
+          .from("settings")
+          .select("value")
+          .eq("key", "youtube_api_key")
+          .single();
+        const apiKey = setting?.value ?? "";
+        if (apiKey) {
+          const url = new URL("https://www.googleapis.com/youtube/v3/channels");
+          url.searchParams.set("part", "id");
+          url.searchParams.set("forHandle", channelId);
+          url.searchParams.set("key", apiKey);
+          const res = await fetch(url.toString());
+          if (res.ok) {
+            const json = await res.json();
+            const resolvedId: string | undefined = json.items?.[0]?.id;
+            if (resolvedId) channelId = resolvedId;
+          }
+        }
+      }
+
       const payload = {
         name: data.name,
         platform: data.platform,
         source_url: data.source_url || null,
         rss_url: data.rss_url || null,
-        channel_id: data.channel_id || null,
+        channel_id: channelId,
         account_handle: data.account_handle || null,
         is_active: data.is_active,
         auto_publish: data.auto_publish,
@@ -371,7 +396,10 @@ export default function AdminContentSourcesPage() {
       ) : isLoading ? (
         <div className="space-y-2 py-2">
           {Array.from({ length: 5 }, (_, i) => (
-            <div key={i} className="h-14 bg-gray-100 animate-pulse border border-gray-200" />
+            <div
+              key={i}
+              className="h-14 bg-gray-100 animate-pulse border border-gray-200"
+            />
           ))}
         </div>
       ) : sources.length === 0 ? (

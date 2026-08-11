@@ -39,7 +39,10 @@ export default function Footer() {
     settings?.instagram_url,
     "instagram.com/thelit_official",
   );
-  const youtubeUrl = ensureHttps(settings?.youtube_url, "youtube.com/@TheLIT_official");
+  const youtubeUrl = ensureHttps(
+    settings?.youtube_url,
+    "youtube.com/@TheLIT_official",
+  );
   const xUrl = ensureHttps(settings?.x_url, "x.com/thelit");
   const address = settings?.address || "경기도 하남시 \ubbf8사동 468";
   const phone = settings?.contact_phone || "1661-0288";
@@ -54,7 +57,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand column */}
           <div className="lg:col-span-4">
-            <Link to="/" aria-label="The Lit — 홈" className="inline-block mb-5">
+            <Link
+              to="/"
+              aria-label="The Lit — 홈"
+              className="inline-block mb-5"
+            >
               <img
                 src="/images/thelitlogo_red_trans.png"
                 alt="The Lit"
