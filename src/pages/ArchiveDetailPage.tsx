@@ -20,7 +20,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 export default function ArchiveDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [ytModal, setYtModal] = useState<{ id: string; isShorts: boolean; coverUrl?: string } | null>(null);
+  const [ytModal, setYtModal] = useState<{ id: string; coverUrl?: string } | null>(null);
   const [ytPlaying, setYtPlaying] = useState(false);
   const playerRef = useRef<YT.Player | null>(null);
   const playerContainerRef = useRef<HTMLDivElement | null>(null);
@@ -187,10 +187,10 @@ export default function ArchiveDetailPage() {
         <section className="pb-16 bg-brand-white">
           <div className="container-wide max-w-3xl">
             <AnimatedSection animation="fade-up">
-              {youtubeService.extractVideoId(item.video_url) ? (
+              {youtubeService.extractVideoId(item.video_url) && !item.video_url!.includes('/shorts/') ? (
                 <button
                   onClick={() => {
-                    setYtModal({ id: youtubeService.extractVideoId(item.video_url!)!, isShorts: item.video_url!.includes('/shorts/'), coverUrl: item.cover_image_url ?? undefined });
+                    setYtModal({ id: youtubeService.extractVideoId(item.video_url!)!, coverUrl: item.cover_image_url ?? undefined });
                     setYtPlaying(true);
                   }}
                   className="inline-flex items-center gap-3 px-8 py-4 bg-brand-black text-white font-sans text-sm tracking-widest uppercase hover:bg-brand-charcoal transition-colors cursor-pointer"
@@ -309,68 +309,35 @@ export default function ArchiveDetailPage() {
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 sm:p-6"
           onClick={() => { setYtModal(null); setYtPlaying(false); }}
         >
-          {ytModal.isShorts ? (
-            <div
-              className="flex flex-col items-end"
-              style={{ width: 'min(44vh, 86vw)' }}
-              onClick={(e) => e.stopPropagation()}
+          <div
+            className="flex flex-col items-end w-full max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => { setYtModal(null); setYtPlaying(false); }}
+              className="mb-2 text-white/70 hover:text-white transition-colors"
+              aria-label="닫기"
             >
-              <button
-                onClick={() => { setYtModal(null); setYtPlaying(false); }}
-                className="mb-2 text-white/70 hover:text-white transition-colors"
-                aria-label="닫기"
-              >
-                <X size={28} />
-              </button>
-              <div className="w-full aspect-[9/16]">
-                {ytPlaying ? (
-                  <div ref={playerContainerRef} className="w-full h-full" />
-                ) : (
-                  <button
-                    onClick={() => setYtPlaying(true)}
-                    className="w-full h-full relative flex items-center justify-center group bg-brand-black"
-                  >
-                    {ytModal.coverUrl && (
-                      <img src={ytModal.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
-                    )}
-                    <div className="relative z-10 w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/80 transition-colors">
-                      <Play size={22} className="text-white ml-1" fill="currentColor" />
-                    </div>
-                  </button>
-                )}
-              </div>
+              <X size={28} />
+            </button>
+            <div className="w-full aspect-video">
+              {ytPlaying ? (
+                <div ref={playerContainerRef} className="w-full h-full" />
+              ) : (
+                <button
+                  onClick={() => setYtPlaying(true)}
+                  className="w-full h-full relative flex items-center justify-center group bg-brand-black"
+                >
+                  {ytModal.coverUrl && (
+                    <img src={ytModal.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                  )}
+                  <div className="relative z-10 w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/80 transition-colors">
+                    <Play size={22} className="text-white ml-1" fill="currentColor" />
+                  </div>
+                </button>
+              )}
             </div>
-          ) : (
-            <div
-              className="flex flex-col items-end w-full max-w-4xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => { setYtModal(null); setYtPlaying(false); }}
-                className="mb-2 text-white/70 hover:text-white transition-colors"
-                aria-label="닫기"
-              >
-                <X size={28} />
-              </button>
-              <div className="w-full aspect-video">
-                {ytPlaying ? (
-                  <div ref={playerContainerRef} className="w-full h-full" />
-                ) : (
-                  <button
-                    onClick={() => setYtPlaying(true)}
-                    className="w-full h-full relative flex items-center justify-center group bg-brand-black"
-                  >
-                    {ytModal.coverUrl && (
-                      <img src={ytModal.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
-                    )}
-                    <div className="relative z-10 w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/80 transition-colors">
-                      <Play size={22} className="text-white ml-1" fill="currentColor" />
-                    </div>
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       )}
     </>
