@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { archiveService } from "../../services/archive";
 import type { ArchiveItem } from "../../types";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
@@ -33,6 +33,9 @@ const archiveSchema = z.object({
 });
 
 type ArchiveFormData = z.infer<typeof archiveSchema>;
+
+const toSlug = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'archive';
 
 function ArchiveItemForm({
   initialData,
@@ -80,6 +83,7 @@ function ArchiveItemForm({
     handleSubmit,
     setValue,
     watch,
+    getValues,
     formState: { errors },
   } = useForm<ArchiveFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -120,13 +124,39 @@ function ArchiveItemForm({
   const coverImageUrl = watch("cover_image_url");
   const galleryImages = watch("images") ?? [];
   const mediaType = watch("media_type");
+  const titleValue = watch("title");
+
+  // Auto-generate slug from title on new forms when slug is still empty
+  useEffect(() => {
+    if (initialData) return;
+    if (!getValues("slug")) setValue("slug", toSlug(titleValue));
+  }, [titleValue]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = async (data: ArchiveFormData) => {
     setSaving(true);
     setSubmitError(null);
     try {
+      // Resolve unique slug before saving
+      let finalSlug = data.slug;
+      const base = data.slug;
+      if (!(await archiveService.slugExists(base, initialData?.id))) {
+        finalSlug = base;
+      } else {
+        let n = 2;
+        while (n <= 99) {
+          const candidate = `${base}-${n}`;
+          if (!(await archiveService.slugExists(candidate, initialData?.id))) {
+            finalSlug = candidate;
+            break;
+          }
+          n++;
+        }
+        if (finalSlug === base) finalSlug = `${base}-${Date.now()}`;
+      }
+      if (finalSlug !== data.slug) setValue("slug", finalSlug);
       const payload = {
         ...data,
+        slug: finalSlug,
         images: data.images ?? [],
         cover_image_url: data.cover_image_url ?? null,
         publish_status: data.publish_status,

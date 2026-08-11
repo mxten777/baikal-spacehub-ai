@@ -78,4 +78,14 @@ export const archiveService = {
     const { error } = await supabase.from('archive_items').delete().eq('id', id)
     if (error) throw error
   },
+
+  async slugExists(slug: string, excludeId?: string): Promise<boolean> {
+    let query = supabase
+      .from('archive_items')
+      .select('id', { count: 'exact', head: true })
+      .eq('slug', slug)
+    if (excludeId) query = query.neq('id', excludeId)
+    const { count } = await query
+    return (count ?? 0) > 0
+  },
 }
