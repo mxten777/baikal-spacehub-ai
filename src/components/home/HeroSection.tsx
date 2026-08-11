@@ -296,7 +296,7 @@ export default function HeroSection() {
                 wordBreak: "keep-all",
               }}
             >
-              {slide.title}
+              {slide.title.replace(/\\n/g, "\n")}
             </h1>
             {slide.subtitle && (
               <p className="font-sans text-[15px] text-white/55 mb-12 tracking-[0.02em]">

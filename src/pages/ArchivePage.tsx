@@ -79,7 +79,10 @@ type ImageTile = {
 export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeSubcategory, setActiveSubcategory] = useState("all");
-  const [ytModal, setYtModal] = useState<{ id: string; coverUrl?: string } | null>(null);
+  const [ytModal, setYtModal] = useState<{
+    id: string;
+    coverUrl?: string;
+  } | null>(null);
   const [ytPlaying, setYtPlaying] = useState(false);
   const playerRef = useRef<YT.Player | null>(null);
   const playerContainerRef = useRef<HTMLDivElement | null>(null);
@@ -87,7 +90,10 @@ export default function ArchivePage() {
   useEffect(() => {
     if (!ytModal) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { setYtModal(null); setYtPlaying(false); }
+      if (e.key === "Escape") {
+        setYtModal(null);
+        setYtPlaying(false);
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -99,16 +105,18 @@ export default function ArchivePage() {
     loadYouTubeAPI().then(() => {
       if (cancelled || !playerContainerRef.current) return;
       const YTApi = window.YT!;
-      const target = document.createElement('div');
+      const target = document.createElement("div");
       playerContainerRef.current.appendChild(target);
       const p = new YTApi.Player(target, {
         videoId: ytModal.id,
-        width: '100%',
-        height: '100%',
+        width: "100%",
+        height: "100%",
         playerVars: { autoplay: 1, rel: 0, playsinline: 1 },
         events: {
           onReady: (event) => {
-            event.target.getIframe().setAttribute('allow', 'autoplay; encrypted-media; fullscreen');
+            event.target
+              .getIframe()
+              .setAttribute("allow", "autoplay; encrypted-media; fullscreen");
           },
           onStateChange: (event) => {
             if (event.data === YTApi.PlayerState.ENDED) {
@@ -122,7 +130,11 @@ export default function ArchivePage() {
     return () => {
       cancelled = true;
       if (playerRef.current) {
-        try { playerRef.current.destroy(); } catch { /* ignore */ }
+        try {
+          playerRef.current.destroy();
+        } catch {
+          /* ignore */
+        }
         playerRef.current = null;
       }
     };
@@ -329,108 +341,124 @@ export default function ArchivePage() {
       {/* Grid */}
       <section className="section-padding bg-brand-white">
         <div className="container-wide">
-            <div className="grid grid-cols-2 lg:grid-cols-3 auto-rows-[220px] gap-3 lg:gap-4">
-              {tiles.map((tile, i) => {
-                // 7타일 반복 패턴: 0번·4번은 tall(2행), 나머지는 normal(1행)
-                const isTall = i % 7 === 0 || i % 7 === 4;
-                const tileInner = (
-                  <>
-                    {tile.url ? (
-                      <img
-                        src={tile.url}
-                        alt={tile.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-end p-5 bg-brand-warm" />
-                    )}
-                    {tile.isVideo && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/60 transition-colors">
-                          <Play
-                            size={22}
-                            className="text-white ml-1"
-                            fill="currentColor"
-                          />
-                        </div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 auto-rows-[220px] gap-3 lg:gap-4">
+            {tiles.map((tile, i) => {
+              // 7타일 반복 패턴: 0번·4번은 tall(2행), 나머지는 normal(1행)
+              const isTall = i % 7 === 0 || i % 7 === 4;
+              const tileInner = (
+                <>
+                  {tile.url ? (
+                    <img
+                      src={tile.url}
+                      alt={tile.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-end p-5 bg-brand-warm" />
+                  )}
+                  {tile.isVideo && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/60 transition-colors">
+                        <Play
+                          size={22}
+                          className="text-white ml-1"
+                          fill="currentColor"
+                        />
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                    {tile.isCover && (
-                      <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                        <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
-                          {tile.date?.substring(0, 7)} · {tile.category}
-                        </p>
-                        <h3 className="font-display text-lg font-light text-white">
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                  {tile.isCover && (
+                    <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                      <p className="font-sans text-[10px] tracking-widest uppercase text-white/60 mb-1">
+                        {tile.date?.substring(0, 7)} · {tile.category}
+                      </p>
+                      <h3 className="font-display text-lg font-light text-white">
+                        {tile.title}
+                      </h3>
+                    </div>
+                  )}
+                  {/* Always shown title overlay (mobile, cover only) */}
+                  {tile.isCover && (
+                    <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
+                      <div className="bg-black/60 backdrop-blur-sm p-3">
+                        <h3 className="font-display text-base font-light text-white">
                           {tile.title}
                         </h3>
                       </div>
-                    )}
-                    {/* Always shown title overlay (mobile, cover only) */}
-                    {tile.isCover && (
-                      <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
-                        <div className="bg-black/60 backdrop-blur-sm p-3">
-                          <h3 className="font-display text-base font-light text-white">
-                            {tile.title}
-                          </h3>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                );
-                return (
-                  <AnimatedSection
-                    key={`${tile.slug}-${i}`}
-                    animation="fade-up"
-                    delay={i * 40}
-                    className={isTall ? "row-span-2" : ""}
-                  >
-                    {tile.isVideo && tile.videoUrl ? (
-                      <button
-                        onClick={() => {
-                          if (tile.videoUrl!.includes('/shorts/')) {
-                            window.open(tile.videoUrl!, "_blank", "noopener,noreferrer");
-                            return;
-                          }
-                          const ytId = youtubeService.extractVideoId(tile.videoUrl!);
-                          if (ytId) {
-                            setYtModal({ id: ytId, coverUrl: tile.url });
-                            setYtPlaying(true);
-                          } else {
-                            window.open(tile.videoUrl!, "_blank", "noopener,noreferrer");
-                          }
-                        }}
-                        className="group block relative overflow-hidden h-full bg-brand-warm w-full text-left cursor-pointer"
-                      >
-                        {tileInner}
-                      </button>
-                    ) : (
-                      <Link
-                        to={`/archive/${tile.slug}`}
-                        className="group block relative overflow-hidden h-full bg-brand-warm"
-                      >
-                        {tileInner}
-                      </Link>
-                    )}
-                  </AnimatedSection>
-                );
-              })}
-            </div>
+                    </div>
+                  )}
+                </>
+              );
+              return (
+                <AnimatedSection
+                  key={`${tile.slug}-${i}`}
+                  animation="fade-up"
+                  delay={i * 40}
+                  className={isTall ? "row-span-2" : ""}
+                >
+                  {tile.isVideo && tile.videoUrl ? (
+                    <button
+                      onClick={() => {
+                        if (tile.videoUrl!.includes("/shorts/")) {
+                          window.open(
+                            tile.videoUrl!,
+                            "_blank",
+                            "noopener,noreferrer",
+                          );
+                          return;
+                        }
+                        const ytId = youtubeService.extractVideoId(
+                          tile.videoUrl!,
+                        );
+                        if (ytId) {
+                          setYtModal({ id: ytId, coverUrl: tile.url });
+                          setYtPlaying(true);
+                        } else {
+                          window.open(
+                            tile.videoUrl!,
+                            "_blank",
+                            "noopener,noreferrer",
+                          );
+                        }
+                      }}
+                      className="group block relative overflow-hidden h-full bg-brand-warm w-full text-left cursor-pointer"
+                    >
+                      {tileInner}
+                    </button>
+                  ) : (
+                    <Link
+                      to={`/archive/${tile.slug}`}
+                      className="group block relative overflow-hidden h-full bg-brand-warm"
+                    >
+                      {tileInner}
+                    </Link>
+                  )}
+                </AnimatedSection>
+              );
+            })}
+          </div>
         </div>
       </section>
 
       {ytModal && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 sm:p-6"
-          onClick={() => { setYtModal(null); setYtPlaying(false); }}
+          onClick={() => {
+            setYtModal(null);
+            setYtPlaying(false);
+          }}
         >
           <div
             className="flex flex-col items-end w-full max-w-4xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={() => { setYtModal(null); setYtPlaying(false); }}
+              onClick={() => {
+                setYtModal(null);
+                setYtPlaying(false);
+              }}
               className="mb-2 text-white/70 hover:text-white transition-colors"
               aria-label="닫기"
             >
@@ -445,10 +473,18 @@ export default function ArchivePage() {
                   className="w-full h-full relative flex items-center justify-center group bg-brand-black"
                 >
                   {ytModal.coverUrl && (
-                    <img src={ytModal.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                    <img
+                      src={ytModal.coverUrl}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover opacity-60"
+                    />
                   )}
                   <div className="relative z-10 w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-black/80 transition-colors">
-                    <Play size={22} className="text-white ml-1" fill="currentColor" />
+                    <Play
+                      size={22}
+                      className="text-white ml-1"
+                      fill="currentColor"
+                    />
                   </div>
                 </button>
               )}

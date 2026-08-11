@@ -78,7 +78,10 @@ export default function Header() {
   return (
     <>
       {/* paddingTop: env(safe-area-inset-top) — viewport-fit=cover 시 노치·상단 크롬 영역 회피 */}
-      <header className="fixed top-0 left-0 right-0 z-50" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <header
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+      >
         <AnnouncementBar />
         {/* — Animated background layer — */}
         <motion.div
