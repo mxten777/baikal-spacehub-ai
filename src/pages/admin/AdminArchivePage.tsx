@@ -161,9 +161,13 @@ function ArchiveItemForm({
       }
     } catch (e) {
       console.error("[AdminArchivePage] save error:", e);
-      setSubmitError(
-        e instanceof Error ? e.message : "저장 중 오류가 발생했습니다.",
-      );
+      const msg =
+        e instanceof Error
+          ? e.message
+          : typeof e === "object" && e !== null && "message" in e
+            ? String((e as { message: unknown }).message)
+            : "저장 중 오류가 발생했습니다.";
+      setSubmitError(msg);
     } finally {
       setSaving(false);
     }
