@@ -1,7 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Play } from "lucide-react";
+import { Play, X } from "lucide-react";
 import { useArchive, usePublicPhotos } from "../hooks/useData";
+import { youtubeService } from "../services/media";
 import AnimatedSection from "../components/common/AnimatedSection";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, breadcrumbJsonLd } from "../lib/seo";
@@ -78,6 +79,15 @@ type ImageTile = {
 export default function ArchivePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeSubcategory, setActiveSubcategory] = useState("all");
+  const [ytModalVideoId, setYtModalVideoId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!ytModalVideoId) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModalVideoId(null); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [ytModalVideoId]);
+
   const { data: archives } = useArchive();
   const { data: archivePhotos } = usePublicPhotos("archive");
   const items = archives && archives.length > 0 ? archives : FALLBACK;
@@ -337,14 +347,19 @@ export default function ArchivePage() {
                     className={isTall ? "row-span-2" : ""}
                   >
                     {tile.isVideo && tile.videoUrl ? (
-                      <a
-                        href={tile.videoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group block relative overflow-hidden h-full bg-brand-warm"
+                      <button
+                        onClick={() => {
+                          const ytId = youtubeService.extractVideoId(tile.videoUrl!);
+                          if (ytId) {
+                            setYtModalVideoId(ytId);
+                          } else {
+                            window.open(tile.videoUrl!, "_blank", "noopener,noreferrer");
+                          }
+                        }}
+                        className="group block relative overflow-hidden h-full bg-brand-warm w-full text-left cursor-pointer"
                       >
                         {tileInner}
-                      </a>
+                      </button>
                     ) : (
                       <Link
                         to={`/archive/${tile.slug}`}
@@ -359,6 +374,33 @@ export default function ArchivePage() {
             </div>
         </div>
       </section>
+
+      {ytModalVideoId && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setYtModalVideoId(null)}
+        >
+          <button
+            onClick={() => setYtModalVideoId(null)}
+            className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors z-10"
+            aria-label="닫기"
+          >
+            <X size={28} />
+          </button>
+          <div
+            className="w-full max-w-4xl aspect-video"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <iframe
+              src={`https://www.youtube.com/embed/${ytModalVideoId}?autoplay=1`}
+              className="w-full h-full"
+              allow="autoplay; encrypted-media; fullscreen"
+              allowFullScreen
+              title="YouTube video"
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

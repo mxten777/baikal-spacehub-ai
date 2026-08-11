@@ -52,6 +52,7 @@ export const youtubeService = {
       /youtu\.be\/([^#&?]{11})/,
       /youtube\.com\/watch\?v=([^#&?]{11})/,
       /youtube\.com\/embed\/([^#&?]{11})/,
+      /youtube\.com\/shorts\/([^#&?]{11})/,
     ]
     for (const pattern of patterns) {
       const match = url.match(pattern)

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { archiveService } from "../services/archive";
@@ -7,6 +7,7 @@ import LoadingSpinner from "../components/common/LoadingSpinner";
 import { X, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import SeoHead from "../components/common/SeoHead";
 import { SITE_URL, DEFAULT_OG_IMAGE, breadcrumbJsonLd } from "../lib/seo";
+import { youtubeService } from "../services/media";
 
 const CATEGORY_LABELS: Record<string, string> = {
   exhibition: "전시",
@@ -19,6 +20,14 @@ const CATEGORY_LABELS: Record<string, string> = {
 export default function ArchiveDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [ytModalVideoId, setYtModalVideoId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!ytModalVideoId) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setYtModalVideoId(null); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [ytModalVideoId]);
 
   const { data: item, isLoading } = useQuery({
     queryKey: ["archive", slug],
@@ -138,40 +147,30 @@ export default function ArchiveDetailPage() {
         <section className="pb-16 bg-brand-white">
           <div className="container-wide max-w-3xl">
             <AnimatedSection animation="fade-up">
-              <a
-                href={item.video_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-brand-black text-white font-sans text-sm tracking-widest uppercase hover:bg-brand-charcoal transition-colors"
-              >
-                <Play size={16} fill="currentColor" />
-                영상 보기
-              </a>
-              <p className="mt-3 text-xs text-brand-muted font-sans">
-                외부 플랫폼에서 재생됩니다.
-              </p>
-            </AnimatedSection>
-          </div>
-        </section>
-      )}
-
-      {/* 동영상 보기 버튼 */}
-      {item.media_type === "video" && item.video_url && (
-        <section className="pb-16 bg-brand-white">
-          <div className="container-wide max-w-3xl">
-            <AnimatedSection animation="fade-up">
-              <a
-                href={item.video_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-brand-black text-white font-sans text-sm tracking-widest uppercase hover:bg-brand-charcoal transition-colors"
-              >
-                <Play size={16} fill="currentColor" />
-                영상 보기
-              </a>
-              <p className="mt-3 text-xs text-brand-muted font-sans">
-                외부 플랫폼에서 재생됩니다.
-              </p>
+              {youtubeService.extractVideoId(item.video_url) ? (
+                <button
+                  onClick={() => setYtModalVideoId(youtubeService.extractVideoId(item.video_url!))}
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-brand-black text-white font-sans text-sm tracking-widest uppercase hover:bg-brand-charcoal transition-colors cursor-pointer"
+                >
+                  <Play size={16} fill="currentColor" />
+                  영상 보기
+                </button>
+              ) : (
+                <>
+                  <a
+                    href={item.video_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-brand-black text-white font-sans text-sm tracking-widest uppercase hover:bg-brand-charcoal transition-colors"
+                  >
+                    <Play size={16} fill="currentColor" />
+                    영상 보기
+                  </a>
+                  <p className="mt-3 text-xs text-brand-muted font-sans">
+                    외부 플랫폼에서 재생됩니다.
+                  </p>
+                </>
+              )}
             </AnimatedSection>
           </div>
         </section>
@@ -259,6 +258,33 @@ export default function ArchiveDetailPage() {
               <ChevronRight size={36} />
             </button>
           )}
+        </div>
+      )}
+
+      {ytModalVideoId && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setYtModalVideoId(null)}
+        >
+          <button
+            onClick={() => setYtModalVideoId(null)}
+            className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors z-10"
+            aria-label="닫기"
+          >
+            <X size={28} />
+          </button>
+          <div
+            className="w-full max-w-4xl aspect-video"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <iframe
+              src={`https://www.youtube.com/embed/${ytModalVideoId}?autoplay=1`}
+              className="w-full h-full"
+              allow="autoplay; encrypted-media; fullscreen"
+              allowFullScreen
+              title="YouTube video"
+            />
+          </div>
         </div>
       )}
     </>
