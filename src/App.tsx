@@ -1,5 +1,9 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+// ── Maintenance Mode ─────────────────────────────────────────────────────────
+// true → 리뉴얼 안내 화면 / false → 기존 홈페이지
+const MAINTENANCE_MODE = true;
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { HelmetProvider, Helmet } from "react-helmet-async";
@@ -8,6 +12,7 @@ import { useAuth } from "./hooks/useAuth";
 
 // Layouts (eager — always needed, small)
 import MainLayout from "./layouts/MainLayout";
+import MaintenancePage from "./pages/MaintenancePage";
 import AdminLayout from "./layouts/AdminLayout";
 import RoleGuard from "./components/admin/RoleGuard";
 
@@ -114,36 +119,40 @@ export default function App() {
           <AuthProvider>
             <Suspense fallback={null}>
               <Routes>
-                {/* Public routes */}
-                <Route element={<MainLayout />}>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/spaces" element={<SpacesPage />} />
-                  <Route path="/spaces/:slug" element={<SpaceDetailPage />} />
-                  <Route path="/programs" element={<ProgramsPage />} />
-                  <Route
-                    path="/programs/:slug"
-                    element={<ProgramDetailPage />}
-                  />
-                  <Route
-                    path="/events"
-                    element={<Navigate to="/wedding" replace />}
-                  />
-                  <Route path="/wedding" element={<WeddingPage />} />
-                  <Route path="/archive" element={<ArchivePage />} />
-                  <Route
-                    path="/archive/:slug"
-                    element={<ArchiveDetailPage />}
-                  />
-                  <Route path="/blog" element={<BlogPage />} />
-                  <Route path="/blog/:slug" element={<BlogPostPage />} />
-                  <Route path="/media" element={<MediaPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/reservation" element={<ReservationPage />} />
-                </Route>
-
-                {/* Admin auth */}
+                {/* Admin auth — always accessible regardless of MAINTENANCE_MODE */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
+
+                {/* Public routes */}
+                {MAINTENANCE_MODE ? (
+                  <Route path="*" element={<MaintenancePage />} />
+                ) : (
+                  <Route element={<MainLayout />}>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/spaces" element={<SpacesPage />} />
+                    <Route path="/spaces/:slug" element={<SpaceDetailPage />} />
+                    <Route path="/programs" element={<ProgramsPage />} />
+                    <Route
+                      path="/programs/:slug"
+                      element={<ProgramDetailPage />}
+                    />
+                    <Route
+                      path="/events"
+                      element={<Navigate to="/wedding" replace />}
+                    />
+                    <Route path="/wedding" element={<WeddingPage />} />
+                    <Route path="/archive" element={<ArchivePage />} />
+                    <Route
+                      path="/archive/:slug"
+                      element={<ArchiveDetailPage />}
+                    />
+                    <Route path="/blog" element={<BlogPage />} />
+                    <Route path="/blog/:slug" element={<BlogPostPage />} />
+                    <Route path="/media" element={<MediaPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/reservation" element={<ReservationPage />} />
+                  </Route>
+                )}
 
                 {/* Admin CMS routes */}
                 <Route
