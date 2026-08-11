@@ -14,11 +14,11 @@ const PLACEHOLDER_DATE = "2026-01-01T00:00:00Z";
 export const HERO_FALLBACK_SLIDES: HeroSlide[] = [
   {
     id: "fallback-1",
-    title: "어둠을 지나면\n빛이 있습니다",
-    subtitle: "Walk Into The Light",
+    title: "BEYOND SPACE,\nSTORIES BEGIN.",
+    subtitle: "공간을 넘어, 이야기가 시작되는 곳",
     description: null,
-    desktop_image_url: "/images/hero/hero-1.jpg",
-    mobile_image_url: null,
+    desktop_image_url: "/images/hero/hero-1.webp",
+    mobile_image_url: "/images/hero/hero-1-mobile.webp",
     primary_button_text: "Experience THE LIT",
     primary_button_link: "/about",
     secondary_button_text: "Explore Spaces",

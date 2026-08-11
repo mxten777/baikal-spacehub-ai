@@ -276,7 +276,7 @@ export default function HeroSection() {
       <div className="relative z-10 flex flex-col justify-end h-full container-wide hero-content-pad">
         <AnimatePresence mode="wait">
           <motion.div
-            key={slide.id + "-content"}
+            key={safeIdx + "-content"}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
