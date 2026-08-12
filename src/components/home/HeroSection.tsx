@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useActiveHeroSlides, usePublicPhotos } from "../../hooks/useData";
 import { HERO_FALLBACK_SLIDES } from "../../data/heroFallbackData";
 import type { HeroSlide } from "../../types";
@@ -34,41 +32,6 @@ function withVersion(
   if (!url || !updatedAt) return url;
   const sep = url.includes("?") ? "&" : "?";
   return `${url}${sep}v=${updatedAt}`;
-}
-
-// ─── Button helper ────────────────────────────────────────────────────────────
-
-function HeroButton({
-  text,
-  link,
-  variant,
-}: {
-  text: string | null | undefined;
-  link: string | null | undefined;
-  variant: "primary" | "outline";
-}) {
-  if (!text || !link) return null;
-
-  const isExternal = link.startsWith("http://") || link.startsWith("https://");
-  const className = variant === "primary" ? "btn-primary" : "btn-outline-white";
-
-  if (isExternal) {
-    return (
-      <a
-        href={link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-      >
-        {text} <ArrowRight size={15} />
-      </a>
-    );
-  }
-  return (
-    <Link to={link} className={className}>
-      {text} {variant === "primary" && <ArrowRight size={15} />}
-    </Link>
-  );
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -160,7 +123,7 @@ export default function HeroSection() {
         Math.min(c + 1, displaySlidesRef.current.length),
       );
       setCurrent((prev) => (prev + 1) % displaySlidesRef.current.length);
-    }, 6000);
+    }, 7000);
   };
 
   // Begin autoplay once hero is ready — interval reads ref which stays current
@@ -237,11 +200,8 @@ export default function HeroSection() {
               key={s.id}
               className="absolute inset-0"
               initial={false}
-              animate={{
-                opacity: i === safeIdx ? 1 : 0,
-                scale: i === safeIdx ? 1 : 1.04,
-              }}
-              transition={{ duration: 1.2, ease: "easeInOut" }}
+              animate={{ opacity: i === safeIdx ? 1 : 0 }}
+              transition={{ duration: 1.8, ease: "easeInOut" }}
               style={{ zIndex: i === safeIdx ? 1 : 0 }}
             >
               <picture>
@@ -279,15 +239,11 @@ export default function HeroSection() {
                 />
               </picture>
               <div
-                className="absolute inset-0 bg-gradient-overlay-center"
-                style={
-                  i === 1
-                    ? {
-                        backgroundImage:
-                          "linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.05) 45%, rgba(10,10,10,0.48) 100%)",
-                      }
-                    : undefined
-                }
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, rgba(10,10,10,0.06) 0%, rgba(10,10,10,0.30) 50%, rgba(10,10,10,0.68) 100%)",
+                }}
               />
             </motion.div>
           );
@@ -295,57 +251,35 @@ export default function HeroSection() {
       </motion.div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-end h-full container-wide hero-content-pad">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={safeIdx + "-content"}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-3xl"
+      <div className="relative z-10 flex flex-col h-full container-wide">
+        {/* Fixed brand message — stays constant across all slide transitions */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+          <p className="font-sans text-[10px] tracking-[0.32em] uppercase text-white/55 mb-6">
+            Where Your Light Shines
+          </p>
+          <h1
+            className="font-display font-light text-white mb-7"
+            style={{
+              fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
+              letterSpacing: "-0.02em",
+              lineHeight: "1.1",
+              wordBreak: "keep-all",
+              maxWidth: "26rem",
+            }}
           >
-            <p className="font-sans text-[10px] tracking-[0.28em] uppercase text-white/45 mb-5">
-              The Lit — 복합문화공간
-            </p>
-            <h1
-              className="font-display font-light text-white whitespace-pre-line mb-7"
-              style={{
-                fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
-                letterSpacing: "-0.03em",
-                lineHeight: "1.08",
-                overflowWrap: "break-word",
-                wordBreak: "keep-all",
-              }}
-            >
-              {slide.title.replace(/\\n/g, "\n")}
-            </h1>
-            {slide.subtitle && (
-              <p className="font-sans text-[15px] text-white/55 mb-12 tracking-[0.02em]">
-                {slide.subtitle}
-              </p>
-            )}
-
-            {/* Buttons — only shown when both text and link are set */}
-            {(slide.primary_button_text || slide.secondary_button_text) && (
-              <div className="flex flex-wrap items-center gap-4">
-                <HeroButton
-                  text={slide.primary_button_text}
-                  link={slide.primary_button_link}
-                  variant="primary"
-                />
-                <HeroButton
-                  text={slide.secondary_button_text}
-                  link={slide.secondary_button_link}
-                  variant="outline"
-                />
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+            당신의 가장 빛나는 순간을 담는 캔버스, 더릿
+          </h1>
+          <p
+            className="font-sans text-[13px] md:text-[14px] text-white/60 leading-relaxed tracking-[0.01em]"
+            style={{ maxWidth: "30rem" }}
+          >
+            하남 미사의 자연 속, 프라이빗 하우스 웨딩부터 글로벌 K-콘텐츠까지.{" "}
+            최고의 기획자들이 선택한 프리미엄 베뉴, THE LIT.
+          </p>
+        </div>
 
         {/* Slide indicators */}
-        <div className="flex items-center gap-3 mt-12">
+        <div className="flex items-center justify-center gap-3 hero-content-pad">
           {displaySlides.map((_, i) => (
             <button
               key={i}
