@@ -177,6 +177,24 @@ export default function HeroSection() {
     };
   }, [heroReady]);
 
+  // Activate all slides and pre-decode their images right after first slide is shown.
+  // Ensures no blank frame during crossfade caused by deferred async decoding.
+  useEffect(() => {
+    if (!heroReady || displaySlides.length <= 1) return;
+    setActivatedCount(displaySlides.length);
+    const isMobile = window.innerWidth <= 767;
+    displaySlides.slice(1).forEach((s) => {
+      const rawUrl = s.desktop_image_url;
+      if (!rawUrl) return;
+      const preferred = isMobile
+        ? (getMobileWebPSrc(rawUrl) ?? getWebPSrc(rawUrl) ?? rawUrl)
+        : (getWebPSrc(rawUrl) ?? rawUrl);
+      const img = new window.Image();
+      img.src = (withVersion(preferred, s.updated_at) ?? preferred) as string;
+      img.decode().catch(() => {});
+    });
+  }, [heroReady, displaySlides]);
+
   // Safe current index — clamps if slides list shrinks (avoids out-of-bounds)
   const safeIdx = Math.min(current, displaySlides.length - 1);
   const slide = safeIdx >= 0 ? displaySlides[safeIdx] : null;
