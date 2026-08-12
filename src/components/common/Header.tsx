@@ -10,9 +10,10 @@ import AnnouncementBar from "./AnnouncementBar";
 
 const NAV_ITEMS = [
   { label: "Brand Story", href: "/about", hasMega: false },
-  { label: "Spaces", href: "/spaces", hasMega: true },
-  { label: "Wedding", href: "/wedding", hasMega: false },
-  { label: "Archive", href: "/archive", hasMega: true },
+  { label: "House Wedding", href: "/wedding", hasMega: false },
+  { label: "K-Culture & Event Venue", href: "/programs", hasMega: false },
+  { label: "Café & Garden", href: "/spaces", hasMega: false },
+  { label: "Portfolio", href: "/archive", hasMega: false },
   { label: "Media", href: "/media", hasMega: true },
   { label: "Contact", href: "/contact", hasMega: false },
 ];
@@ -151,7 +152,7 @@ export default function Header() {
                       const border = isActive
                         ? "border-current"
                         : "border-transparent";
-                      return `block px-[13px] py-2 font-sans text-[10.5px] font-medium tracking-[0.16em] uppercase border-b transition-colors duration-200 ${border} ${textColor}`;
+                      return `block px-[10px] py-2 font-sans text-[9.5px] font-medium tracking-[0.1em] uppercase border-b transition-colors duration-200 ${border} ${textColor}`;
                     }}
                     style={
                       lightText

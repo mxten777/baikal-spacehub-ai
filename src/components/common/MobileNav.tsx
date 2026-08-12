@@ -11,9 +11,10 @@ interface MobileNavProps {
 
 const NAV_ITEMS = [
   { label: "Brand Story", href: "/about" },
-  { label: "Spaces", href: "/spaces" },
-  { label: "Wedding", href: "/wedding" },
-  { label: "Archive", href: "/archive" },
+  { label: "House Wedding", href: "/wedding" },
+  { label: "K-Culture & Event Venue", href: "/programs" },
+  { label: "Café & Garden", href: "/spaces" },
+  { label: "Portfolio", href: "/archive" },
   { label: "Media", href: "/media" },
   { label: "Contact", href: "/contact" },
 ];
