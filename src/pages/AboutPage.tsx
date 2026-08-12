@@ -35,8 +35,6 @@ export default function AboutPage() {
     hero_eyebrow,
     hero_title_line1,
     hero_title_line2,
-    mission_quote,
-    mission_description,
     story_eyebrow,
     story_title_line1,
     story_title_line2,
@@ -232,21 +230,6 @@ export default function AboutPage() {
               </div>
             </AnimatedSection>
           </div>
-        </div>
-      </section>
-
-      {/* 4. Why We Built THE LIT — Founder Philosophy */}
-      <section className="section-padding bg-brand-white">
-        <div className="container-narrow text-center">
-          <AnimatedSection animation="fade-up">
-            <p className="eyebrow mb-6">Why We Built THE LIT</p>
-            <blockquote className="font-display text-[clamp(1.5rem,3vw,2.5rem)] font-light text-brand-black leading-relaxed mb-8">
-              {mission_quote}
-            </blockquote>
-            <p className="font-sans text-base text-brand-muted leading-relaxed">
-              {mission_description}
-            </p>
-          </AnimatedSection>
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { aboutService, DEFAULT_ABOUT } from "../../services/about";
+import ImageUploadField from "../../components/admin/ImageUploadField";
 import { useAuth } from "../../hooks/useAuth";
 import type {
   AboutContent,
@@ -8,7 +9,15 @@ import type {
   AboutValueItem,
   JourneyStep,
 } from "../../types";
-import { Check, Loader2, Plus, Trash2, GripVertical, Lock, ArrowRight } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  Plus,
+  Trash2,
+  GripVertical,
+  Lock,
+  ArrowRight,
+} from "lucide-react";
 
 type BrandTab =
   | "story"
@@ -40,7 +49,14 @@ export default function AdminBrandPage() {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<BrandTab>(() => {
     const t = searchParams.get("tab") as BrandTab | null;
-    const valid: BrandTab[] = ["story", "journey", "wedding", "philosophy", "history", "seo"];
+    const valid: BrandTab[] = [
+      "story",
+      "journey",
+      "wedding",
+      "philosophy",
+      "history",
+      "seo",
+    ];
     return t && valid.includes(t) ? t : "story";
   });
   const [content, setContent] = useState<AboutContent>({
@@ -101,7 +117,8 @@ export default function AdminBrandPage() {
           </p>
         )}
         <p className="font-sans text-sm text-gray-500 mt-1">
-          브랜드 핵심 콘텐츠의 원본 관리 위치입니다. Story · Philosophy · History는 이 페이지에서만 수정합니다.
+          브랜드 핵심 콘텐츠의 원본 관리 위치입니다. Story · Philosophy ·
+          History는 이 페이지에서만 수정합니다.
         </p>
       </div>
 
@@ -153,7 +170,8 @@ export default function AdminBrandPage() {
               Wedding Experience는 Wedding 관리에서 관리합니다.
             </p>
             <p className="font-sans text-xs text-gray-400">
-              House Wedding · Garden Wedding · Studio Wedding 트랙 및 Wedding Story 문구를 Wedding 관리 메뉴에서 수정하세요.
+              House Wedding · Garden Wedding · Studio Wedding 트랙 및 Wedding
+              Story 문구를 Wedding 관리 메뉴에서 수정하세요.
             </p>
             <Link
               to="/admin/wedding"
@@ -530,11 +548,15 @@ function PhilosophyPanel({
   const [eyebrow, setEyebrow] = useState(content.values_eyebrow);
   const [title, setTitle] = useState(content.values_title);
   const [items, setItems] = useState<AboutValueItem[]>(content.brand_values);
+  const [brandIntroImageUrl, setBrandIntroImageUrl] = useState(
+    content.brand_intro_image_url,
+  );
 
   useEffect(() => {
     setEyebrow(content.values_eyebrow);
     setTitle(content.values_title);
     setItems(content.brand_values);
+    setBrandIntroImageUrl(content.brand_intro_image_url);
   }, [content]);
 
   const update = (idx: number, key: keyof AboutValueItem, val: string) => {
@@ -562,6 +584,7 @@ function PhilosophyPanel({
           values_eyebrow: eyebrow,
           values_title: title,
           brand_values: items,
+          brand_intro_image_url: brandIntroImageUrl,
         })
       }
     >
@@ -629,6 +652,22 @@ function PhilosophyPanel({
       >
         <Plus size={14} /> 항목 추가
       </button>
+
+      <div className="pt-6 border-t border-gray-100">
+        <p className="font-sans text-xs font-medium text-brand-black tracking-wide mb-1">
+          홈 Brand Philosophy 이미지
+        </p>
+        <p className="font-sans text-xs text-gray-400 mb-4">
+          홈페이지 Brand Philosophy 영역에 표시되는 대표 이미지입니다.
+        </p>
+        <ImageUploadField
+          label="Brand Philosophy 대표 이미지"
+          value={brandIntroImageUrl}
+          onChange={(url) => setBrandIntroImageUrl(url ?? "")}
+          folder="about"
+          photoPickerCategory={null}
+        />
+      </div>
     </SectionCard>
   );
 }

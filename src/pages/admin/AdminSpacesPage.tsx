@@ -20,7 +20,9 @@ const spaceSchema = z.object({
     .min(1, "slug를 입력하세요")
     .regex(/^[a-z0-9-]+$/, "소문자, 숫자, 하이픈만 허용됩니다"),
   description: z.string().optional(),
-  category: z.enum(["cafe", "garden", "studio", "storage", "hall", "other"]),
+  category: z.enum(["cafe", "garden", "studio", "storage", "hall", "other"], {
+    error: "카테고리를 선택하세요",
+  }),
   capacity: z.coerce.number().min(0).optional(),
   size_sqm: z.coerce.number().min(0).optional(),
   rental_price_per_hour: z.coerce.number().min(0).optional(),
@@ -56,11 +58,11 @@ const PUBLISH_STATUS_COLORS: Record<string, string> = {
   archived: "bg-gray-100 text-gray-500",
 };
 
-const defaultValues: SpaceFormData = {
+// category is intentionally omitted — operator must explicitly select one
+const defaultValues: Omit<SpaceFormData, "category"> & { category?: SpaceFormData["category"] } = {
   name: "",
   slug: "",
   description: "",
-  category: "other",
   capacity: undefined,
   size_sqm: undefined,
   rental_price_per_hour: undefined,
@@ -292,18 +294,31 @@ function SpaceForm({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">
-                카테고리
+                카테고리 *
               </label>
               <select
                 {...register("category")}
                 className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black bg-white"
               >
-                {Object.entries(CATEGORY_LABELS).map(([val, label]) => (
-                  <option key={val} value={val}>
-                    {label}
-                  </option>
-                ))}
+                {!initialData && (
+                  <option value="">— 선택하세요 —</option>
+                )}
+                <option value="cafe">Cafe</option>
+                <option value="garden">Garden</option>
+                <option value="studio">Studio</option>
+                <option value="storage">Storage</option>
+                {initialData?.category === "hall" && (
+                  <option value="hall">홀 (기존)</option>
+                )}
+                {initialData?.category === "other" && (
+                  <option value="other">기타 (기존)</option>
+                )}
               </select>
+              {errors.category && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.category.message}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-xs font-sans text-gray-600 tracking-wider uppercase mb-1">

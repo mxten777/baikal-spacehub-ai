@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight, Users, Maximize2 } from "lucide-react";
 import { useSpaces, usePublicPhotos } from "../hooks/useData";
@@ -76,11 +76,24 @@ const FALLBACK_SPACES = [
   },
 ];
 
+const VALID_SPACE_CATEGORIES = ["cafe", "garden", "studio", "storage"] as const;
+
 export default function SpacesPage() {
   const [searchParams] = useSearchParams();
-  const [activeCategory, setActiveCategory] = useState<string>(
-    searchParams.get("category") ?? "all",
+
+  const resolveCategory = (param: string | null) =>
+    param && VALID_SPACE_CATEGORIES.includes(param as typeof VALID_SPACE_CATEGORIES[number])
+      ? param
+      : "all";
+
+  const [activeCategory, setActiveCategory] = useState<string>(() =>
+    resolveCategory(searchParams.get("category")),
   );
+
+  useEffect(() => {
+    setActiveCategory(resolveCategory(searchParams.get("category")));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
   const { data: spaces } = useSpaces(
     activeCategory !== "all" ? { category: activeCategory } : undefined,
   );

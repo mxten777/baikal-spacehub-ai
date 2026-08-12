@@ -140,7 +140,7 @@ export interface ArchiveItem {
   content?: string | null;
   category: string;
   subcategory?: string | null;
-  media_type?: 'photo' | 'video';
+  media_type?: "photo" | "video";
   date?: ISODateString | null;
   cover_image_url?: string | null;
   images?: string[];

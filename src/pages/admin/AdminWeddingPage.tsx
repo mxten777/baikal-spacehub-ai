@@ -273,7 +273,9 @@ function WeddingInquiryModal({
 
 export default function AdminWeddingPage() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"photos" | "inquiries" | "content">("content");
+  const [activeTab, setActiveTab] = useState<
+    "photos" | "inquiries" | "content"
+  >("content");
   const [stage, setStage] = useState<ProjectStage | "all">("all");
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoRecord | null>(null);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
@@ -286,7 +288,9 @@ export default function AdminWeddingPage() {
   const [storyParagraphs, setStoryParagraphs] = useState<string[]>([]);
   const [savingStory, setSavingStory] = useState(false);
   const [savedStory, setSavedStory] = useState(false);
-  const [experienceTracks, setExperienceTracks] = useState<WeddingExperience[]>([]);
+  const [experienceTracks, setExperienceTracks] = useState<WeddingExperience[]>(
+    [],
+  );
   const [savingExperience, setSavingExperience] = useState(false);
   const [savedExperience, setSavedExperience] = useState(false);
 
@@ -693,7 +697,9 @@ export default function AdminWeddingPage() {
                         onChange={(e) => setStoryTitle(e.target.value)}
                         rows={2}
                         className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none"
-                        placeholder={"틀에 박힌 웨딩이 아니라,\n두 사람만의 장면을"}
+                        placeholder={
+                          "틀에 박힌 웨딩이 아니라,\n두 사람만의 장면을"
+                        }
                       />
                     </div>
                     {storyParagraphs.map((para, idx) => (
@@ -760,7 +766,11 @@ export default function AdminWeddingPage() {
                                 type="checkbox"
                                 checked={track.is_visible}
                                 onChange={(e) =>
-                                  updateTrack(idx, "is_visible", e.target.checked)
+                                  updateTrack(
+                                    idx,
+                                    "is_visible",
+                                    e.target.checked,
+                                  )
                                 }
                                 className="w-3.5 h-3.5 accent-brand-black"
                               />

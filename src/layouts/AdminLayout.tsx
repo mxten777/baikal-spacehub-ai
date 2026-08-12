@@ -78,7 +78,7 @@ const operatorNav: NavEntry[] = [
     permission: "blog",
   },
   {
-    label: "History",
+    label: "Archive",
     href: "/admin/archive",
     icon: Archive,
     permission: "archive",

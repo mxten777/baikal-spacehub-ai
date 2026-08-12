@@ -59,13 +59,6 @@ export default function AdminAboutPage() {
       ) {
         urlsToDelete.add(content.hero_image_url);
       }
-      if (
-        "brand_intro_image_url" in updates &&
-        content.brand_intro_image_url &&
-        updates.brand_intro_image_url !== content.brand_intro_image_url
-      ) {
-        urlsToDelete.add(content.brand_intro_image_url);
-      }
       try {
         const updated = await aboutService.update(content.id, updates);
         setContent(updated);
@@ -412,7 +405,6 @@ function BrandIntroAdminSection({
   const [titleLine2, setTitleLine2] = useState(content.brand_intro_title_line2);
   const [p1, setP1] = useState(content.brand_intro_paragraph_1);
   const [p2, setP2] = useState(content.brand_intro_paragraph_2);
-  const [imageUrl, setImageUrl] = useState(content.brand_intro_image_url);
   const [pillars, setPillars] = useState<BrandIntroPillar[]>(
     content.brand_intro_pillars,
   );
@@ -423,7 +415,6 @@ function BrandIntroAdminSection({
     setTitleLine2(content.brand_intro_title_line2);
     setP1(content.brand_intro_paragraph_1);
     setP2(content.brand_intro_paragraph_2);
-    setImageUrl(content.brand_intro_image_url);
     setPillars(content.brand_intro_pillars);
   }, [content]);
 
@@ -449,14 +440,29 @@ function BrandIntroAdminSection({
           brand_intro_title_line2: titleLine2,
           brand_intro_paragraph_1: p1,
           brand_intro_paragraph_2: p2,
-          brand_intro_image_url: imageUrl,
           brand_intro_pillars: pillars,
         })
       }
     >
       <p className="font-sans text-xs text-gray-400">
-        홈페이지 Brand Philosophy 영역의 문구와 이미지를 관리합니다.
+        홈페이지 Brand Philosophy 영역의 문구와 태그를 관리합니다.
       </p>
+      <div className="flex items-center justify-between gap-6 px-4 py-3 bg-gray-50 border border-gray-200">
+        <div>
+          <p className="font-sans text-xs font-medium text-brand-black">
+            홈 Brand Philosophy 이미지
+          </p>
+          <p className="font-sans text-xs text-gray-500 mt-0.5">
+            이 이미지는 Brand CMS → Philosophy에서 관리됩니다.
+          </p>
+        </div>
+        <Link
+          to="/admin/brand?tab=philosophy"
+          className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans bg-brand-black text-white hover:bg-brand-muted transition-colors whitespace-nowrap"
+        >
+          Brand CMS <ArrowRight size={12} />
+        </Link>
+      </div>
       <Field label="Eyebrow 텍스트" value={eyebrow} onChange={setEyebrow} />
       <div className="grid grid-cols-2 gap-4">
         <Field label="제목 1행" value={titleLine1} onChange={setTitleLine1} />
@@ -479,13 +485,6 @@ function BrandIntroAdminSection({
         onChange={setP2}
         multiline
         rows={2}
-      />
-      <ImageUploadField
-        label="이미지 URL"
-        value={imageUrl}
-        onChange={(url) => setImageUrl(url ?? "")}
-        folder="about"
-        photoPickerCategory={null}
       />
       <div>
         <label className="block font-sans text-xs text-gray-500 mb-2">
