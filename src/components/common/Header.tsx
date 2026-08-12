@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { label: "Brand Story", href: "/about", hasMega: false },
   { label: "House Wedding", href: "/wedding", hasMega: false },
   { label: "K-Culture & Event Venue", href: "/venue", hasMega: false },
-  { label: "Café & Garden", href: "/spaces", hasMega: false },
+  { label: "Café & Garden", href: "/cafe-garden", hasMega: false },
   { label: "Portfolio", href: "/archive", hasMega: false },
   { label: "Media", href: "/media", hasMega: true },
   { label: "Contact", href: "/contact", hasMega: false },

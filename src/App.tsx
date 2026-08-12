@@ -32,6 +32,7 @@ const MediaPage = lazy(() => import("./pages/MediaPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
 const ReservationPage = lazy(() => import("./pages/ReservationPage"));
 const VenuePage = lazy(() => import("./pages/VenuePage"));
+const CafeGardenPage = lazy(() => import("./pages/CafeGardenPage"));
 
 // Admin pages — lazy loaded (일반 방문자는 로드하지 않음)
 const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage"));
@@ -138,6 +139,7 @@ export default function App() {
                       element={<ProgramDetailPage />}
                     />
                     <Route path="/venue" element={<VenuePage />} />
+                    <Route path="/cafe-garden" element={<CafeGardenPage />} />
                     <Route
                       path="/events"
                       element={<Navigate to="/wedding" replace />}
