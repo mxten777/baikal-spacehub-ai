@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { usePublicPhotos } from "../hooks/useData";
 import AnimatedSection from "../components/common/AnimatedSection";
-import SectionHeader from "../components/common/SectionHeader";
 import { aboutService, DEFAULT_ABOUT } from "../services/about";
 import type { AboutContent } from "../types";
 import SeoHead from "../components/common/SeoHead";
@@ -41,7 +40,6 @@ export default function AboutPage() {
     story_paragraph_1,
     story_paragraph_2,
     story_paragraph_3,
-    timeline,
     values_eyebrow,
     values_title,
     brand_values,
@@ -147,34 +145,34 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 2. Light Philosophy — Dark / Passage / Light / Memory */}
+      {/* 2. Light Philosophy */}
       <section className="section-padding bg-brand-black">
         <div className="container-wide">
-          <AnimatedSection animation="fade-up" className="text-center mb-16">
-            <SectionHeader
-              eyebrow={values_eyebrow}
-              title={values_title}
-              align="center"
-              light
-            />
-          </AnimatedSection>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+            <AnimatedSection animation="slide-left">
+              <p className="eyebrow text-white/40 mb-4">{values_eyebrow}</p>
+              <h2 className="font-display text-headline font-light text-white leading-tight">
+                {values_title}
+              </h2>
+            </AnimatedSection>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {brand_values.map((v, i) => (
-              <AnimatedSection key={v.title} animation="fade-up" delay={i * 80}>
-                <div className="p-8 border border-white/10 hover:border-brand-accent transition-colors duration-300">
-                  <span className="text-brand-accent text-2xl block mb-4">
-                    {v.icon}
-                  </span>
-                  <h3 className="font-display text-xl font-light text-white mb-3">
-                    {v.title}
-                  </h3>
-                  <p className="font-sans text-sm text-white/50 leading-relaxed">
-                    {v.desc}
-                  </p>
-                </div>
-              </AnimatedSection>
-            ))}
+            <AnimatedSection animation="slide-right" delay={100}>
+              <div className="divide-y divide-white/10">
+                {brand_values.map((v) => (
+                  <div key={v.title} className="flex items-start gap-5 py-5 first:pt-0 last:pb-0">
+                    <span className="text-brand-accent text-lg shrink-0 w-5 mt-0.5">{v.icon}</span>
+                    <div>
+                      <span className="font-display text-base font-light text-white block mb-1">
+                        {v.title}
+                      </span>
+                      <span className="font-sans text-xs text-white/40 leading-relaxed">
+                        {v.desc}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
@@ -213,6 +211,11 @@ export default function AboutPage() {
             </AnimatedSection>
 
             <AnimatedSection animation="slide-right" delay={150}>
+              <img
+                src="/images/hero/Way-02.jpg"
+                alt="THE LIT — 30m Passage"
+                className="w-full aspect-[3/4] object-cover mb-8"
+              />
               <div className="flex flex-wrap gap-3">
                 {brand_intro_pillars.map((p) => (
                   <div
@@ -233,41 +236,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 5. History — Timeline */}
-      <section className="section-padding bg-brand-cream">
-        <div className="container-wide">
-          <AnimatedSection animation="fade-up" className="mb-12 lg:mb-16">
-            <SectionHeader eyebrow="History" title="지나온 시간들" />
-          </AnimatedSection>
-
-          <AnimatedSection animation="fade-up" delay={100}>
-            <div className="max-w-lg space-y-0">
-              {timeline.map((item, i) => (
-                <div key={item.year} className="flex gap-6 pb-10 relative">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-brand-black flex items-center justify-center shrink-0 z-10">
-                      <span className="font-sans text-[10px] font-medium text-white tracking-wider">
-                        {item.year}
-                      </span>
-                    </div>
-                    {i < timeline.length - 1 && (
-                      <div className="w-px flex-1 mt-2 bg-brand-border" />
-                    )}
-                  </div>
-                  <div className="pt-2 pb-2">
-                    <h3 className="font-display text-lg font-light text-brand-black mb-1">
-                      {item.title}
-                    </h3>
-                    <p className="font-sans text-sm text-brand-muted leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
+      {/* 5. History — P4: UI에서 제거, 데이터/Admin 보존 */}
 
       {/* CTA */}
       <section className="py-20 bg-brand-black text-center">
@@ -286,6 +255,32 @@ export default function AboutPage() {
               <Link to="/spaces" className="btn-ghost-light">
                 Explore Spaces
               </Link>
+            </div>
+
+            <div className="mt-10 pt-8 border-t border-white/10">
+              <p className="font-sans text-[10px] font-medium tracking-[0.15em] uppercase text-white/30 mb-5">
+                Explore THE LIT
+              </p>
+              <div className="flex flex-wrap gap-8 justify-center">
+                <Link
+                  to="/wedding"
+                  className="font-sans text-sm text-white/50 hover:text-white transition-colors duration-200"
+                >
+                  House Wedding
+                </Link>
+                <Link
+                  to="/venue"
+                  className="font-sans text-sm text-white/50 hover:text-white transition-colors duration-200"
+                >
+                  K-Culture &amp; Event
+                </Link>
+                <Link
+                  to="/cafe-garden"
+                  className="font-sans text-sm text-white/50 hover:text-white transition-colors duration-200"
+                >
+                  Café &amp; Garden
+                </Link>
+              </div>
             </div>
           </AnimatedSection>
         </div>
