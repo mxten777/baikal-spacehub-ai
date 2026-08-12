@@ -12,15 +12,17 @@ import { useSettings } from "../../hooks/useData";
 
 const footerLinks = {
   explore: [
-    { label: "About", href: "/about" },
-    { label: "Spaces", href: "/spaces" },
-    { label: "Archive", href: "/archive" },
+    { label: "Brand Story", href: "/about" },
+    { label: "House Wedding", href: "/wedding" },
+    { label: "K-Culture & Event Venue", href: "/venue" },
+    { label: "Café & Garden", href: "/cafe-garden" },
+    { label: "Portfolio", href: "/archive" },
   ],
   connect: [
+    { label: "Spaces", href: "/spaces" },
     { label: "Blog", href: "/blog" },
     { label: "Media", href: "/media" },
     { label: "Contact", href: "/contact" },
-    { label: "Wedding", href: "/wedding" },
     { label: "예약 신청", href: "/reservation" },
   ],
 };
@@ -188,24 +190,10 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="container-wide py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="container-wide py-5 flex items-center justify-center">
           <p className="font-sans text-[11px] text-white/25 tracking-wide">
             © {year} The Lit. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
-            <Link
-              to="/privacy"
-              className="font-sans text-[11px] text-white/25 hover:text-white/50 transition-colors duration-200"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              to="/terms"
-              className="font-sans text-[11px] text-white/25 hover:text-white/50 transition-colors duration-200"
-            >
-              Terms of Use
-            </Link>
-          </div>
         </div>
       </div>
     </footer>
