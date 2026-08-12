@@ -205,17 +205,17 @@ export default function HeroSection() {
 
   return (
     <section className="relative h-screen-safe min-h-[600px] overflow-hidden bg-brand-black">
-      {/* 250ms fade-in on first reveal — background transitions from brand-black naturally */}
+      {/* initial={false}: image already decoded before heroReady fires, so paint at full opacity immediately */}
       <motion.div
         className="absolute inset-0"
-        initial={{ opacity: 0 }}
+        initial={false}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
       >
         {/* Background slides — all rendered for instant preload, crossfade via opacity */}
         {displaySlides.map((s, i) => {
           // heroReady guarantees first image is painted; serve src to all slides immediately for decode
-          const shouldHaveSrc = heroReady || i === safeIdx || i < activatedCount;
+          const shouldHaveSrc =
+            heroReady || i === safeIdx || i < activatedCount;
           const desktopWebP = shouldHaveSrc
             ? withVersion(getWebPSrc(s.desktop_image_url), s.updated_at)
             : null;
