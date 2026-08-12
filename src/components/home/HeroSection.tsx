@@ -253,7 +253,7 @@ export default function HeroSection() {
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full container-wide">
         {/* Fixed brand message — stays constant across all slide transitions */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+        <div className="flex-1 flex flex-col items-start justify-center text-left px-4">
           <p className="font-sans text-[10px] tracking-[0.32em] uppercase text-white/55 mb-6">
             Where Your Light Shines
           </p>
@@ -264,18 +264,16 @@ export default function HeroSection() {
               letterSpacing: "-0.02em",
               lineHeight: "1.2",
               wordBreak: "keep-all",
-              maxWidth: "44rem",
+              maxWidth: "36rem",
             }}
           >
-            당신의 가장 빛나는 순간을
-            <br className="hidden md:block" />
-            {" "}담는 캔버스,
-            <br className="hidden md:block" />
-            {" "}더릿
+            당신의 가장 빛나는
+            <br className="hidden md:block" /> 순간을 담는
+            <br className="hidden md:block" /> 캔버스, 더릿
           </h1>
           <p
             className="font-sans text-[13px] md:text-[14px] text-white/60 leading-relaxed tracking-[0.01em]"
-            style={{ maxWidth: "30rem" }}
+            style={{ maxWidth: "24rem" }}
           >
             하남 미사의 자연 속, 프라이빗 하우스 웨딩부터 글로벌 K-콘텐츠까지.{" "}
             최고의 기획자들이 선택한 프리미엄 베뉴, THE LIT.
