@@ -260,14 +260,18 @@ export default function HeroSection() {
           <h1
             className="font-display font-light text-white mb-7"
             style={{
-              fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
+              fontSize: "clamp(1.875rem, 4.0vw, 4.0rem)",
               letterSpacing: "-0.02em",
-              lineHeight: "1.1",
+              lineHeight: "1.2",
               wordBreak: "keep-all",
-              maxWidth: "26rem",
+              maxWidth: "44rem",
             }}
           >
-            당신의 가장 빛나는 순간을 담는 캔버스, 더릿
+            당신의 가장 빛나는 순간을
+            <br className="hidden md:block" />
+            {" "}담는 캔버스,
+            <br className="hidden md:block" />
+            {" "}더릿
           </h1>
           <p
             className="font-sans text-[13px] md:text-[14px] text-white/60 leading-relaxed tracking-[0.01em]"
