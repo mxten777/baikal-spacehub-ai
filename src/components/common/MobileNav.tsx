@@ -12,7 +12,7 @@ interface MobileNavProps {
 const NAV_ITEMS = [
   { label: "Brand Story", href: "/about" },
   { label: "House Wedding", href: "/wedding" },
-  { label: "K-Culture & Event Venue", href: "/programs" },
+  { label: "K-Culture & Event Venue", href: "/venue" },
   { label: "Café & Garden", href: "/spaces" },
   { label: "Portfolio", href: "/archive" },
   { label: "Media", href: "/media" },
