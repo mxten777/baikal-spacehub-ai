@@ -90,10 +90,13 @@ export default function HeroSection() {
     }));
   }, [heroData, mainPhotos]);
 
-  // displaySlides is set once after first image preload — never swapped
-  const [displaySlides, setDisplaySlides] = useState<HeroSlide[]>([]);
   // Hero is revealed only after the first real image is decoded and ready to paint
   const [heroReady, setHeroReady] = useState(false);
+  // Derived: empty until heroReady, then always tracks mergedSlides (includes Supabase updates)
+  const displaySlides = useMemo(
+    () => (heroReady ? mergedSlides : []),
+    [heroReady, mergedSlides],
+  );
 
   const [current, setCurrent] = useState(0);
   const [activatedCount, setActivatedCount] = useState(2);
@@ -105,13 +108,6 @@ export default function HeroSection() {
     displaySlidesRef.current = displaySlides;
   });
 
-  // Swap to real Supabase data once it arrives (no-op if hero was already real)
-  useEffect(() => {
-    if (heroReady && heroData?.length) {
-      setDisplaySlides(mergedSlides);
-    }
-  }, [heroReady, heroData, mergedSlides]);
-
   // Preload first hero image before revealing the section; avoids any visible swap
   useEffect(() => {
     if (!mergedSlides.length || heroReady) return;
@@ -120,7 +116,6 @@ export default function HeroSection() {
     const rawUrl = firstSlide.desktop_image_url;
 
     const activate = () => {
-      setDisplaySlides(mergedSlides);
       setHeroReady(true);
     };
 
@@ -177,11 +172,10 @@ export default function HeroSection() {
     };
   }, [heroReady]);
 
-  // Activate all slides and pre-decode their images right after first slide is shown.
+  // Pre-decode all remaining slide images right after first slide is shown.
   // Ensures no blank frame during crossfade caused by deferred async decoding.
   useEffect(() => {
     if (!heroReady || displaySlides.length <= 1) return;
-    setActivatedCount(displaySlides.length);
     const isMobile = window.innerWidth <= 767;
     displaySlides.slice(1).forEach((s) => {
       const rawUrl = s.desktop_image_url;
@@ -220,8 +214,8 @@ export default function HeroSection() {
       >
         {/* Background slides — all rendered for instant preload, crossfade via opacity */}
         {displaySlides.map((s, i) => {
-          // Load src for slide i only when it's been activated (avoids downloading all slides upfront)
-          const shouldHaveSrc = i === safeIdx || i < activatedCount;
+          // heroReady guarantees first image is painted; serve src to all slides immediately for decode
+          const shouldHaveSrc = heroReady || i === safeIdx || i < activatedCount;
           const desktopWebP = shouldHaveSrc
             ? withVersion(getWebPSrc(s.desktop_image_url), s.updated_at)
             : null;
