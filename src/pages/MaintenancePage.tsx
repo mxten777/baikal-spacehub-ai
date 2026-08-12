@@ -116,10 +116,8 @@ export default function MaintenancePage() {
           className="font-sans text-xs md:text-sm text-white/45 mt-3 md:mt-4 leading-relaxed max-w-xs md:max-w-md"
           {...anim(1.8, 1.0)}
         >
-          공간을 넘어,{" "}
-          더 특별한 순간과 경험을 위한 THE LIT으로
-          <br />
-          곧 다시 만나겠습니다.
+          공간을 넘어, 더 특별한 순간과 경험을 위한 THE LIT으로
+          <br />곧 다시 만나겠습니다.
         </motion.p>
       </div>
 

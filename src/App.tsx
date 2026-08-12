@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // ── Maintenance Mode ─────────────────────────────────────────────────────────
 // true → 리뉴얼 안내 화면 / false → 기존 홈페이지
-const MAINTENANCE_MODE = false;
+const MAINTENANCE_MODE = true;
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { HelmetProvider, Helmet } from "react-helmet-async";
