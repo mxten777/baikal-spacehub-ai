@@ -268,7 +268,14 @@ export default function HeroSection() {
               </picture>
               <div
                 className="absolute inset-0 bg-gradient-overlay-center"
-                style={i === 1 ? { backgroundImage: "linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.05) 45%, rgba(10,10,10,0.48) 100%)" } : undefined}
+                style={
+                  i === 1
+                    ? {
+                        backgroundImage:
+                          "linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.05) 45%, rgba(10,10,10,0.48) 100%)",
+                      }
+                    : undefined
+                }
               />
             </motion.div>
           );

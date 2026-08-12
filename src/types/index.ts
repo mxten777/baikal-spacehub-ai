@@ -777,6 +777,8 @@ export interface AboutContent {
   brand_intro_pillars: BrandIntroPillar[];
   journey_steps: JourneyStep[];
   wedding_experiences: WeddingExperience[];
+  wedding_story_title?: string;
+  wedding_story_paragraphs?: string[];
   seo_title: string;
   seo_description: string;
   seo_og_image: string;

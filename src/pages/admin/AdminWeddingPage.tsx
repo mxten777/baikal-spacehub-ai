@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import {
@@ -11,16 +11,23 @@ import {
   Clock,
   ChevronDown,
   ArrowRight,
+  Loader2,
+  Check,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import {
   getAdminPhotosByCategory,
   updatePhotoRecord,
 } from "../../services/photoRepository";
+import { aboutService } from "../../services/about";
 import type {
   PhotoRecord,
   ProjectStage,
   Inquiry,
   InquiryStatus,
+  AboutContent,
+  WeddingExperience,
 } from "../../types";
 import { useInquiries } from "../../hooks/useData";
 import { inquiriesService } from "../../services/inquiries";
@@ -270,6 +277,79 @@ export default function AdminWeddingPage() {
   const [stage, setStage] = useState<ProjectStage | "all">("all");
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoRecord | null>(null);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+
+  // ── Content (Story + Experience) ─────────────────────────────────────────
+  const [aboutContent, setAboutContent] = useState<AboutContent | null>(null);
+  const [contentLoading, setContentLoading] = useState(false);
+  const [contentError, setContentError] = useState<string | null>(null);
+  const [storyTitle, setStoryTitle] = useState("");
+  const [storyParagraphs, setStoryParagraphs] = useState<string[]>([]);
+  const [savingStory, setSavingStory] = useState(false);
+  const [savedStory, setSavedStory] = useState(false);
+  const [experienceTracks, setExperienceTracks] = useState<WeddingExperience[]>([]);
+  const [savingExperience, setSavingExperience] = useState(false);
+  const [savedExperience, setSavedExperience] = useState(false);
+
+  useEffect(() => {
+    if (activeTab !== "content" || aboutContent !== null) return;
+    setContentLoading(true);
+    aboutService
+      .get()
+      .then((data) => {
+        setAboutContent(data);
+        setStoryTitle(data.wedding_story_title ?? "");
+        setStoryParagraphs(data.wedding_story_paragraphs ?? []);
+        setExperienceTracks(data.wedding_experiences ?? []);
+      })
+      .finally(() => setContentLoading(false));
+  }, [activeTab, aboutContent]);
+
+  const handleSaveStory = async () => {
+    if (!aboutContent) return;
+    setSavingStory(true);
+    setContentError(null);
+    try {
+      const updated = await aboutService.update(aboutContent.id, {
+        wedding_story_title: storyTitle,
+        wedding_story_paragraphs: storyParagraphs,
+      });
+      setAboutContent(updated);
+      setSavedStory(true);
+      setTimeout(() => setSavedStory(false), 2000);
+    } catch (e) {
+      setContentError(e instanceof Error ? e.message : "저장에 실패했습니다.");
+    } finally {
+      setSavingStory(false);
+    }
+  };
+
+  const handleSaveExperience = async () => {
+    if (!aboutContent) return;
+    setSavingExperience(true);
+    setContentError(null);
+    try {
+      const updated = await aboutService.update(aboutContent.id, {
+        wedding_experiences: experienceTracks,
+      });
+      setAboutContent(updated);
+      setSavedExperience(true);
+      setTimeout(() => setSavedExperience(false), 2000);
+    } catch (e) {
+      setContentError(e instanceof Error ? e.message : "저장에 실패했습니다.");
+    } finally {
+      setSavingExperience(false);
+    }
+  };
+
+  const updateTrack = <K extends keyof WeddingExperience>(
+    idx: number,
+    key: K,
+    val: WeddingExperience[K],
+  ) => {
+    setExperienceTracks((prev) =>
+      prev.map((t, i) => (i === idx ? { ...t, [key]: val } : t)),
+    );
+  };
 
   // ── Photos ──────────────────────────────────────────────────────────────────
   const {
@@ -561,120 +641,390 @@ export default function AdminWeddingPage() {
 
         {/* ── Content tab ──────────────────────────────────────────────────────── */}
         {activeTab === "content" && (
-          <div className="space-y-3">
-            <p className="font-sans text-xs text-brand-muted mb-5">
-              웨딩 페이지 각 섹션의 관리 위치를 안내합니다.
-            </p>
+          <div className="space-y-6">
+            {contentError && (
+              <div className="p-4 bg-red-50 border border-red-200 text-sm font-sans text-red-700">
+                {contentError}
+              </div>
+            )}
 
-            <div className="bg-white border border-brand-border divide-y divide-brand-border">
-              {/* 3-Track Wedding Experience — Brand CMS */}
-              <div className="flex items-start justify-between px-5 py-4 gap-4">
-                <div className="min-w-0">
-                  <p className="font-sans text-sm font-medium text-brand-black">
-                    3-Track Wedding Experience
+            {contentLoading ? (
+              <div className="flex items-center justify-center gap-2 py-16 text-brand-muted">
+                <Loader2 size={16} className="animate-spin" />
+                <span className="text-sm font-sans">불러오는 중...</span>
+              </div>
+            ) : (
+              <>
+                {/* Wedding Story */}
+                <div className="bg-white border border-brand-border">
+                  <div className="flex items-center justify-between px-5 py-4 border-b border-brand-border">
+                    <div>
+                      <h2 className="font-sans text-sm font-medium text-brand-black">
+                        Wedding Story
+                      </h2>
+                      <p className="font-sans text-xs text-brand-muted mt-0.5">
+                        웨딩 페이지 소개 문구 — 제목과 본문 3단락
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleSaveStory}
+                      disabled={savingStory}
+                      className={`flex items-center gap-1.5 px-5 py-2 text-xs font-sans tracking-wider uppercase transition-colors disabled:opacity-50 ${
+                        savedStory
+                          ? "bg-green-600 text-white"
+                          : "bg-brand-black text-white hover:bg-brand-muted"
+                      }`}
+                    >
+                      {savingStory ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        <Check size={12} />
+                      )}
+                      {savedStory ? "저장됨" : "저장"}
+                    </button>
+                  </div>
+                  <div className="p-5 space-y-4">
+                    <div>
+                      <label className="block font-sans text-xs text-gray-500 mb-1.5">
+                        제목 (두 줄은 줄바꿈으로 구분)
+                      </label>
+                      <textarea
+                        value={storyTitle}
+                        onChange={(e) => setStoryTitle(e.target.value)}
+                        rows={2}
+                        className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none"
+                        placeholder={"틀에 박힌 웨딩이 아니라,\n두 사람만의 장면을"}
+                      />
+                    </div>
+                    {storyParagraphs.map((para, idx) => (
+                      <div key={idx}>
+                        <label className="block font-sans text-xs text-gray-500 mb-1.5">
+                          본문 단락 {idx + 1}
+                        </label>
+                        <textarea
+                          value={para}
+                          onChange={(e) => {
+                            const next = [...storyParagraphs];
+                            next[idx] = e.target.value;
+                            setStoryParagraphs(next);
+                          }}
+                          rows={3}
+                          className="w-full border border-gray-200 px-3 py-2 text-sm font-sans focus:outline-none focus:border-brand-black resize-none"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Wedding Experience */}
+                <div className="bg-white border border-brand-border">
+                  <div className="flex items-center justify-between px-5 py-4 border-b border-brand-border">
+                    <div>
+                      <h2 className="font-sans text-sm font-medium text-brand-black">
+                        Wedding Experience
+                      </h2>
+                      <p className="font-sans text-xs text-brand-muted mt-0.5">
+                        House · Garden · Studio Wedding 트랙 관리
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleSaveExperience}
+                      disabled={savingExperience}
+                      className={`flex items-center gap-1.5 px-5 py-2 text-xs font-sans tracking-wider uppercase transition-colors disabled:opacity-50 ${
+                        savedExperience
+                          ? "bg-green-600 text-white"
+                          : "bg-brand-black text-white hover:bg-brand-muted"
+                      }`}
+                    >
+                      {savingExperience ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        <Check size={12} />
+                      )}
+                      {savedExperience ? "저장됨" : "저장"}
+                    </button>
+                  </div>
+                  <div className="p-5 space-y-4">
+                    {experienceTracks.map((track, idx) => (
+                      <div
+                        key={idx}
+                        className={`border ${track.is_visible ? "border-gray-200" : "border-gray-100 opacity-60"} bg-white`}
+                      >
+                        <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
+                          <span className="font-sans text-xs font-medium text-gray-600">
+                            {track.number} · {track.track || "새 트랙"}
+                          </span>
+                          <div className="flex items-center gap-3">
+                            <label className="flex items-center gap-1.5 font-sans text-xs text-gray-500">
+                              <input
+                                type="checkbox"
+                                checked={track.is_visible}
+                                onChange={(e) =>
+                                  updateTrack(idx, "is_visible", e.target.checked)
+                                }
+                                className="w-3.5 h-3.5 accent-brand-black"
+                              />
+                              노출
+                            </label>
+                            <button
+                              onClick={() =>
+                                setExperienceTracks((prev) =>
+                                  prev.filter((_, i) => i !== idx),
+                                )
+                              }
+                              className="text-gray-400 hover:text-red-500 transition-colors"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-[60px_1fr_60px] gap-2">
+                            <input
+                              value={track.number}
+                              onChange={(e) =>
+                                updateTrack(idx, "number", e.target.value)
+                              }
+                              placeholder="01"
+                              className="border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                            />
+                            <input
+                              value={track.track}
+                              onChange={(e) =>
+                                updateTrack(idx, "track", e.target.value)
+                              }
+                              placeholder="트랙명 (예: House Wedding)"
+                              className="border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                            />
+                            <input
+                              type="number"
+                              value={track.sort_order}
+                              onChange={(e) =>
+                                updateTrack(
+                                  idx,
+                                  "sort_order",
+                                  Number(e.target.value),
+                                )
+                              }
+                              placeholder="순서"
+                              className="border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                            />
+                          </div>
+                          <input
+                            value={track.title}
+                            onChange={(e) =>
+                              updateTrack(idx, "title", e.target.value)
+                            }
+                            placeholder="타이틀 (예: 집 앞마당에서)"
+                            className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                          />
+                          <textarea
+                            value={track.desc}
+                            onChange={(e) =>
+                              updateTrack(idx, "desc", e.target.value)
+                            }
+                            placeholder="설명"
+                            rows={2}
+                            className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black resize-none"
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block font-sans text-[11px] text-gray-400 mb-1">
+                                키워드 (쉼표 구분)
+                              </label>
+                              <input
+                                value={track.keywords.join(", ")}
+                                onChange={(e) =>
+                                  updateTrack(
+                                    idx,
+                                    "keywords",
+                                    e.target.value
+                                      .split(",")
+                                      .map((k) => k.trim())
+                                      .filter(Boolean),
+                                  )
+                                }
+                                placeholder="Warm, Intimate, Private"
+                                className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                              />
+                            </div>
+                            <div>
+                              <label className="block font-sans text-[11px] text-gray-400 mb-1">
+                                추천 대상 (쉼표 구분)
+                              </label>
+                              <input
+                                value={track.recommended.join(", ")}
+                                onChange={(e) =>
+                                  updateTrack(
+                                    idx,
+                                    "recommended",
+                                    e.target.value
+                                      .split(",")
+                                      .map((k) => k.trim())
+                                      .filter(Boolean),
+                                  )
+                                }
+                                placeholder="소규모 웨딩, 가족 중심 예식"
+                                className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            <div>
+                              <label className="block font-sans text-[11px] text-gray-400 mb-1">
+                                장소명
+                              </label>
+                              <input
+                                value={track.venue}
+                                onChange={(e) =>
+                                  updateTrack(idx, "venue", e.target.value)
+                                }
+                                placeholder="카페 본관 + 잔디정원"
+                                className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                              />
+                            </div>
+                            <div>
+                              <label className="block font-sans text-[11px] text-gray-400 mb-1">
+                                CTA 텍스트
+                              </label>
+                              <input
+                                value={track.cta_text ?? ""}
+                                onChange={(e) =>
+                                  updateTrack(idx, "cta_text", e.target.value)
+                                }
+                                placeholder="House Wedding 문의"
+                                className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                              />
+                            </div>
+                            <div>
+                              <label className="block font-sans text-[11px] text-gray-400 mb-1">
+                                CTA 링크
+                              </label>
+                              <input
+                                value={track.cta_href ?? ""}
+                                onChange={(e) =>
+                                  updateTrack(idx, "cta_href", e.target.value)
+                                }
+                                placeholder="/contact"
+                                className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() =>
+                        setExperienceTracks((prev) => [
+                          ...prev,
+                          {
+                            number: String(prev.length + 1).padStart(2, "0"),
+                            track: "",
+                            keywords: [],
+                            title: "",
+                            desc: "",
+                            recommended: [],
+                            venue: "",
+                            cta_text: "",
+                            cta_href: "/contact",
+                            is_visible: true,
+                            sort_order: prev.length + 1,
+                          },
+                        ])
+                      }
+                      className="flex items-center gap-2 text-sm text-brand-muted hover:text-brand-black transition-colors"
+                    >
+                      <Plus size={14} /> 트랙 추가
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quick links */}
+                <div className="bg-white border border-brand-border divide-y divide-brand-border">
+                  <div className="flex items-start justify-between px-5 py-4 gap-4">
+                    <div className="min-w-0">
+                      <p className="font-sans text-sm font-medium text-brand-black">
+                        웨딩 갤러리 · 대표 사진
+                      </p>
+                      <p className="font-sans text-xs text-brand-muted mt-0.5">
+                        갤러리 사진 업로드 및 대표 사진 지정
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab("photos")}
+                      className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
+                    >
+                      사진 관리 <ArrowRight size={12} />
+                    </button>
+                  </div>
+                  <div className="flex items-start justify-between px-5 py-4 gap-4">
+                    <div className="min-w-0">
+                      <p className="font-sans text-sm font-medium text-brand-black">
+                        실제 웨딩 사례 (Real Weddings)
+                      </p>
+                      <p className="font-sans text-xs text-brand-muted mt-0.5">
+                        Archive에서 "wedding" 검색 결과가 자동 표시됩니다.
+                      </p>
+                    </div>
+                    <Link
+                      to="/admin/archive"
+                      className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
+                    >
+                      Archive 관리 <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                  <div className="flex items-start justify-between px-5 py-4 gap-4">
+                    <div className="min-w-0">
+                      <p className="font-sans text-sm font-medium text-brand-black">
+                        웨딩 저널 (Journal)
+                      </p>
+                      <p className="font-sans text-xs text-brand-muted mt-0.5">
+                        Stories에서 "wedding" 태그 게시물이 자동 표시됩니다.
+                      </p>
+                    </div>
+                    <Link
+                      to="/admin/blog"
+                      className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
+                    >
+                      Stories 관리 <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                  <div className="flex items-start justify-between px-5 py-4 gap-4">
+                    <div className="min-w-0">
+                      <p className="font-sans text-sm font-medium text-brand-black">
+                        웨딩 상담 문의
+                      </p>
+                      <p className="font-sans text-xs text-brand-muted mt-0.5">
+                        웨딩 상담 신청 내역 및 처리 상태 관리
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab("inquiries")}
+                      className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
+                    >
+                      문의 관리 <ArrowRight size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Hardcoded sections notice */}
+                <div className="p-4 bg-gray-50 border border-gray-200">
+                  <p className="font-sans text-[11px] font-medium text-gray-500 tracking-widest uppercase mb-2">
+                    현재 코드에 고정된 항목 (직접 수정 필요)
                   </p>
-                  <p className="font-sans text-xs text-brand-muted mt-0.5">
-                    House Wedding · Garden Wedding · Studio Wedding 트랙 문구, 키워드, CTA 버튼
+                  <ul className="space-y-1 font-sans text-xs text-gray-500">
+                    <li>• Hero 카피 — 메인 타이틀, 서브 문구</li>
+                    <li>• FAQ — 6개 질문/답변 항목</li>
+                  </ul>
+                  <p className="font-sans text-[11px] text-gray-400 mt-2">
+                    코드 위치:{" "}
+                    <code className="bg-gray-100 px-1 py-0.5 rounded-sm">
+                      src/pages/WeddingPage.tsx
+                    </code>
                   </p>
                 </div>
-                <Link
-                  to="/admin/brand?tab=wedding"
-                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans bg-brand-black text-white hover:bg-brand-muted transition-colors whitespace-nowrap"
-                >
-                  Brand CMS <ArrowRight size={12} />
-                </Link>
-              </div>
-
-              {/* Wedding gallery photos */}
-              <div className="flex items-start justify-between px-5 py-4 gap-4">
-                <div className="min-w-0">
-                  <p className="font-sans text-sm font-medium text-brand-black">
-                    웨딩 갤러리 · 대표 사진
-                  </p>
-                  <p className="font-sans text-xs text-brand-muted mt-0.5">
-                    갤러리 사진 업로드 및 대표 사진 지정
-                  </p>
-                </div>
-                <button
-                  onClick={() => setActiveTab("photos")}
-                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
-                >
-                  사진 관리 <ArrowRight size={12} />
-                </button>
-              </div>
-
-              {/* Real Weddings from archive */}
-              <div className="flex items-start justify-between px-5 py-4 gap-4">
-                <div className="min-w-0">
-                  <p className="font-sans text-sm font-medium text-brand-black">
-                    실제 웨딩 사례 (Real Weddings)
-                  </p>
-                  <p className="font-sans text-xs text-brand-muted mt-0.5">
-                    Archive에서 "wedding" 검색 결과가 자동 표시됩니다.
-                  </p>
-                </div>
-                <Link
-                  to="/admin/archive"
-                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
-                >
-                  Archive 관리 <ArrowRight size={12} />
-                </Link>
-              </div>
-
-              {/* Journal posts */}
-              <div className="flex items-start justify-between px-5 py-4 gap-4">
-                <div className="min-w-0">
-                  <p className="font-sans text-sm font-medium text-brand-black">
-                    웨딩 저널 (Journal)
-                  </p>
-                  <p className="font-sans text-xs text-brand-muted mt-0.5">
-                    Stories에서 "wedding" 태그 게시물이 자동 표시됩니다.
-                  </p>
-                </div>
-                <Link
-                  to="/admin/blog"
-                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
-                >
-                  Stories 관리 <ArrowRight size={12} />
-                </Link>
-              </div>
-
-              {/* Inquiries */}
-              <div className="flex items-start justify-between px-5 py-4 gap-4">
-                <div className="min-w-0">
-                  <p className="font-sans text-sm font-medium text-brand-black">
-                    웨딩 상담 문의
-                  </p>
-                  <p className="font-sans text-xs text-brand-muted mt-0.5">
-                    웨딩 상담 신청 내역 및 처리 상태 관리
-                  </p>
-                </div>
-                <button
-                  onClick={() => setActiveTab("inquiries")}
-                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-sans border border-brand-border hover:border-brand-black transition-colors text-brand-black whitespace-nowrap"
-                >
-                  문의 관리 <ArrowRight size={12} />
-                </button>
-              </div>
-            </div>
-
-            {/* Hardcoded sections notice */}
-            <div className="p-4 bg-gray-50 border border-gray-200">
-              <p className="font-sans text-[11px] font-medium text-gray-500 tracking-widest uppercase mb-2">
-                현재 코드에 고정된 항목 (직접 수정 필요)
-              </p>
-              <ul className="space-y-1 font-sans text-xs text-gray-500">
-                <li>• Wedding Story 소개 문구 — 페이지 2번 섹션 제목 및 본문 3단락</li>
-                <li>• Hero 카피 — 메인 타이틀, 서브 문구</li>
-                <li>• FAQ — 6개 질문/답변 항목</li>
-              </ul>
-              <p className="font-sans text-[11px] text-gray-400 mt-2">
-                코드 위치:{" "}
-                <code className="bg-gray-100 px-1 py-0.5 rounded-sm">
-                  src/pages/WeddingPage.tsx
-                </code>
-              </p>
-            </div>
+              </>
+            )}
           </div>
         )}
       </div>

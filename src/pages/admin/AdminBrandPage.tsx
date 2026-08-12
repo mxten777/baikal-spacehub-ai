@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { aboutService, DEFAULT_ABOUT } from "../../services/about";
 import { useAuth } from "../../hooks/useAuth";
 import type {
@@ -7,9 +7,8 @@ import type {
   AboutTimelineItem,
   AboutValueItem,
   JourneyStep,
-  WeddingExperience,
 } from "../../types";
-import { Check, Loader2, Plus, Trash2, GripVertical, Lock } from "lucide-react";
+import { Check, Loader2, Plus, Trash2, GripVertical, Lock, ArrowRight } from "lucide-react";
 
 type BrandTab =
   | "story"
@@ -149,12 +148,20 @@ export default function AdminBrandPage() {
           />
         )}
         {activeTab === "wedding" && (
-          <WeddingPanel
-            content={content}
-            saving={savingSection === "wedding"}
-            saved={savedSection === "wedding"}
-            onSave={(u) => handleSave("wedding", u)}
-          />
+          <div className="bg-white border border-gray-200 p-8 text-center space-y-4">
+            <p className="font-sans text-sm text-brand-black font-medium">
+              Wedding Experience는 Wedding 관리에서 관리합니다.
+            </p>
+            <p className="font-sans text-xs text-gray-400">
+              House Wedding · Garden Wedding · Studio Wedding 트랙 및 Wedding Story 문구를 Wedding 관리 메뉴에서 수정하세요.
+            </p>
+            <Link
+              to="/admin/wedding"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-black text-white text-xs font-sans tracking-wider uppercase hover:bg-brand-muted transition-colors"
+            >
+              Wedding 관리 이동 <ArrowRight size={12} />
+            </Link>
+          </div>
         )}
         {activeTab === "philosophy" && (
           <PhilosophyPanel
@@ -502,236 +509,6 @@ function JourneyPanel({
         className="flex items-center gap-2 text-sm text-brand-muted hover:text-brand-black transition-colors mt-2"
       >
         <Plus size={14} /> 단계 추가
-      </button>
-    </SectionCard>
-  );
-}
-
-// ── Wedding Experience Panel ───────────────────────────────────────────────────
-
-function WeddingPanel({
-  content,
-  saving,
-  saved,
-  onSave,
-}: {
-  content: AboutContent;
-  saving: boolean;
-  saved: boolean;
-  onSave: (u: Partial<AboutContent>) => void;
-}) {
-  const [tracks, setTracks] = useState<WeddingExperience[]>(
-    content.wedding_experiences ?? [],
-  );
-
-  useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
-    setTracks(content.wedding_experiences ?? []);
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, [content]);
-
-  const update = <K extends keyof WeddingExperience>(
-    idx: number,
-    key: K,
-    val: WeddingExperience[K],
-  ) => {
-    setTracks((prev) =>
-      prev.map((t, i) => (i === idx ? { ...t, [key]: val } : t)),
-    );
-  };
-
-  const updateKeywords = (idx: number, raw: string) => {
-    update(
-      idx,
-      "keywords",
-      raw
-        .split(",")
-        .map((k) => k.trim())
-        .filter(Boolean),
-    );
-  };
-
-  const updateRecommended = (idx: number, raw: string) => {
-    update(
-      idx,
-      "recommended",
-      raw
-        .split(",")
-        .map((k) => k.trim())
-        .filter(Boolean),
-    );
-  };
-
-  const add = () => {
-    setTracks((prev) => [
-      ...prev,
-      {
-        number: String(prev.length + 1).padStart(2, "0"),
-        track: "",
-        keywords: [],
-        title: "",
-        desc: "",
-        recommended: [],
-        venue: "",
-        cta_text: "",
-        cta_href: "/contact",
-        is_visible: true,
-        sort_order: prev.length + 1,
-      },
-    ]);
-  };
-
-  const remove = (idx: number) => {
-    setTracks((prev) => prev.filter((_, i) => i !== idx));
-  };
-
-  return (
-    <SectionCard
-      title="Wedding Experience"
-      subtitle="웨딩 페이지 — 3-Track 웨딩 경험 섹션"
-      saving={saving}
-      saved={saved}
-      onSave={() => onSave({ wedding_experiences: tracks })}
-    >
-      <p className="font-sans text-xs text-gray-400">
-        House Wedding / Garden Wedding / Studio Wedding 3가지 웨딩 경험을
-        관리합니다.
-      </p>
-      <div className="space-y-6 mt-2">
-        {tracks.map((track, idx) => (
-          <div
-            key={idx}
-            className={`border ${track.is_visible ? "border-gray-200" : "border-gray-100 opacity-60"} bg-white`}
-          >
-            <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
-              <span className="font-sans text-xs font-medium text-gray-600">
-                {track.number} · {track.track || "새 트랙"}
-              </span>
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-1.5 font-sans text-xs text-gray-500">
-                  <input
-                    type="checkbox"
-                    checked={track.is_visible}
-                    onChange={(e) =>
-                      update(idx, "is_visible", e.target.checked)
-                    }
-                    className="w-3.5 h-3.5 accent-brand-black"
-                  />
-                  노출
-                </label>
-                <button
-                  onClick={() => remove(idx)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            </div>
-            <div className="p-4 space-y-3">
-              <div className="grid grid-cols-[60px_1fr_60px] gap-2">
-                <input
-                  value={track.number}
-                  onChange={(e) => update(idx, "number", e.target.value)}
-                  placeholder="01"
-                  className="border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-                />
-                <input
-                  value={track.track}
-                  onChange={(e) => update(idx, "track", e.target.value)}
-                  placeholder="트랙명 (예: House Wedding)"
-                  className="border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-                />
-                <input
-                  type="number"
-                  value={track.sort_order}
-                  onChange={(e) =>
-                    update(idx, "sort_order", Number(e.target.value))
-                  }
-                  placeholder="순서"
-                  className="border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-                />
-              </div>
-              <input
-                value={track.title}
-                onChange={(e) => update(idx, "title", e.target.value)}
-                placeholder="타이틀 (예: 집 앞마당에서)"
-                className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-              />
-              <textarea
-                value={track.desc}
-                onChange={(e) => update(idx, "desc", e.target.value)}
-                placeholder="설명"
-                rows={2}
-                className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black resize-none"
-              />
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block font-sans text-[11px] text-gray-400 mb-1">
-                    키워드 (쉼표 구분)
-                  </label>
-                  <input
-                    value={track.keywords.join(", ")}
-                    onChange={(e) => updateKeywords(idx, e.target.value)}
-                    placeholder="Warm, Intimate, Private"
-                    className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-                  />
-                </div>
-                <div>
-                  <label className="block font-sans text-[11px] text-gray-400 mb-1">
-                    추천 대상 (쉼표 구분)
-                  </label>
-                  <input
-                    value={track.recommended.join(", ")}
-                    onChange={(e) => updateRecommended(idx, e.target.value)}
-                    placeholder="소규모 웨딩, 가족 중심 예식"
-                    className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="col-span-1">
-                  <label className="block font-sans text-[11px] text-gray-400 mb-1">
-                    장소명
-                  </label>
-                  <input
-                    value={track.venue}
-                    onChange={(e) => update(idx, "venue", e.target.value)}
-                    placeholder="카페 본관 + 잔디정원"
-                    className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-                  />
-                </div>
-                <div>
-                  <label className="block font-sans text-[11px] text-gray-400 mb-1">
-                    CTA 텍스트
-                  </label>
-                  <input
-                    value={track.cta_text ?? ""}
-                    onChange={(e) => update(idx, "cta_text", e.target.value)}
-                    placeholder="House Wedding 문의"
-                    className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-                  />
-                </div>
-                <div>
-                  <label className="block font-sans text-[11px] text-gray-400 mb-1">
-                    CTA 링크
-                  </label>
-                  <input
-                    value={track.cta_href ?? ""}
-                    onChange={(e) => update(idx, "cta_href", e.target.value)}
-                    placeholder="/contact"
-                    className="w-full border border-gray-200 px-2 py-1.5 text-sm font-sans focus:outline-none focus:border-brand-black"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <button
-        onClick={add}
-        className="flex items-center gap-2 text-sm text-brand-muted hover:text-brand-black transition-colors mt-2"
-      >
-        <Plus size={14} /> 트랙 추가
       </button>
     </SectionCard>
   );
